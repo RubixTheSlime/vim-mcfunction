@@ -1,0 +1,13 @@
+#!/bin/bash
+
+printf '
+syn match   mcSelector%-33s contained /@[eaprs]\>\[\@!/                                             skipwhite nextgroup=mcDoubleSpace,%s
+syn region  mcSelectorFilter%-27s contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,%s
+syn match   mcPlayerName%-31s contained /\w\{3,16}\>-\@!/                                             skipwhite nextgroup=mcDoubleSpace,%s
+syn match   mcUUID%-37s contained /\\x\{8}-\\x\{4}-\\x\{4}-\\x\{12}/                                skipwhite nextgroup=mcDoubleSpace,%s
+syn cluster mcEntity%-35s add=mcSelector%-34sadd=mcPlayerName%-32sadd=mcUUID%-30sadd=mcSelectorFilter%s
+hi def link mcSelector%-33s mcSelector
+hi def link mcPlayerName%-31s mcPlayerName
+hi def link mcUUID%-37s mcUUID
+' $1 $2  $1 $2  $1 $2  $1 $2  $1 $1 $1 $1 $1  $1  $1  $1 >> entities.vim
+
