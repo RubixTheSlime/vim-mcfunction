@@ -1,1 +1,1 @@
-au BufRead,BufNewFile *.mcfunction setfiletype mc
+au BufRead,BufNewFile *.mcfunction setfiletype mcfunction
