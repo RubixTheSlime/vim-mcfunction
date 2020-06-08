@@ -11,7 +11,7 @@ Plug rubixninja314/vim-mcfunction
 
 call plug#end()
 ```
-to the list
+to your .vimrc
 
 ## Current Progress
 ### Commands implemented:
