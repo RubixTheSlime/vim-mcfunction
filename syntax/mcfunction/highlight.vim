@@ -4,7 +4,7 @@ hi mcCommand ctermfg=4 cterm=bold
 
 hi def link mcBadWhitespace     Error
 hi def link mcChatMessage       String
-hi def link mcCommand           Statement
+hi def link mcCommand           String
 hi def link mcComment           Comment
 hi def link mcCoordinate        Constant
 hi def link mcKeyword           Keyword
