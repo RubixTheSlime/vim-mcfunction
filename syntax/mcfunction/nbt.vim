@@ -19,7 +19,7 @@ endfor
 
 " NBT Tags
 for [type,nexttype] in [["Give","mcUInt"],["Setblock","mcSetblockPad"],["Fill","mcFillPad"],["FillReplace",""],["Clone","mcClonePad"]]
-        execute 'syn region  mcNBTTag'.type 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,'.nexttype
+        execute 'syn region  mcNBTTag'.type 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,'.nexttype
         execute 'syn cluster mcNBT add=mcNBTTag'.type
 endfor
 
