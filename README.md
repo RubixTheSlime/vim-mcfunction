@@ -3,7 +3,7 @@ Vim syntax definitions for mcfunction. Still a work in progress, currently being
 
 ## Installation
 
-To install using [vim-plug](github.com/junegunn/vim-plug), add
+To install using [vim-plug](https://github.com/junegunn/vim-plug), add
 ```
 call plug#begin()
 
