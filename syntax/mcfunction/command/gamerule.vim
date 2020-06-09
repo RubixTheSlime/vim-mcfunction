@@ -1,3 +1,5 @@
+syn keyword mcCommand gamerule                  contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
+
 "bools
 syn keyword mcGamerule announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks contained skipwhite nextgroup=mcDoubleSpace,mcBool
 

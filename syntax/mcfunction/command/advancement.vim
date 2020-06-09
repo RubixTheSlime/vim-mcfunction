@@ -1,3 +1,4 @@
+syn keyword mcCommand advancement               contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementKeyword
 
 syn match   mcAdvancementName                   /\(\w\|[/:]\)\+/        contained
 syn match   mcAdvancementNameFilter             /\(\w\|[/:]\)\+/        contained skipwhite nextgroup=mcFilterEqAdvance

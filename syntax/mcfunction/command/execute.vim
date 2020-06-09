@@ -69,3 +69,9 @@ syn cluster mcExecuteInValue contains=mcExecuteInValueRaw,mcExecuteInValuePrefix
 
 syn keyword mcExecuteCommand execute contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
 syn cluster mcCommand add=mcExecuteCommand
+
+
+syn match   mcBlockNameExecute                  /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinBlock       skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+syn match   mcDimensionExecute                  /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinDimension   skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+hi def link mcBlockNameExecute                  mcBlockName
+hi def link mcDimensionExecute                  mcDimension

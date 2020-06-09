@@ -1,3 +1,5 @@
+syn keyword mcCommand bossbar                   contained skipwhite nextgroup=mcDoubleSpace,mcBossbarKeyword
+
 syn match   mcBossbarId                 /\(\w\|[:./-]\)\+/      contained contains=mcNamespace
 syn match   mcBossbarIdExecuteStore     /\(\w\|[:./-]\)\+/      contained contains=mcNamespace skipwhite nextgroup=mcDoubleSpace,mcBossbarFeildExecuteStore
 syn match   mcBossbarIdAdd              /\(\w\|[:./-]\)\+/      contained contains=mcNamespace skipwhite nextgroup=mcDoubleSpace,mcJSONText
