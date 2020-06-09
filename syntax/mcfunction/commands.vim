@@ -32,3 +32,4 @@ syn keyword mcCommand loot                      contained skipwhite nextgroup=mc
 syn keyword mcCommand spawnpoint                contained skipwhite nextgroup=mcDoubleSpace,@mcEntitySpawnPos
 syn keyword mcCommand weather                   contained skipwhite nextgroup=mcDoubleSpace,mcWeather
 syn keyword mcCommand summon                    contained skipwhite nextgroup=mcDoubleSpace,mcEntityTypeSummon
+syn keyword mcCommand title                     contained skipwhite nextgroup=mcDoubleSpace,@mcEntityTitle

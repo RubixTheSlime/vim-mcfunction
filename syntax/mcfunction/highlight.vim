@@ -6,20 +6,25 @@ hi def link mcBadWhitespace     Error
 hi def link mcChatMessage       String
 hi def link mcCommand           String
 hi def link mcComment           Comment
-hi def link mcCoordinate        Constant
+"hi def link mcCoordinate        Constant
 hi def link mcKeyword           Keyword
 hi def link mcSelector          Type
 hi def link mcValue             Constant
-hi def link mcNBTBracket        Operator
+"hi def link mcNBTBracket        Operator
 hi def link mcBool              Boolean
-hi def link mcNamespace         Keyword
+hi def link mcNamespace         mcKeyword
 "hi def link mcNBTString         String
-hi mcKeyValue           ctermfg=5 cterm=bold
 hi mcNBTPath            ctermfg=6
 hi mcNBTBracket         ctermfg=2
 hi mcNBTPathDot         ctermfg=4
-hi mcNBTValue           ctermfg=6 cterm=bold
-
+hi mcNBTValue           ctermfg=4
+hi mcJSONText           ctermfg=3
+hi mcCoordinate         ctermfg=14
+hi mcCoordinate2        ctermfg=11
+hi mcCoordinate3        ctermfg=10
+hi mcKeyword            cterm=italic
+hi mcKeyValue           ctermfg=11 cterm=bold
+hi mcValue              ctermfg=11
 
 hi def link mcBlockStateBracket         mcSelector
 hi def link mcBlockStateEq              mcFilterEq
@@ -27,8 +32,8 @@ hi def link mcBlockStateKeyword         mcFilterKeyword
 hi def link mcBlockStateValue           mcFilterValue
 hi def link mcBossbarFeild              mcKeyValue
 hi def link mcBossbarId                 mcValue
-hi def link mcCoordinate2               mcCoordinate
-hi def link mcCoordinate3               mcCoordinate
+"hi def link mcCoordinate2               mcCoordinate
+"hi def link mcCoordinate3               mcCoordinate
 hi def link mcDataKeyword               mcKeyword
 hi def link mcEnchantmentLevel          mcValue
 hi def link mcExecuteCommand            mcCommand

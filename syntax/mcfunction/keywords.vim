@@ -24,12 +24,26 @@ hi def link mcListUUIDs         mcKeyword
 
 "TODO
 syn match   mcJSONText          contained /.\+/
+hi def link mcJSONText          mcString
 
 " Help commands (why am i even including this, or UUID highlighting for that matter)
 " (i guess you could /execute store result ... run help for a message generator)
 " (same with /seed but that one was easy so i don't really care)
 syn keyword mcHelpCommand contained advancement bossbar clear clone data datapack debug defaultgamemode difficulty effect enchant execute experience fill forceload function gamemode gamerule give help kill list locate loot me msg paraticle playsound recipe reload replaceitem say schedule scoreboard seed setblock setworldspawn spawnpoint spreadplayers stopsound summon tag team teleport teammsg tell tellraw time title tp trigger w weather worldborder xp
 hi def link mcHelpCommand       mcKeyValue
+
+" Title
+syn keyword mcTitleKeyword      contained actionbar subtitle title skipwhite nextgroup=mcDoubleSpace,mcJSONText
+syn keyword mcTitleKeyword      contained clear reset
+syn keyword mcTitleKeyword      contained times skipwhite nextgroup=mcDoubleSpace,mcTitleTime
+hi def link mcTitleKeyword mcKeyWord
+syn match mcTitleTime           /\d\{1,9\}/ contained skipwhite nextgroup=mcDoubleSpace,mcTitleTime2
+syn match mcTitleTime2          /\d\{1,9\}/ contained skipwhite nextgroup=mcDoubleSpace,mcTitleTime3
+syn match mcTitleTime3          /\d\{1,9\}/ contained skipwhite nextgroup=mcDoubleSpace
+hi def link mcTitleTime         mcCoordinate
+hi def link mcTitleTime2        mcCoordinate2
+hi def link mcTitleTime3        mcCoordinate3
+
 
 " Enchantment level
 syn match   mcEnchantmentLevel  /[0-5]/ contained
