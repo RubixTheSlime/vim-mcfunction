@@ -30,6 +30,7 @@ hi def link mcDoubleSpace mcBadWhitespace
 " Optional Slash
 syn match mcOptionalSlash /^\/\?/ nextgroup=@mcCommand
 hi def link mcOptionalSlash mcCommand
+syn cluster mcCommand add=mcCommand
 
 " Illegal Whitespace
 syn match mcComment /^#.*/
