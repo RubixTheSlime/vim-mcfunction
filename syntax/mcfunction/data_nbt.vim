@@ -3,24 +3,32 @@
 
 syn region  mcNBTTag            matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
 
+function! s:mcNBTPath(type)
+        execute 'syn match   mcNBTPath'.a:type           '/\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:type ',mc'.a:type.'Pad'
+        execute 'syn region  mcNBTPath'.a:type           'matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:type ',mc'.a:type.'Pad'
+        execute 'syn region  mcNBTArray'.a:type          'matchgroup=mcNBTBracket start=/\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:type ',mc'.a:type.'Pad'
+        execute 'syn region  mcNBTTagP'.a:type           'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:type ',mc'.a:type.'Pad'
+        execute 'syn match   mcNBTPathDot'.a:type        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:type ',mc'.a:type.'Pad'
+        execute 'syn cluster mcNBTPath'.a:type           'contains=mcNBTPath'.a:type.',mcNBTTagP'.a:type
+        execute 'syn cluster mcNBTContinue'.a:type       'contains=mcNBTTagP'.a:type.',mcNBTArray'.a:type.',mcNBTPathDot'.a:type
+        execute 'syn cluster mcNBT'.a:type               'add=mcNBTPath'.a:type.',mcNBTArray'.a:type.',mcNBTTagP'.a:type.',mcNBTPathDot'.a:type.',mcNBTTag'.a:type
+        execute 'hi def link mcNBTPath'.a:type 'mcNBTPath'
+        execute 'hi def link mcNBTPathDot'.a:type 'mcNBTPathDot'
+endfunction
+
+function! s:mcNBTTag(type,nexttype)
+        execute 'syn region  mcNBTTag'.a:type 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+        execute 'syn cluster mcNBT add=mcNBTTag'.a:type
+endfunction
+
 " NBT Paths
 for type in ["","ExecuteStore","Execute","DataGet","DataModify"]
-        execute 'syn match   mcNBTPath'.type           '/\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.type ',mc'.type.'Pad'
-        execute 'syn region  mcNBTPath'.type           'matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.type ',mc'.type.'Pad'
-        execute 'syn region  mcNBTArray'.type          'matchgroup=mcNBTBracket start=/\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.type ',mc'.type.'Pad'
-        execute 'syn region  mcNBTTagP'.type           'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.type ',mc'.type.'Pad'
-        execute 'syn match   mcNBTPathDot'.type        '/\./                                                            contained                               nextgroup=mcNBTPath'.type ',mc'.type.'Pad'
-        execute 'syn cluster mcNBTPath'.type           'contains=mcNBTPath'.type.',mcNBTTagP'.type
-        execute 'syn cluster mcNBTContinue'.type       'contains=mcNBTTagP'.type.',mcNBTArray'.type.',mcNBTPathDot'.type
-        execute 'syn cluster mcNBT'.type               'add=mcNBTPath'.type.',mcNBTArray'.type.',mcNBTTagP'.type.',mcNBTPathDot'.type.',mcNBTTag'.type
-        execute 'hi def link mcNBTPath'.type 'mcNBTPath'
-        execute 'hi def link mcNBTPathDot'.type 'mcNBTPathDot'
+        call s:mcNBTPath(type)
 endfor
 
 " NBT Tags
 for [type,nexttype] in [["Give","mcUInt"],["Setblock","mcSetblockPad"],["Fill","mcFillPad"],["FillReplace",""],["Clone","mcClonePad"]]
-        execute 'syn region  mcNBTTag'.type 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,'.nexttype
-        execute 'syn cluster mcNBT add=mcNBTTag'.type
+        call s:mcNBTTag(type,nexttype)
 endfor
 
 " These never need to be redefined as they will always be found inside

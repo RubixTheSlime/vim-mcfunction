@@ -9,20 +9,21 @@
 " - cluster player names, selectors, and UUIDs into entities
 " - match each group
 
+function! s:mcEntity(type, nexttype)
+        execute 'hi def link mcEntity'.a:type 'mcEntity'
+        execute 'syn cluster mcEntity'.a:type 'add=mcEntity'.a:type
+        execute 'syn match   mcEntity'.a:type 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+        execute 'syn match   mcEntity'.a:type 'contained /@[eaprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+        execute 'syn match   mcEntity'.a:type 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+        execute 'syn region  mcEntity'.a:type 'contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+        execute 'syn cluster mcFilter add='.a:type
+endfunction
+
 "Most types
-for [type, nexttype] in [ ["Title","mcTitleKeyword"],["Advancement", "mcAdvancementWhich"], ["Clear", "mcItemClear"], ["DataGet", "@mcNBTPathDataGet"], ["DataMerge", "mcNBTTag"], ["DataModify", "@mcNBTPathDataModify"], ["DataRemove", "@mcNBTPath"], ["EffectClear", "mcEffect"], ["EffectGive", "mcEffectGive"], ["Enchant", "mcEnchantment"], ["Execute", "@mcExecuteKeyword"], ["ExecuteCond", "@mcExecuteKeyword"], ["ExecuteCondData", "@mcNBTPathExecute"], ["ExecuteCondScoreSource", "mcObjectiveNameExecuteCondScoreSource"], ["ExecuteCondScoreTarget", "mcObjectiveNameExecuteCondScoreTarget"], ["ExecuteFacing", "mcExecuteAnchoredValue"], ["ExecuteStore", "@mcNBTPathExecuteStore"], ["ExecuteStoreScore", "mcObjectiveNameExecuteStore"], ["Give", "mcItemGive"], ["Loot", "mcLootSourceKeyword"], ["LootReplace", "mcItemSlotLoot"], ["Msg", "mcChatMessage"], ["SpawnPos","mcCoordinate"], ["TpFacing", "mcTpAnchoredValue"], ["XpQuery", "mcXpUnit"], ["XpSet", "mcXpAmount"], ]
-        execute 'hi def link mcPlayerName'.type 'mcPlayerName'
-        execute 'hi def link mcSelector'.type 'mcSelector'
-        execute 'hi def link mcUUID'.type 'mcUUID'
-        execute 'syn cluster mcEntity'.type 'add=mcSelector'.type.',mcPlayerName'.type.',mcUUID'.type.',mcSelectorFilter'.type
-        execute 'syn match mcPlayerName'.type 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.nexttype
-        execute 'syn match mcSelector'.type 'contained /@[eaprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.nexttype
-        execute 'syn match mcUUID'.type 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.nexttype
-        execute 'syn region mcSelectorFilter'.type 'contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.nexttype
-        execute 'syn cluster mcFilter add='.type
+for [type, nexttype] in [["Title","mcTitleKeyword"],["Advancement", "mcAdvancementWhich"], ["Clear", "mcItemClear"], ["DataGet", "@mcNBTPathDataGet"], ["DataMerge", "mcNBTTag"], ["DataModify", "@mcNBTPathDataModify"], ["DataRemove", "@mcNBTPath"], ["EffectClear", "mcEffect"], ["EffectGive", "mcEffectGive"], ["Enchant", "mcEnchantment"], ["Execute", "@mcExecuteKeyword"], ["ExecuteCond", "@mcExecuteKeyword"], ["ExecuteCondData", "@mcNBTPathExecute"], ["ExecuteCondScoreSource", "mcObjectiveNameExecuteCondScoreSource"], ["ExecuteCondScoreTarget", "mcObjectiveNameExecuteCondScoreTarget"], ["ExecuteFacing", "mcExecuteAnchoredValue"], ["ExecuteStore", "@mcNBTPathExecuteStore"], ["ExecuteStoreScore", "mcObjectiveNameExecuteStore"], ["Give", "mcItemGive"], ["Loot", "mcLootSourceKeyword"], ["LootReplace", "mcItemSlotLoot"], ["Msg", "mcChatMessage"], ["SpawnPos","mcCoordinate"], ["TpFacing", "mcTpAnchoredValue"], ["XpQuery", "mcXpUnit"], ["XpSet", "mcXpAmount"], ]
+        call s:mcEntity(type,nexttype)
 endfor
 
-"Base case
 syn cluster mcEntity add=mcSelector add=mcPlayerName add=mcUUID add=mcSelectorFilter
 syn match mcPlayerName contained /\w\{3,16}\>-\@!/
 syn match mcSelector contained /@[eaprs]\>\[\@!/
