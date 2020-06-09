@@ -137,9 +137,6 @@ hi def link mcEffectSeconds mcValue
 hi def link mcEffectAmp     mcValue
 hi def link mcEffectKeyword mcKeyword
 
-" Gamerules
-syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcBool       announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids doDaylightCycle doEntityDrops doFireTick doLimitedCrafting doMobLoot doTileDrops doWeatherCycle keepInventory logAdminCommands mobGriefing naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
-syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcUInt       maxCommandChainLength maxEntityCramming randomTickSpeed spawnRadius
 
 " Setblock
 syn match   mcSetblockPad       / \@=/ contained skipwhite nextgroup=mcDoubleSpace,mcSetBlockMode

@@ -23,6 +23,11 @@ tp sam
 /
 say  srat
 kill 12345678-1234-1234-123456789abc
+gamerule doDaylightCycle true
+gamerule maxCommandChainLength 213123
+gamerule randomTickSpeed 0
+gamerule randomTickSpeed 4096
+gamerule randomTickSpeed 4097
 s
 //say
 w @s hi
@@ -53,6 +58,8 @@ kill @e[type=arst]
 kill @e[type=yuh:armor_stand]
 kill @e[type=cow]
 @e
+gamerule doDaylightCycle true
+gamerule randomTickSpeed 29389281098308109
 w @s hi    there
 tp @a ~ ~ ~
 enchant 

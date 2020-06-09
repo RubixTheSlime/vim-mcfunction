@@ -30,6 +30,7 @@ to the list
 - forceload
 - function
 - gamemode
+- gamerule
 - give
 - help
 - kill
@@ -51,7 +52,6 @@ to the list
 
 ### Commands partially implemented:
 - execute
-- gamerule
 - loot
 
 ### Commands not yet implemented:
