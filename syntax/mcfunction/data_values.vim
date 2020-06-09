@@ -10,6 +10,7 @@ syn match   mcEffect                            /\(\w\|:\)\+/   contained contai
 syn match   mcEffectGive                        /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEffect      skipwhite nextgroup=mcDoubleSpace,mcEffectSeconds
 syn match   mcEnchantment                       /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEnchantment skipwhite nextgroup=mcDoubleSpace,mcEnchantmentLevel
 syn match   mcEntityType                        /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEntity
+syn match   mcEntityTypeSummon                  /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEntity      skipwhite nextgroup=mcDoubleSpace,mcCoordinateSummon
 syn match   mcItem                              /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinItem
 syn match   mcItemGive                          /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinItem        nextgroup=mcAnySpace,mcNBTTagGive
 syn match   mcItemClear                         /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinItem        skipwhite nextgroup=mcDoubleSpace,mcUInt

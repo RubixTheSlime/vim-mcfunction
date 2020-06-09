@@ -11,7 +11,7 @@ Plug rubixninja314/vim-mcfunction
 
 call plug#end()
 ```
-to the list
+to your .vimrc
 
 ## Current Progress
 ### Commands implemented:
@@ -43,11 +43,14 @@ to the list
 - seed
 - setblock
 - setworldspawn
+- spawnpoint
+- summon
 - teammsg
 - teleport
 - tell
 - tp
 - w
+- weather
 - xp
 
 ### Commands partially implemented:
@@ -61,17 +64,14 @@ to the list
 - replaceitem
 - schedule
 - scoreboard
-- spawnpoint
 - spreadplayers
 - stopsound
-- summon
 - tag
 - team
 - tellraw
 - time
 - title
 - trigger
-- weather
 - worldborder
 
 

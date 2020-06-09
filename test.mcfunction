@@ -3,10 +3,12 @@ loot replace entity @e[type=chest_minecart] slot 1 loot arst
 loot replace block 1 2 3 slot 32 kill @e
 loot give @s mine 1 2 3 bread
 loot give @e kill @e
+spawnpoint @a 1 2 3
 nbt arstne.hhft."ent".f[234].rhtnyun{rtei:'ernt'}
 nbt {"sthn":[{"rsnt":[eni]},{ein:'iernst rtf'}]}
 nbt arst[{"f  t":1}].arst{}
 nbt arst[3].renti
+summon armor_stand ~ ~ ~
 bossbar add minecraft:arst eiarsntyu
 bossbar set arst value 123
 bossbar set arst max 123
@@ -24,7 +26,7 @@ tp sam
 say  srat
 kill 12345678-1234-1234-123456789abc
 gamerule doDaylightCycle true
-gamerule maxCommandChainLength 213123
+gamerule maxCommandChainLength 213123293012
 gamerule randomTickSpeed 0
 gamerule randomTickSpeed 4096
 gamerule randomTickSpeed 4097

@@ -46,4 +46,4 @@ hi def link mcNBTColon          mcNBTPathDot
 hi def link mcNBTValueQuote     mcNBTValue
 
 " For debugging purposes
-"syn keyword mcCommand nbt skipwhite contained nextgroup=@mcNBTPath
+syn keyword mcCommand nbt skipwhite contained nextgroup=@mcNBTPath

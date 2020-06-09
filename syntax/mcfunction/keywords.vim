@@ -6,7 +6,9 @@ syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
 
 syn match   mcChatMessage       /.*/    contained
 syn match   mcFunction          /#?[a-z0-9_-]\+:[a-z0-9./_-]*/ contained
+syn match   mcWeatherDuration   /\d\{0,6\}/ contained
 syn match   mcUInt              /\d\+/  contained
+syn match   mcLineEnd           /\s*$/  contained
 hi def link mcUInt              mcValue
 
 syn keyword mcGamemode          contained survival creative adventure spectator
@@ -14,6 +16,7 @@ syn keyword mcGamemodeSet       contained survival creative adventure spectator 
 syn keyword mcDifficulty        contained peaceful easy normal hard
 syn keyword mcListUUIDs         contained uuids
 syn keyword mcBool              contained true false
+syn keyword mcWeather           contained clear rain thunder skipwhite nextgroup=mcDoubleSpace,mcWeatherDuration
 hi def link mcGamemodeSet       mcGamemode
 hi def link mcGamemode          mcKeyValue
 hi def link mcDifficulty        mcKeyValue
