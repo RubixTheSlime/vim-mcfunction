@@ -1,8 +1,15 @@
+setblock 1 2 3 red_banner replace
+setblock 1 2 3 red_banner[snowy=true] replace
+setblock 1 2 3 red_banner{areisnt:ient} replace
+setblock 1 2 3 dirt[snowy=true]{ienrstiaen:{ienrset:'ariesnt',entiesrn:'yunst'},irstn:r1} replace
+give @s red_carpet
+give @s bread
 loot spawn 1 2 3 fish arst lake mainhand
 loot replace entity @e[type=chest_minecart] slot 1 loot arst
 loot replace block 1 2 3 slot 32 kill @e
 loot give @s mine 1 2 3 bread
 loot give @e kill @e
+fill 1 2 3 4 5 6 dirt[istern]replace
 spawnpoint @a 1 2 3
 nbt arstne.hhft."ent".f[234].rhtnyun{rtei:'ernt'}
 nbt {"sthn":[{"rsnt":[eni]},{ein:'iernst rtf'}]}
@@ -15,6 +22,8 @@ bossbar set arst value 123
 bossbar set arst max 123
 bossbar set arst color blue
 bossbar set arst style notched_6
+xp query @s
+xp set @s 123 levels
 tp 123
 tp 123 1 2
 tp 123 1 2 3
@@ -26,6 +35,7 @@ tp sam
 /
 say  srat
 kill 12345678-1234-1234-123456789abc
+enchant @s minecraft:sweeping 3
 gamerule doDaylightCycle true
 gamerule maxCommandChainLength 213123293012
 gamerule randomTickSpeed 0
@@ -50,7 +60,7 @@ execute store result block 1 2 3 east."rst"[0]."yu" int 2
 execute store result bossbar arsen max run
 execute store result entity @s arnetnr byte 1.0 run
 execute store result score @s arsten run
-execute if block 1 2 3 arsten run
+execute if block 1 2 3 dirt run
 execute if blocks 1 2 3 1 2 3 1 2 3 all run
 execute if data entity @s arsien if data block 1 2 3 ienst run
 execute if score @s eini matches 1 if score @s ney = Sam ieneun run

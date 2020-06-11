@@ -1,20 +1,26 @@
 " Data Values
-syn match   mcBlockName                         /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinBlock nextgroup=mcBlocstate
-syn match   mcDimension                         /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinDimension
-syn match   mcEffect                            /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEffect
-syn match   mcEntityType                        /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEntity
-syn match   mcItem                              /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinItem
+syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinBlock nextgroup=mcBlockstate
+syn match   mcDimension                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinDimension
+syn match   mcEffect                            /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEffect
+syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
+syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinItem
+syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
+syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
+hi def link mcBlock         mcValue
+hi def link mcDimension     mcValue
+hi def link mcEffect        mcValue
+hi def link mcEntityType    mcValue
+hi def link mcItem          mcValue
+hi def link mcEnchantment   mcValue
+hi def link mcNamespace mcValue
+
+syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
+hi def link mcBadWhiteSpaceBlock mcBadWhitespace
 
 " Block States
 syn region  mcBlockState                matchgroup=mcBlockStateBracket start=/\[/rs=e end=/]/ contained skipwhite contains=mcBlockStateKeyword
 
 " keywords
-syn keyword mcForceloadKeyword          add     contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart
-syn keyword mcForceloadKeyword          remove  contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart,mcForceloadRemKeyword
-syn keyword mcForceloadKeyword          query   contained skipwhite nextgroup=mcDoubleSpace,mcColumn
-syn keyword mcForceloadRemKeyword       all contained
-hi def link mcForceloadRemKeyword       mcForceloadKeyword
-hi def link mcForceloadKeyword          mcKeyword
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI          age bites delay distance eggs hatch layers level moisture note pickles power rotation stage
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqBool        attached bottom conditional disarmed down drag enabled extended eye hanging has_book has_bottle_0 has_bottle_1 has_bottle_2 has_record in_wall inverted lit locked note occupied open persistent powered short signal_fire snowy triggered unstable up waterlogged
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAttachment  attachment

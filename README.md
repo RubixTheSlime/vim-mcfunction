@@ -36,6 +36,7 @@ to your .vimrc
 - kill
 - list
 - locate
+- loot
 - me
 - msg
 - reload
@@ -55,7 +56,6 @@ to your .vimrc
 
 ### Commands partially implemented:
 - execute
-- loot
 
 ### Commands not yet implemented:
 - particle
