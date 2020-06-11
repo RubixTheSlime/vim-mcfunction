@@ -668,38 +668,42 @@ hi def link mcLocatable                 mcKeyValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand loot contained skipwhite nextgroup=mcDoubleSpace,mcLootTargetKeyword
 
-call s:mcEntity("Loot", "mcLootSourceKeyword")
-call s:mcEntity("LootReplace", "mcItemSlotLoot")
-call s:mcCoordinate("Loot","mcLootSourceKeyword","")
-call s:mcCoordinate("LootMine","mcExecuteFacingKeyword,mcItem,mcLootHand","")
-call s:mcCoordinate("LootReplace","mcItemSlotLoot","")
+" Target
+syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot                    spawn insert
+        call s:mcCoordinate("Loot","mcLootSourceKeyword","")
+syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcEntityLoot                        give
+        call s:mcEntity("Loot", "mcLootSourceKeyword")
+syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootReplaceKeyword                replace
+        syn keyword mcLootReplaceKeyword        contained skipwhite nextgroup=mcDoubleSpace,mcEntityLootReplace                 entity
+                call s:mcEntity("LootReplace", "mcItemSlotLoot")
+        syn keyword mcLootReplaceKeyword        contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootReplace             block
+                call s:mcCoordinate("LootReplace","mcItemSlotLoot","")
+        syn keyword mcItemSlotLoot              contained skipwhite nextgroup=mcDoubleSpace,mcLootCount,mcLootSourceKeyword     slot
+                syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/
 
+" Source
+syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
+        syn match   mcLootTableFish             contained skipwhite nextgroup=mcDoubleSpace,mcLootFishingLocation contains=mcNamespace  /\(\w\|:\)\+/
+        syn match   mcLootFishingLocation       contained skipwhite nextgroup=mcDoubleSpace,mcItem,mcLootHand                           /\w\+/
+syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTable                                 loot
+        syn match   mcLootTable                 contained contains=mcNamespace                                                          /\(\w\|:\)\+/
+syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcEntity                                    kill
+syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine                        mine
+        call s:mcCoordinate("LootMine","mcExecuteFacingKeyword,mcItem,mcLootHand","")
+syn keyword mcLootHand                          contained                                                                               mainhand offhand
 
-syn keyword mcLootTargetKeyword         spawn insert    contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot
-syn keyword mcLootTargetKeyword         replace         contained skipwhite nextgroup=mcDoubleSpace,mcLootReplaceKeyword
-syn keyword mcLootReplaceKeyword        entity          contained skipwhite nextgroup=mcDoubleSpace,mcEntityLootReplace
-syn keyword mcLootReplaceKeyword        block           contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootReplace
-syn keyword mcLootTargetKeyword         give            contained skipwhite nextgroup=mcDoubleSpace,mcEntityLoot
-syn keyword mcLootSourceKeyword         fish            contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish
-syn keyword mcLootSourceKeyword         loot            contained skipwhite nextgroup=mcDoubleSpace,mcLootTable
-syn keyword mcLootSourceKeyword         kill            contained skipwhite nextgroup=mcDoubleSpace,mcEntity
-syn keyword mcLootSourceKeyword         mine            contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine
+" Links
 hi def link mcLootTargetKeyword         mcKeyword
 hi def link mcLootReplaceKeyword        mcKeyword
 hi def link mcLootSourceKeyword         mcKeyword
-syn match   mcLootCount                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/        contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword
-syn keyword mcLootHand                  mainhand offhand                        contained
-"TODO x3
-syn match   mcLootTable                 /\(\w\|:\)\+/   contained contains=mcNamespace
-syn match   mcLootTableFish             /\(\w\|:\)\+/   contained contains=mcNamespace skipwhite nextgroup=mcDoubleSpace,mcLootFishingLocation
-syn match   mcLootFishingLocation       /\w\+/          contained skipwhite nextgroup=mcDoubleSpace,mcItem,mcLootHand
-hi def link mcLootCount                 mcUInt
-hi def link mcLootHand                  mcKeyValue
+hi def link mcItemSlotLoot              mcKeyword
+hi def link mcLootHand                  mcKeyword
+
 hi def link mcLootTableFish             mcLootTable
 hi def link mcLootTable                 mcValue
 hi def link mcLootFishingLocation       mcValue
-syn keyword mcItemSlotLoot      slot    contained skipwhite nextgroup=mcDoubleSpace,mcLootCount,mcLootSourceKeyword
-hi def link mcItemSlotLoot              mcKeyword
+
+hi def link mcLootCount                 mcUInt
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Msg
