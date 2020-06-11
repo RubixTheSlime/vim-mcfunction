@@ -367,7 +367,7 @@ call s:mcCoordinate("ExecuteStoreBlock","@mcNBTPathExecuteStore","")
 call s:mcRotation("Execute","@mcExecuteKeyword","")
 call s:mcNBTPath("ExecuteStore")
 call s:mcNBTPath("Execute")
-syn match   mcBlockExecute                  /\S\+\(\[[^\]]\]\)\?/   contained contains=mcBlock       skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+call s:mcBlock("Execute","@mcExecuteKeyword")
 syn match   mcDimensionExecute                  /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinDimension   skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
 hi def link mcDimensionExecute                  mcDimension
 
