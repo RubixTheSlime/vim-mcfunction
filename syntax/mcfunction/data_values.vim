@@ -1,4 +1,5 @@
 " Data Values
+syn match   mcAdvancement                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinAdvancement
 syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinBlock nextgroup=mcBlockstate
 syn match   mcDimension                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinDimension
 syn match   mcEffect                            /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEffect
@@ -6,6 +7,7 @@ syn match   mcEntityType                        /\(\w\+:\)*\w\+/        containe
 syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinItem
 syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
 syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
+hi def link mcAdvancement   mcValue
 hi def link mcBlock         mcValue
 hi def link mcDimension     mcValue
 hi def link mcEffect        mcValue

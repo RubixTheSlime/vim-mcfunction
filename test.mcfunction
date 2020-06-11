@@ -2,6 +2,7 @@ setblock 1 2 3 red_banner replace
 setblock 1 2 3 red_banner[snowy=true] replace
 setblock 1 2 3 red_banner{areisnt:ient} replace
 setblock 1 2 3 dirt[snowy=true]{ienrstiaen:{ienrset:'ariesnt',entiesrn:'yunst'},irstn:r1} replace
+clone 1 2 3 4 5 6 7 8 9 filtered dirt[open=true]{yusrnt} force
 give @s red_carpet
 give @s bread
 loot spawn 1 2 3 fish arst lake mainhand

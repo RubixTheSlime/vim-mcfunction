@@ -34,8 +34,6 @@ hi def link mcBossbarFeild              mcKeyValue
 hi def link mcBossbarId                 mcValue
 "hi def link mcCoordinate2               mcCoordinate
 "hi def link mcCoordinate3               mcCoordinate
-hi def link mcDataKeyword               mcKeyword
-hi def link mcEnchantmentLevel          mcValue
 hi def link mcExecuteCommand            mcCommand
 hi def link mcExecuteKeyValue           mcKeyValue
 hi def link mcExecuteKeyword            mcKeyword
