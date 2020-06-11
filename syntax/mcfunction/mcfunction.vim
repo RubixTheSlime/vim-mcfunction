@@ -73,6 +73,8 @@ function! s:mcColumn(type,nexttype,serial)
         execute 'syn match mcColumn'.a:type 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
         execute 'hi def link mcColumn'.a:type 'mcColumn'.a:serial
 endfunction
+hi def link mcColumn                    mcCoordinate
+hi def link mcColumn2                   mcCoordinate2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Rotation
@@ -83,6 +85,7 @@ function! s:mcRotation(type,nexttype,serial)
         execute 'syn match mcRotation'.a:type 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
         execute 'hi def link mcRotation'.a:type 'mcRotation'.a:serial
 endfunction
+hi def link mcRotation                  mcCoordinate
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Path
@@ -207,11 +210,11 @@ syn keyword mcAdvancementKeyword        grant revoke    contained skipwhite next
 syn keyword mcAdvancementWhich          everything
 syn keyword mcAdvancementWhich          only            contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementNameCriteria
 syn keyword mcAdvancementWhich          from through until      contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancementName
-hi def link mcAdvancementWhich          mcAdvancementKeyword
-hi def link mcAdvancementKeyword        mcKeyword
 
-"hi mcAdvancementNameFilter              ctermfg=1 cterm=bold
-"hi mcAdvancementCriterionNameFilter     ctermfg=1
+hi def link mcAdvancementWhich          mcKeyword
+hi def link mcAdvancementName           mcValue
+hi def link mcAdvancementCriterionName  mcValue
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Bossbar
@@ -238,29 +241,26 @@ syn match   mcBossbarId /\(\w\|[:./-]\)\+/ contained contains=mcNamespace
 syn keyword mcBossbarKeyword set contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdSet
 syn match   mcBossbarIdSet /\(\w\|[:./-]\)\+/ contained contains=mcNamespace skipwhite nextgroup=mcDoubleSpace,mcBossbarSetKeyword
 
-syn keyword mcBossbarSetKeyword color contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor 
-syn keyword mcBossbarSetColor blue green pink purple red white yellow contained
-
-syn keyword mcBossbarSetKeyword max value contained skipwhite nextgroup=mcDoubleSpace,mcUInt
-
-syn keyword mcBossbarSetKeyword name contained skipwhite nextgroup=mcDoubleSpace,mcJSONText
-
-syn keyword mcBossbarSetKeyword players contained skipwhite nextgroup=mcDoubleSpace,mcEntity
-
-syn keyword mcBossbarSetKeyword style contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle 
-syn keyword mcBossbarSetStyle contained progress notched_6 notched_10 notched_12 notched_20
-
-syn keyword mcBossbarSetKeyword visible contained skipwhite nextgroup=mcDoubleSpace,mcBool
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor   color
+        syn keyword mcBossbarSetColor   contained                                                       blue green pink purple red white yellow
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcUInt              max value 
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          name 
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcEntity            players 
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle   style 
+        syn keyword mcBossbarSetStyle   contained                                                       progress notched_6 notched_10 notched_12 notched_20
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBool              visible
 
 " Links
-hi def link mcBossbarKeyword            mcKeyword
-hi def link mcBossbarGetKeyword         mcBossbarKeyword
-hi def link mcBossbarSetKeyword         mcBossbarKeyword
-hi def link mcBossbarIdAdd              mcBossbarId
-hi def link mcBossbarIdExecuteStore     mcBossbarId
-hi def link mcBossbarIdSet              mcBossbarId
+hi def link mcBossbarGetKeyword         mcKeyword
+hi def link mcBossbarSetKeyword         mcKeyword
+
+hi def link mcBossbarFeild              mcKeyValue
 hi def link mcBossbarSetColor           mcKeyValue
 hi def link mcBossbarSetStyle           mcKeyValue
+
+hi def link mcBossbarIdAdd              mcValue
+hi def link mcBossbarIdExecuteStore     mcValue
+hi def link mcBossbarIdSet              mcValue
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -354,7 +354,7 @@ hi def link mcDataModifyIndex   mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Datapack
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand datapack                  contained skipwhite nextgroup=mcDoubleSpace,mcDatapackKeyword
+syn keyword mcCommand datapack contained skipwhite nextgroup=mcDoubleSpace,mcDatapackKeyword
 
 " Datapack disable
 syn keyword mcDatapackKeyword           disable                 contained skipwhite nextgroup=mcDoubleSpace,mcDatapackName
@@ -374,15 +374,15 @@ syn keyword mcDatapackKeyword           list                    contained skipwh
 syn keyword mcDatapackListKeyword       enabled available       contained
 
 " Links
-hi def link mcDatapackNameEnable        mcDatapackName
-hi def link mcDatapackNameEnableRel     mcDatapackName
+hi def link mcDatapackNameEnable        mcValue
+hi def link mcDatapackNameEnableRel     mcValue
 hi def link mcDatapackEnableKeyword     mcKeyword
 hi def link mcDatapackListKeyword       mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Difficulty
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand difficulty                contained skipwhite nextgroup=mcDoubleSpace,mcDifficulty
+syn keyword mcCommand difficulty contained skipwhite nextgroup=mcDoubleSpace,mcDifficulty
 
 syn keyword mcDifficulty        contained peaceful easy normal hard
 hi def link mcDifficulty        mcKeyValue
@@ -390,7 +390,7 @@ hi def link mcDifficulty        mcKeyValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Effect
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand effect                    contained skipwhite nextgroup=mcDoubleSpace,mcEffectKeyword
+syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffectKeyword
 
 
 " Effect give
@@ -412,7 +412,7 @@ hi def link mcEffectAmp     mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enchant
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand enchant                   contained skipwhite nextgroup=mcDoubleSpace,mcEntityEnchant
+syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcEntityEnchant
 
 call s:mcEntity("Enchant", "mcEnchantmentName")
 
@@ -551,42 +551,52 @@ hi def link mcExecuteStoreScale                 mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Fill
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand fill                      contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateFillFrom
+syn keyword mcCommand fill contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateFillFrom
 
 call s:mcCoordinate("FillFrom","mcCoordinateFillTo","")
 call s:mcCoordinate("FillTo","mcBlockFill","2")
 call s:mcBlock("Fill","mcFillMode")
-call s:mcBlock("FillReplace","")
 syn keyword mcFillMode          destroy hollow keep outline     contained
 syn keyword mcFillMode          replace                         contained skipwhite nextgroup=mcDoubleSpace,mcBlockFillReplace
+        call s:mcBlock("FillReplace","")
+
+" Links
 hi def link mcFillMode          mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Forceload
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand forceload                 contained skipwhite nextgroup=mcDoubleSpace,mcForceloadKeyword
+syn keyword mcCommand forceload contained skipwhite nextgroup=mcDoubleSpace,mcForceloadKeyword
 
-call s:mcColumn("ForceloadStart","mcColumnForceloadEnd","")
-call s:mcColumn("ForceloadEnd","mcDoubleSpace","2")
+" Forceload add
 syn keyword mcForceloadKeyword          add     contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart
+call s:mcColumn("ForceloadStart","mcColumnForceloadEnd","")
+call s:mcColumn("ForceloadEnd","mcAnySpace","2")
+
+" Forceload remove
 syn keyword mcForceloadKeyword          remove  contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart,mcForceloadRemKeyword
-syn keyword mcForceloadKeyword          query   contained skipwhite nextgroup=mcDoubleSpace,mcColumn
 syn keyword mcForceloadRemKeyword       all contained
+
+" Forceload query
+syn keyword mcForceloadKeyword          query   contained skipwhite nextgroup=mcDoubleSpace,mcColumn
+
+" Links
 hi def link mcForceloadRemKeyword       mcForceloadKeyword
 hi def link mcForceloadKeyword          mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Function
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand function                  contained skipwhite nextgroup=mcDoubleSpace,mcFunction
+syn keyword mcCommand function contained skipwhite nextgroup=mcDoubleSpace,mcFunction
 
 syn match   mcFunction          /#?[a-z0-9_-]\+:[a-z0-9./_-]*/ contained
+hi def link mcFuncion   mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gamemode
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand defaultgamemode           contained skipwhite nextgroup=mcDoubleSpace,mcGamemode
-syn keyword mcCommand gamemode                  contained skipwhite nextgroup=mcDoubleSpace,mcGamemodeSet
+syn keyword mcCommand defaultgamemode contained skipwhite nextgroup=mcDoubleSpace,mcGamemode
+syn keyword mcCommand gamemode        contained skipwhite nextgroup=mcDoubleSpace,mcGamemodeSet
 
 syn keyword mcGamemode          contained survival creative adventure spectator
 syn keyword mcGamemodeSet       contained survival creative adventure spectator skipwhite nextgroup=mcDoubleSpace,mcEntity
@@ -596,52 +606,50 @@ hi def link mcGamemode          mcKeyValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gamerule
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand gamerule                  contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
+syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
 
 "bools
-syn keyword mcGamerule announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks contained skipwhite nextgroup=mcDoubleSpace,mcBool
+syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
+syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle 
+syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks 
+syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber     maxCommandChainLength maxEntityCramming spawnRadius
+        syn match mcGameruleNumber /\<-\?\d\{1,10\}\>/ contained skipwhite
+syn keyword mcGamerule contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber   randomTickSpeed
+        syn match mcRandomTickNumber /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/ contained skipwhite
 
-"maxCommandChainLength: -999999999-9999999999
-"maxEntityCramming: ditto
-"spawnRadius: ditto
-"randomTickSpeed: 0-4096
-syn keyword mcGamerule maxCommandChainLength maxEntityCramming spawnRadius contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber
-syn keyword mcGamerule randomTickSpeed contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber
-syn match mcGameruleNumber /\<-\?\d\{1,10\}\>/ contained skipwhite
-syn match mcRandomTickNumber /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/ contained skipwhite
-hi def link mcGamerule mcKeyWord
-hi def link mcRandomTickNumber mcGameruleNumber
-hi def link mcGameruleNumber mcValue
+hi def link mcGamerule          mcKeyWord
+hi def link mcRandomTickNumber  mcGameruleNumber
+hi def link mcGameruleNumber    mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Give
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand give                      contained skipwhite nextgroup=mcDoubleSpace,mcEntityGive
+syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcEntityGive
 
 call s:mcEntity("Give", "mcItemGive")
+syn match mcItemGive /\(\w\|:\)\+/ contained contains=mcItem nextgroup=mcAnySpace,mcNBTTagGive
 call s:mcNBTTag("Give","mcUInt")
-syn match   mcItemGive                          /\(\w\|:\)\+/   contained contains=mcItem        nextgroup=mcAnySpace,mcNBTTagGive
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Help
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand help                      contained skipwhite nextgroup=mcDoubleSpace,mcUInt,mcHelpCommand
+syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcUInt,mcHelpCommand
 
 " Help commands (why am i even including this, or UUID highlighting for that matter)
 " (i guess you could /execute store result ... run help for a message generator)
 syn keyword mcHelpCommand contained advancement bossbar clear clone data datapack debug defaultgamemode difficulty effect enchant execute experience fill forceload function gamemode gamerule give help kill list locate loot me msg paraticle playsound recipe reload replaceitem say schedule scoreboard seed setblock setworldspawn spawnpoint spreadplayers stopsound summon tag team teleport teammsg tell tellraw time title tp trigger w weather worldborder xp
-hi def link mcHelpCommand       mcKeyValue
+hi def link mcHelpCommand mcKeyValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Kill
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand kill                      contained skipwhite nextgroup=mcDoubleSpace,mcEntity
+syn keyword mcCommand kill contained skipwhite nextgroup=mcDoubleSpace,mcEntity
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " List
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand list                      contained skipwhite nextgroup=mcDoubleSpace,mcListUUIDs
+syn keyword mcCommand list contained skipwhite nextgroup=mcDoubleSpace,mcListUUIDs
 
 syn keyword mcListUUIDs         contained uuids
 hi def link mcListUUIDs         mcKeyword
@@ -649,15 +657,16 @@ hi def link mcListUUIDs         mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Locate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand locate                    contained skipwhite nextgroup=mcDoubleSpace,mcLocatable
+syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocatable
 
 " TODO: add namespace and contains stuff
 syn keyword mcLocatable contained Buried_Treasure EndCity Fortress Mansion Mineshaft Monument Ocean_Ruin Shipwreck Stronghold Desert_Pyramid Igloo Jungle_Pyramid Swamp_Hut Village Pillager_Outpost
+hi def link mcLocatable                 mcKeyValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Loot
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand loot                      contained skipwhite nextgroup=mcDoubleSpace,mcLootTargetKeyword
+syn keyword mcCommand loot contained skipwhite nextgroup=mcDoubleSpace,mcLootTargetKeyword
 
 call s:mcEntity("Loot", "mcLootSourceKeyword")
 call s:mcEntity("LootReplace", "mcItemSlotLoot")
@@ -701,8 +710,11 @@ syn keyword mcCommand say                       contained skipwhite nextgroup=mc
 call s:mcEntity("Msg", "mcChatMessage")
 
 syn match   mcChatMessage       /.*/    contained
-" Scoreboard
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Scoreboard
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" TODO finish execute store/cond score after finishing this
 syn match   mcTeamName                    /\(\w\|[.+-]\)\+/       contained
 syn match   mcTagName                     /\(\w\|[.+-]\)\+/       contained
 
@@ -715,47 +727,59 @@ hi def link mcObjectiveNameExecuteStore                 mcObjectiveName
 hi def link mcObjectiveNameFilter                       mcObjectiveName
 hi def link mcObjectiveNameExecuteCondScoreTarget       mcObjectiveName
 hi def link mcObjectiveNameExecuteCondScoreSource       mcObjectiveName
+hi def link mcObjectiveName             mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Setblock
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand setblock                  contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateSetblock
+syn keyword mcCommand setblock contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateSetblock
 
 call s:mcCoordinate("Setblock","mcBlockSetblock","")
+syn keyword mcSetblockMode      contained destroy keep replace
 call s:mcBlock("Setblock","mcSetblockMode")
 
-syn keyword mcSetblockMode      contained destroy keep replace
 hi def link mcSetblockMode      mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spawnpoint
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand spawnpoint                contained skipwhite nextgroup=mcDoubleSpace,mcEntitySpawnPos
-syn keyword mcCommand setworldspawn             contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate
+syn keyword mcCommand spawnpoint contained skipwhite nextgroup=mcDoubleSpace,mcEntitySpawnPos
 call s:mcEntity("SpawnPos","mcCoordinate")
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Setworldspawn
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Summon
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand summon                    contained skipwhite nextgroup=mcDoubleSpace,mcEntityTypeSummon
+syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcEntityTypeSummon
 
+call s:mcEntityType("Entity","mcCoordinateSummon")
 call s:mcCoordinate("Summon","mcLineEnd,@mcNBT","")
-syn match   mcEntityTypeSummon                  /\(\w\|:\)\+/   contained contains=mcNamespace,mcBuiltinEntity      skipwhite nextgroup=mcDoubleSpace,mcCoordinateSummon
-hi def link mcEntityTypeSummon                  mcEntityType
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Title
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand title                     contained skipwhite nextgroup=mcDoubleSpace,mcEntityTitle
+syn keyword mcCommand title contained skipwhite nextgroup=mcDoubleSpace,mcEntityTitle
 
-syn keyword mcTitleKeyword      contained actionbar subtitle title skipwhite nextgroup=mcDoubleSpace,mcJSONText
-syn keyword mcTitleKeyword      contained clear reset
-syn keyword mcTitleKeyword      contained times skipwhite nextgroup=mcDoubleSpace,mcTitleTime
 call s:mcEntity("Title","mcTitleKeyword")
-hi def link mcTitleKeyword mcKeyWord
+
+" Title title (title title title?)
+syn keyword mcTitleKeyword      contained actionbar subtitle title skipwhite nextgroup=mcDoubleSpace,mcJSONText
+
+" Title clear/reset
+syn keyword mcTitleKeyword      contained clear reset
+
+" Title times
+syn keyword mcTitleKeyword      contained times skipwhite nextgroup=mcDoubleSpace,mcTitleTime
 syn match mcTitleTime           /\d\{1,9\}/ contained skipwhite nextgroup=mcDoubleSpace,mcTitleTime2
 syn match mcTitleTime2          /\d\{1,9\}/ contained skipwhite nextgroup=mcDoubleSpace,mcTitleTime3
-syn match mcTitleTime3          /\d\{1,9\}/ contained skipwhite nextgroup=mcDoubleSpace
+syn match mcTitleTime3          /\d\{1,9\}/ contained
+
+hi def link mcTitleKeyword mcKeyWord
+" might as well right?
 hi def link mcTitleTime         mcCoordinate
 hi def link mcTitleTime2        mcCoordinate2
 hi def link mcTitleTime3        mcCoordinate3
@@ -763,37 +787,41 @@ hi def link mcTitleTime3        mcCoordinate3
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand tp teleport               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate,mcEntityTpTarget
+syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate,mcEntityTpTarget
 
 call s:mcEntity("TpFacing", "mcTpAnchoredValue")
 call s:mcCoordinate("Tp","mcExecuteFacingKeyword,mcRotation","")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Trivial
+" Trivial Commands
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand reload seed               contained
+syn keyword mcCommand reload seed contained
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Weather
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand weather                   contained skipwhite nextgroup=mcDoubleSpace,mcWeather
+syn keyword mcCommand weather contained skipwhite nextgroup=mcDoubleSpace,mcWeather
 
 syn keyword mcWeather           contained clear rain thunder skipwhite nextgroup=mcDoubleSpace,mcWeatherDuration
-syn match   mcWeatherDuration   /\d\{0,6\}/ contained
+syn match   mcWeatherDuration   contained /\d\{0,6\}/
+
 hi def link mcWeather           mcKeyword
 hi def link mcWeatherDuration   mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Xp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand xp experience             contained skipwhite nextgroup=mcDoubleSpace,mcXpKeyword
+syn keyword mcCommand xp experience contained skipwhite nextgroup=mcDoubleSpace,mcXpKeyword
 
-call s:mcEntity("XpQuery", "mcXpUnit")
-call s:mcEntity("XpSet", "mcXpAmount")
-syn keyword mcXpKeyword add set         contained skipwhite nextgroup=mcDoubleSpace,mcEntityXpSet
 syn keyword mcXpKeyword query           contained skipwhite nextgroup=mcDoubleSpace,mcEntityXpQuery
-syn match   mcXpAmount  /-\?\d\+/       contained skipwhite nextgroup=mcDoubleSpace,mcXpUnit
+        call s:mcEntity("XpQuery", "mcXpUnit")
+
+syn keyword mcXpKeyword add set         contained skipwhite nextgroup=mcDoubleSpace,mcEntityXpSet
+        call s:mcEntity("XpSet", "mcXpAmount")
+        syn match   mcXpAmount  /-\?\d\+/       contained skipwhite nextgroup=mcDoubleSpace,mcXpUnit
+
 syn keyword mcXpUnit    points levels   contained
+
 hi def link mcXpAmount  mcValue
 hi def link mcXpUnit    mcKeyword
 hi def link mcXpKeyword mcKeyword

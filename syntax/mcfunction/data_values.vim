@@ -14,7 +14,7 @@ hi def link mcEffect        mcValue
 hi def link mcEntityType    mcValue
 hi def link mcItem          mcValue
 hi def link mcEnchantment   mcValue
-hi def link mcNamespace mcValue
+hi def link mcNamespace     mcValue
 
 syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
 hi def link mcBadWhiteSpaceBlock mcBadWhitespace

@@ -7,6 +7,7 @@ syn match   mcLineEnd           /\s*$/  contained
 hi def link mcUInt              mcValue
 
 syn keyword mcBool              contained true false
+hi def link mcBool              mcValue
 
 "TODO
 syn match   mcJSONText          contained /.\+/
