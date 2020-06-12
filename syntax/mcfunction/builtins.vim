@@ -97,3 +97,8 @@ syn match mcBuiltinItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan
 " Sounds
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sound channels
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinSoundChannel mcKeyWord
+syn keyword mcBuiltinSoundChannel contained ambient block hostile master music neutral player record voice weather

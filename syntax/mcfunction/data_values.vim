@@ -1,6 +1,5 @@
 " Data Values
 syn match   mcAdvancement                       /\(\w\+[:/]\)*\w\+/     contained contains=mcNamespace,mcBuiltinAdvancement
-syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
 syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinBlock nextgroup=mcBlockstate
 syn match   mcBossbarId                         /\(\w[:./-]\)*\w\+/     contained contains=mcNamespace,mcBuiltinBossbarId
 syn match   mcDimension                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinDimension
@@ -11,7 +10,11 @@ syn match   mcItem                              /\(\w\+:\)*\w\+/        containe
 syn match   mcObjective                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinObjective
 syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
 syn match   mcSound                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinSound
-syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
+
+syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
+syn match   mcSoundChannel                      /\w\+/                  contained contains=mcBuiltinSoundChannel
+
+syn match   mcNamespace                         /\w\+:/                 contained contains=mcBuiltinNamespace
 hi def link mcAdvancement               mcValue
 hi def link mcAdvancementCriteria       mcValue
 hi def link mcBlock                     mcValue

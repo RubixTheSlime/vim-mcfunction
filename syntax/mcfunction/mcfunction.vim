@@ -758,7 +758,12 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc spreadplaye
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Stopsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc stopsound
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntityStopsound stopsound
+
+call s:mcEntity('StopSound','mcSoundChannelStopSound,mcStopsoundGlob')
+call s:mcData('SoundChannel','StopSound','mcSound')
+syn match mcStopsoundGlob /\*/ contained skipwhite nextgroup=mcSound
+hi def link mcStopsoundGlob mcOp
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tag
@@ -776,6 +781,11 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc team
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntityTellraw tellraw
 
 call s:mcEntity('Tellraw','mcJSONText')
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Time
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc time
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Setblock

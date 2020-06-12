@@ -49,6 +49,7 @@ to your .vimrc
 - setblock
 - setworldspawn
 - spawnpoint
+- stopsound
 - summon
 - teammsg
 - teleport
@@ -67,7 +68,6 @@ to your .vimrc
 - replaceitem
 - schedule
 - spreadplayers
-- stopsound
 - tag
 - team
 - time
