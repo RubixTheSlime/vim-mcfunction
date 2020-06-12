@@ -42,6 +42,7 @@ to your .vimrc
 - msg
 - particle
 - playsound
+- recipe
 - reload
 - replaceitem
 - say
@@ -65,7 +66,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- recipe
 - schedule
 - spreadplayers
 - tag

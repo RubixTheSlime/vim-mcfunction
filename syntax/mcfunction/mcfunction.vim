@@ -692,7 +692,11 @@ hi def link mcPlaysoundMinVolume mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Recipe
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc recipe
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcRecipeKeyword recipe
+
+syn keyword mcRecipeKeyword contained skipwhite nextgroup=mcDoubleSpace,mcEntityRecipe give take
+call s:mcEntity('Recipe','mcCraftableItem,mcGlob')
+hi def link mcRecipeKeyword mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ReplaceItem

@@ -4,6 +4,8 @@ hi def link mcAnySpace mcBadWhitespace
 
 syn match   mcUInt              /\d\+/  contained
 syn match   mcLineEnd           /\s*$/  contained
+syn match   mcGlob              /\*/    contained
+hi def link mcGlob              mcOp
 hi def link mcUInt              mcValue
 "TODO
 syn match   mcInt32             /-\?\d\+/ contained

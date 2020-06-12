@@ -1,12 +1,13 @@
 " Data Values
 syn match   mcAdvancement                       /\(\w\+[:/]\)*\w\+/     contained contains=mcNamespace,mcBuiltinAdvancement
-syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinBlock nextgroup=mcBlockstate
+syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinBlock nextgroup=mcBlockstate
 syn match   mcBossbarId                         /\(\w[:./-]\)*\w\+/     contained contains=mcNamespace,mcBuiltinBossbarId
+syn match   mcCraftableItem                     /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinCraftableItem
 syn match   mcDimension                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinDimension
 syn match   mcEffect                            /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEffect
 syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
 syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
-syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinItem
+syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinItem
 syn match   mcObjective                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinObjective
 syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
 syn match   mcSound                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinSound

@@ -74,20 +74,35 @@ syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_power dolphins_grace fire_resistance glowing haste health_boost hero_of_the_village hunger instant_health instant_damage invisibility jump_boost levitation luck mining_fatigue nausea night_vision poison regeneration resistance saturation slow_falling slowness speed strength unluck water_breathing weakness wither
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Items
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn cluster mcBuiltinItem contains=mcBuiltinItem,mcBuiltinCraftableItem,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
+syn cluster mcBuiltinCraftableItem contains=mcBuiltinCraftableItem,mcBuiltinCraftableItemBlock
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinItem mcBuiltinBlock
-syn keyword mcBuiltinItem contained bread apple
-syn match   mcBuiltinItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
+" Craftable Items
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinCraftableItem mcBuiltinBlock
+syn keyword mcBuiltinCraftableItem contained bread
+syn match   mcBuiltinCraftableItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-" Items/Blocks
+" Craftable Items/Blocks
 " Many items and blocks are the same
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinItemBlock mcBuiltinBlock
-syn match mcBuiltinItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
+hi def link mcBuiltinCraftableItemBlock mcBuiltinItem
+syn match mcBuiltinCraftableItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Uncraftable Items
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcBuiltinItem contained apple
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Uncraftable Items/Blocks
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinItemBlock mcBuiltinItem
+syn keyword mcBuiltinItemBlock contained dragon_egg
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Particles
