@@ -171,12 +171,12 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand advancement contained skipwhite nextgroup=mcDoubleSpace,mcAdvanceKeyword
 
-syn keyword mcAdvanceKeyword                contained skipwhite nextgroup=mcDoubleSpace,mcEntityAdvance         grant revoke    
+syn keyword mcAdvanceKeyword                contained skipwhite nextgroup=mcDoubleSpace,mcEntityAdvance         grant revoke
 call s:mcEntity("Advance","mcAdvanceWhich")
 syn keyword mcAdvanceWhich                  contained                                                           everything
-syn keyword mcAdvanceWhich                  contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementCriteria   only            
+syn keyword mcAdvanceWhich                  contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementCriteria   only
         call s:mcData('Advancement','Criteria','mcAdvancementCriteria')
-syn keyword mcAdvancementWhich              contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancementName      from through until      
+syn keyword mcAdvancementWhich              contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancementName      from through until
         call s:mcData('Advancement','Criteria','')
 
 hi def link mcAdvanceWhich          mcKeyword
@@ -189,30 +189,30 @@ hi def link mcAdvanceKeyword        mcKeyword
 syn keyword mcCommand bossbar contained skipwhite nextgroup=mcDoubleSpace,mcBossbarKeyword
 
 " Bossbar add
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdAdd add 
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdAdd add
 call s:mcData('BossbarId','Add','mcJSONText')
 
 " Bossbar get
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdGet get 
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdGet get
 call s:mcData('BossbarId','Get','mcBossbarGetKeyword')
 syn keyword mcBossbarGetKeyword contained                                                  max players value visible
 
 " Bossbar list
-syn keyword mcBossbarKeyword    contained                                                  list 
+syn keyword mcBossbarKeyword    contained                                                  list
 
 " Bossbar remove
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarId    remove 
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarId    remove
 
 " Bossbar set
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdSet set 
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdSet set
 call s:mcData('BossbarId','Set','mcBossbarSetKeyword')
 
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor   color
         syn keyword mcBossbarSetColor   contained                                                       blue green pink purple red white yellow
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcUInt              max value 
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          name 
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcEntity            players 
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle   style 
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcUInt              max value
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          name
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcEntity            players
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle   style
         syn keyword mcBossbarSetStyle   contained                                                       progress notched_6 notched_10 notched_12 notched_20
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBool              visible
 
@@ -262,45 +262,45 @@ syn keyword mcCommand data contained skipwhite nextgroup=mcDoubleSpace,mcDataKey
 
 
 " Data get
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordGet    get     
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordGet    get
 
-syn keyword mcDataKeywordGet    contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataGet     entity  
+syn keyword mcDataKeywordGet    contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataGet     entity
         call s:mcEntity("DataGet", "@mcNBTPathDataGet")
-syn keyword mcDataKeywordGet    contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataGet block   
+syn keyword mcDataKeywordGet    contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataGet block
         call s:mcCoordinate("DataGet","@mcNBTPathDataGet","")
 call s:mcNBTPath("DataGet","mcDataGetScale")
-syn match   mcDataGetScale      contained                                                       /-\?\d*\.\?\d\+/                
+syn match   mcDataGetScale      contained                                                       /-\?\d*\.\?\d\+/
 
 " Data merge
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordMerge    merge   
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordMerge    merge
 
-syn keyword mcDataKeywordMerge  contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataMerge     entity  
+syn keyword mcDataKeywordMerge  contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataMerge     entity
         call s:mcEntity("DataMerge", "mcNBTTag")
-syn keyword mcDataKeywordMerge  contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataMerge block   
+syn keyword mcDataKeywordMerge  contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataMerge block
         call s:mcCoordinate("DataMerge","mcNBTTag","")
 
 " Data modify
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordModify    modify  
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordModify    modify
 
-syn keyword mcDataKeywordModify contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataModify     entity  
+syn keyword mcDataKeywordModify contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataModify     entity
         call s:mcEntity("DataModify", "@mcNBTPathDataModify")
-syn keyword mcDataKeywordModify contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataModify block   
+syn keyword mcDataKeywordModify contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataModify block
         call s:mcCoordinate("DataModify","@mcNBTPathDataModify","")
 
 call s:mcNBTPath("DataModify","mcDataModifyHow")
 
-syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  append merge prepend set        
-        syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,@mcNBTValue         value                           
-        syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordRemove from                            
+syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  append merge prepend set
+        syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,@mcNBTValue         value
+        syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordRemove from
 
-syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcDataModifyIndex   insert                          
-        syn match   mcDataModifyIndex   contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  /\d\+/                          
+syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcDataModifyIndex   insert
+        syn match   mcDataModifyIndex   contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  /\d\+/
 
 " Data remove
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordRemove    remove  
-syn keyword mcDataKeywordRemove contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataRemove     entity  
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordRemove    remove
+syn keyword mcDataKeywordRemove contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataRemove     entity
         call s:mcEntity("DataRemove", "@mcNBTPath")
-syn keyword mcDataKeywordRemove contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataRemove block   
+syn keyword mcDataKeywordRemove contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataRemove block
         call s:mcCoordinate("DataRemove","@mcNBTPath","")
 
 " Links
@@ -389,7 +389,7 @@ syn keyword mcCommand execute contained skipwhite nextgroup=mcDoubleSpace,@mcExe
 syn cluster mcExecuteKeyword add=mcExecuteKeyword
 
 " Execute align
-syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteAlignValue                         align 
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteAlignValue                         align
 syn match   mcExecuteAlignValue         contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword                           /\<\(x\([^ x]*x\)\@!\|y\([^ y]*y\)\@!\|z\([^ z]*z\)\@!\)\{1,3\}\>/
 
 " Execute anchored
@@ -449,7 +449,7 @@ call s:mcEntity("ExecuteStoreScore", "mcExecuteStoreObjectiveName")
 
 " Execute if/unless
 """""""""""""""""""""""
-syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCond                       if unless       
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCond                       if unless
 
 " block
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondBlock        block
@@ -464,19 +464,19 @@ call s:mcCoordinate("ExecuteCondDest","mcExecuteCondBlocksMask","3")
 syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword                   all masked
 
 " data
-syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCondData                   data                    
-syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondData         block                   
+syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCondData                   data
+syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondData         block
         call s:mcCoordinate("ExecuteCondData","@mcNBTPathExecute","")
-syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondData             entity                  
+syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondData             entity
         call s:mcEntity("ExecuteCondData", "@mcNBTPathExecute")
 call s:mcNBTPath("Execute","@mcExecuteKeyword")
 
 " entity
-syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCond                 entity                  
+syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCond                 entity
 call s:mcEntity("ExecuteCond", "@mcExecuteKeyword")
 
 " score
-syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondScoreTarget      score                   
+syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondScoreTarget      score
 "call s:mcEntity("ExecuteCondScoreTarget","mcObjectiveNameExecuteCondScoreTarget")
 "call s:mcEntity("ExecuteCondScoreSource","mcObjectiveNameExecuteCondScoreSource")
 "" TODO after finishing scoreboard
@@ -518,8 +518,8 @@ syn keyword mcCommand fill contained skipwhite nextgroup=mcDoubleSpace,mcCoordin
 call s:mcCoordinate("FillFrom","mcCoordinateFillTo","")
 call s:mcCoordinate("FillTo","mcBlockFill","2")
 call s:mcBlock("Fill","mcFillMode")
-syn keyword mcFillMode contained                                                        destroy hollow keep outline     
-syn keyword mcFillMode contained skipwhite nextgroup=mcDoubleSpace,mcBlockFillReplace   replace                         
+syn keyword mcFillMode contained                                                        destroy hollow keep outline
+syn keyword mcFillMode contained skipwhite nextgroup=mcDoubleSpace,mcBlockFillReplace   replace
         call s:mcBlock("FillReplace","")
 
 " Links
@@ -531,16 +531,16 @@ hi def link mcFillMode          mcKeyword
 syn keyword mcCommand forceload contained skipwhite nextgroup=mcDoubleSpace,mcForceloadKeyword
 
 " Forceload add
-syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart                       add     
+syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart                       add
 call s:mcColumn("ForceloadStart","mcColumnForceloadEnd","")
 call s:mcColumn("ForceloadEnd","mcAnySpace","2")
 
 " Forceload remove
-syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart,mcForceloadRemKeyword remove  
-syn keyword mcForceloadRemKeyword contained                                                                                all 
+syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart,mcForceloadRemKeyword remove
+syn keyword mcForceloadRemKeyword contained                                                                                all
 
 " Forceload query
-syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumn                                     query   
+syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumn                                     query
 
 " Links
 hi def link mcForceloadRemKeyword mcForceloadKeyword
@@ -551,7 +551,7 @@ hi def link mcForceloadKeyword    mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand function contained skipwhite nextgroup=mcDoubleSpace,mcFunction
 
-syn match   mcFunction  contained /#?[a-z0-9_-]\+:[a-z0-9./_-]*/ 
+syn match   mcFunction  contained /#?[a-z0-9_-]\+:[a-z0-9./_-]*/
 hi def link mcFuncion   mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -572,12 +572,12 @@ syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGam
 
 "bools
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle 
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks 
+syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle
+syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber     maxCommandChainLength maxEntityCramming spawnRadius
-        syn match mcGameruleNumber   contained skipwhite                                              /\<-\?\d\{1,10\}\>/ 
+        syn match mcGameruleNumber   contained skipwhite                                              /\<-\?\d\{1,10\}\>/
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber   randomTickSpeed
-        syn match mcRandomTickNumber contained skipwhite                                              /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/ 
+        syn match mcRandomTickNumber contained skipwhite                                              /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/
 
 hi def link mcGamerule          mcKeyWord
 hi def link mcRandomTickNumber  mcGameruleNumber
@@ -671,7 +671,7 @@ hi def link mcLootCount                 mcUInt
 " Msg
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand msg w tell teammsg tm me  contained skipwhite nextgroup=mcDoubleSpace,mcEntityMsg
-syn keyword mcCommand say                       contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage 
+syn keyword mcCommand say                       contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage
 
 call s:mcEntity("Msg", "mcChatMessage")
 
