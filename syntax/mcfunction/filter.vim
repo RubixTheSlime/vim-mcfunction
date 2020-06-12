@@ -1,3 +1,8 @@
+" From other files to reorganize
+syn match   mcAdvancementNameFilter             contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[/:]\)\+/        
+syn match   mcAdvancementCriterionNameFilter    contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[.+-]\)\+/       
+hi def link mcAdvancementNameFilter     mcAdvancementName
+hi def link mcAdvancementCriterionNameFilter    mcAdvanecmentCriterionName
 
 syn match   mcFilterComma       contained /,/
 " Keywords

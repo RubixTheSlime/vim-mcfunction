@@ -11,13 +11,13 @@ let b:current_syntax = "mc"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Entity
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcEntity(type, nexttype)
-      execute 'hi def link mcEntity'.a:type 'mcEntity'
-      execute 'syn match   mcEntity'.a:type 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn match   mcEntity'.a:type 'contained /@[eaprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn match   mcEntity'.a:type 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn region  mcEntity'.a:type 'contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn cluster mcFilter add='.a:type
+function! s:mcEntity(group, nextgroup)
+      execute 'hi def link mcEntity'.a:group 'mcEntity'
+      execute 'syn match   mcEntity'.a:group 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcEntity'.a:group 'contained /@[eaprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcEntity'.a:group 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn region  mcEntity'.a:group 'contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn cluster mcFilter add='.a:group
 endfunction
 
 syn match   mcEntity contained /\w\{3,16}\>-\@!/
@@ -36,14 +36,14 @@ syn region  mcEntityTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/r
 " Player
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi def link mcPlayer mcEntity
-function! s:mcPlayer(type, nexttype)
-      execute 'hi def link mcPlayer'.a:type 'mcPlayer'
-      execute 'syn cluster mcPlayer'.a:type 'add=mcPlayer'.a:type
-      execute 'syn match   mcPlayer'.a:type 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn match   mcPlayer'.a:type 'contained /@[aprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn match   mcPlayer'.a:type 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn region  mcPlayer'.a:type 'contained matchgroup=mcSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-      execute 'syn cluster mcFilter add='.a:type
+function! s:mcPlayer(group, nextgroup)
+      execute 'hi def link mcPlayer'.a:group 'mcPlayer'
+      execute 'syn cluster mcPlayer'.a:group 'add=mcPlayer'.a:group
+      execute 'syn match   mcPlayer'.a:group 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcPlayer'.a:group 'contained /@[aprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcPlayer'.a:group 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn region  mcPlayer'.a:group 'contained matchgroup=mcSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn cluster mcFilter add='.a:group
 endfunction
 
 syn match   mcPlayer contained /\w\{3,16}\>-\@!/
@@ -59,9 +59,9 @@ syn region  mcPlayer contained matchgroup=mcSelector start=/@[aprs]\[/rs=e end=/
 
 syn match mcCoordinate contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
 
-function! s:mcCoordinate(type,nexttype,serial)
-        execute 'syn match mcCoordinate'.a:type 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@!\_[ ]\)\{3}\|\(\^-\?\d*\.\?\d* \?\)\{3}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-        execute 'hi def link mcCoordinate'.a:type 'mcCoordinate'.a:serial
+function! s:mcCoordinate(group,nextgroup,serial)
+        execute 'syn match mcCoordinate'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@!\_[ ]\)\{3}\|\(\^-\?\d*\.\?\d* \?\)\{3}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'hi def link mcCoordinate'.a:group 'mcCoordinate'.a:serial
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -69,9 +69,9 @@ endfunction
 " Same as Coordinate, but 2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn match mcColumn     contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
-function! s:mcColumn(type,nexttype,serial)
-        execute 'syn match mcColumn'.a:type 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-        execute 'hi def link mcColumn'.a:type 'mcColumn'.a:serial
+function! s:mcColumn(group,nextgroup,serial)
+        execute 'syn match mcColumn'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'hi def link mcColumn'.a:group 'mcColumn'.a:serial
 endfunction
 hi def link mcColumn                    mcCoordinate
 hi def link mcColumn2                   mcCoordinate2
@@ -81,37 +81,37 @@ hi def link mcColumn2                   mcCoordinate2
 " Same as Column, but no caret allowed
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn match mcRotation   contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@! \?\)\{2\}/
-function! s:mcRotation(type,nexttype,serial)
-        execute 'syn match mcRotation'.a:type 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
-        execute 'hi def link mcRotation'.a:type 'mcRotation'.a:serial
+function! s:mcRotation(group,nextgroup,serial)
+        execute 'syn match mcRotation'.a:group 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'hi def link mcRotation'.a:group 'mcRotation'.a:serial
 endfunction
 hi def link mcRotation                  mcCoordinate
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Path
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcNBTPath(type,nexttype)
-        execute 'syn match   mcNBTPath'.a:type           '/\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:type ',mcNBTPathPad'.a:type
-        execute 'syn region  mcNBTPath'.a:type           'matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:type ',mcNBTPathPad'.a:type
-        execute 'syn region  mcNBTArray'.a:type          'matchgroup=mcNBTBracket start=/\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:type ',mcNBTPathPad'.a:type
-        execute 'syn region  mcNBTTagP'.a:type           'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:type ',mcNBTPathPad'.a:type
-        execute 'syn match   mcNBTPathDot'.a:type        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:type ',mcNBTPathPad'.a:type
-        execute 'syn cluster mcNBTPath'.a:type           'contains=mcNBTPath'.a:type.',mcNBTTagP'.a:type
-        execute 'syn cluster mcNBTContinue'.a:type       'contains=mcNBTTagP'.a:type.',mcNBTArray'.a:type.',mcNBTPathDot'.a:type
-        execute 'syn cluster mcNBT'.a:type               'add=mcNBTPath'.a:type.',mcNBTArray'.a:type.',mcNBTTagP'.a:type.',mcNBTPathDot'.a:type.',mcNBTTag'.a:type
-        execute 'hi def link mcNBTPath'.a:type 'mcNBTPath'
-        execute 'hi def link mcNBTPathDot'.a:type 'mcNBTPathDot'
-        execute 'syn match mcNBTPathPad'.a:type '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+function! s:mcNBTPath(group,nextgroup)
+        execute 'syn match   mcNBTPath'.a:group           '/\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
+        execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
+        execute 'syn cluster mcNBT'.a:group               'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTTag'.a:group
+        execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
+        execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
+        execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
 endfunction
 call s:mcNBTPath("","")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Tag
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcNBTTag(type,nexttype)
-        execute 'syn region  mcNBTTag'.a:type 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:type
-        execute 'syn cluster mcNBT add=mcNBTTag'.a:type
-        execute 'syn match   mcNBTPad'.a:type '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nexttype
+function! s:mcNBTTag(group,nextgroup)
+        execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
+        execute 'syn cluster mcNBT add=mcNBTTag'.a:group
+        execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
 endfunction
 syn region  mcNBTTag            matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
 
@@ -145,10 +145,21 @@ syn keyword mcCommand nbt skipwhite contained nextgroup=@mcNBTPath
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Block
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcBlock(type,nexttype)
-        execute 'syn match mcBlock'.a:type '/\(\w\+:\)*\w\+\(\[[^]]*\]\)\?/ contained contains=mcBlock nextgroup=mcBadWhiteSpaceBlock,mcNBTTagBlock'.a:type
-        call s:mcNBTTag('Block'.a:type,a:nexttype)
-        execute 'syn match mcNBTTagBlock'.a:type '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+function! s:mcBlock(group,nextgroup)
+        execute 'syn match mcBlock'.a:group '/\(\w\+:\)*\w\+\(\[[^]]*\]\)\?/ contained contains=mcBlock nextgroup=mcBadWhiteSpaceBlock,mcNBTTagBlock'.a:group
+        call s:mcNBTTag('Block'.a:group,a:nextgroup)
+        execute 'syn match mcNBTTagBlock'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Other (namespaceable) data types
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:mcData(type,group,nextgroup)
+        if a:nextgroup == ""
+                execute 'syn match mc'.a:type.a:group '/\S\+/ contained contains=mc'.a:type
+        else
+                execute 'syn match mc'.a:type.a:group '/\S\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        endif
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -186,6 +197,20 @@ function! s:mcItem(type,nexttype)
         execute 'syn match mcItem'.a:type '/\S\+/ contained contains=mcItem skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
 endfunction
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Advancement
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:mcAdvancement(type,nexttype)
+        execute 'syn match mcAdvancement'.a:type '/\S\+/ contained contains=mcAdvancement skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" AdvancementCriteria
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:mcAdvancementCriteria(type,nexttype)
+        execute 'syn match mcAdvancementCriteria'.a:type '/\S\+/ contained contains=mcAdvancementCriteria skipwhite nextgroup=mcDoubleSpace,'.a:nexttype
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -195,24 +220,20 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand advancement               contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementKeyword
 
-syn match   mcAdvancementName                   /\(\w\|[/:]\)\+/        contained
-syn match   mcAdvancementNameFilter             /\(\w\|[/:]\)\+/        contained skipwhite nextgroup=mcFilterEqAdvance
-syn match   mcAdvancementNameCriteria           /\(\w\|[/:]\)\+/        contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementCriterionName
-hi def link mcAdvancementNameFilter     mcAdvancementName
-hi def link mcAdvancementNameCriteria   mcAdvancementName
+syn keyword mcAdvancementKeyword                contained skipwhite nextgroup=mcDoubleSpace,mcEntityAdvancement         grant revoke    
 call s:mcEntity("Advancement","mcAdvancementWhich")
+syn keyword mcAdvancementWhich                  contained                                                               everything
+syn keyword mcAdvancementWhich                  contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementNameCriteria   only            
+        syn match   mcAdvancementNameCriteria   contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementCriterionName  /\(\w\|[/:]\)\+/        
+        syn match   mcAdvancementCriterionName  contained                                                               /\(\w\|[.+-]\)\+/       
+syn keyword mcAdvancementWhich                  contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancementName          from through until      
+        syn match   mcAdvancementName           contained                                                               /\(\w\|[/:]\)\+/        
 
-syn match   mcAdvancementCriterionName          /\(\w\|[.+-]\)\+/       contained
-syn match   mcAdvancementCriterionNameFilter    /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcFilterEqAdvance
-hi def link mcAdvancementCriterionNameFilter    mcAdvanecmentCriterionName
-
-syn keyword mcAdvancementKeyword        grant revoke    contained skipwhite nextgroup=mcDoubleSpace,mcEntityAdvancement
-syn keyword mcAdvancementWhich          everything
-syn keyword mcAdvancementWhich          only            contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementNameCriteria
-syn keyword mcAdvancementWhich          from through until      contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancementName
 
 hi def link mcAdvancementWhich          mcKeyword
+
 hi def link mcAdvancementName           mcValue
+hi def link mcAdvancementNameCriteria   mcValue
 hi def link mcAdvancementCriterionName  mcValue
 
 
@@ -269,8 +290,7 @@ hi def link mcBossbarIdSet              mcValue
 syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcEntityClear
 
 call s:mcEntity("Clear","mcItemClear")
-syn match mcItemClear /\(\w\|:\)\+/ contained contains=mcNamespace,mcBuiltinItem skipwhite nextgroup=mcDoubleSpace,mcUInt
-hi def link mcItemClear mcItem
+call s:mcData('Item','Clear','mcUInt')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clone
@@ -396,7 +416,7 @@ syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffec
 " Effect give
 syn keyword mcEffectKeyword give        contained skipwhite nextgroup=mcDoubleSpace,mcEntityEffectGive
 call s:mcEntity("EffectGive", "mcEffectGive")
-syn match   mcEffectGive    /\S\+/      contained skipwhite nextgroup=mcDoubleSpace,mcEffectSeconds contains=mcEffect
+call s:mcData('Effect','Give','mcEffectSeconds')
 syn match   mcEffectSeconds /\d\+/      contained skipwhite nextgroup=mcDoubleSpace,mcEffectAmp
 syn match   mcEffectAmp     /\d\+/      contained skipwhite nextgroup=mcDoubleSpace,mcBool
 
@@ -414,11 +434,11 @@ hi def link mcEffectAmp     mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcEntityEnchant
 
-call s:mcEntity("Enchant", "mcEnchantmentName")
+call s:mcEntity("Enchant", "mcEnchantmentEnchant")
 
-syn match   mcEnchantmentName   /\S\+/   contained contains=mcEnchantment skipwhite nextgroup=mcDoubleSpace,mcEnchantmentLevel
-syn match   mcEnchantmentLevel  /[1-5]/ contained
-hi def link mcEnchantmentLevel  mcValue
+call s:mcData('Enchantment','Enchant','mcEnchantLevel')
+syn match   mcEnchantLevel  /[1-5]/ contained
+hi def link mcEnchantLevel  mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Execute
@@ -448,7 +468,7 @@ call s:mcEntity("ExecuteFacing", "mcExecuteAnchoredValue")
 
 " Execute in
 syn keyword mcExecuteKeyword contained skipwhite nextgroup=mcDoubleSpace,mcDimensionExecute in
-call s:mcDimension("ExecuteIn","@mcExecuteKeyword")
+call s:mcData("Dimension","ExecuteIn","@mcExecuteKeyword")
 
 " Execute positioned
 syn keyword mcExecuteKeyword contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecute,mcExecuteAsKeyword positioned
@@ -627,7 +647,7 @@ hi def link mcGameruleNumber    mcValue
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcEntityGive
 
 call s:mcEntity("Give", "mcItemGive")
-syn match mcItemGive /\(\w\|:\)\+/ contained contains=mcItem nextgroup=mcAnySpace,mcNBTTagGive
+call s:mcData('Item','Give','mcNBTTagGive')
 call s:mcNBTTag("Give","mcUInt")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -760,7 +780,7 @@ syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcEntityTypeSummon
 
-call s:mcEntityType("Entity","mcCoordinateSummon")
+call s:mcData("EntityType","Summon","mcCoordinateSummon")
 call s:mcCoordinate("Summon","mcLineEnd,@mcNBT","")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""

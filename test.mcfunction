@@ -11,12 +11,13 @@ loot replace block 1 2 3 slot 32 kill @e
 loot give @s mine 1 2 3 bread
 loot give @e kill @e
 fill 1 2 3 4 5 6 dirt[istern]replace
+give @s apple
 spawnpoint @a 1 2 3
 nbt arstne.hhft."ent".f[234].rhtnyun{rtei:'ernt'}
 nbt {"sthn":[{"rsnt":[eni]},{ein:'iernst rtf'}]}
 nbt arst[{"f  t":1}].arst{}
 nbt arst[3].renti
-summon armor_stand ~ ~ ~ 
+summon armor_stand ~ ~ ~
 bossbar add minecraft:arst eiarsntyu
 title @s times 123 3239 32901
 bossbar set arst value 123
