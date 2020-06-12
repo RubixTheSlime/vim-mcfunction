@@ -61,7 +61,9 @@ syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
 " ~|~?-?\d*\.?\d+ *3 OR ^[n][.n] *3
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-syn match mcCoordinate contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
+syn match mcCoordinate  contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
+syn match mcCoordinate2 contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
+syn match mcCoordinate3 contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
 
 function! s:mcCoordinate(group,nextgroup,serial)
         execute 'syn match mcCoordinate'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\)\{3}\|\(\^-\?\d*\.\?\d* \?\)\{3}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
@@ -73,6 +75,7 @@ endfunction
 " Same as Coordinate, but 2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn match mcColumn     contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
+syn match mcColumn2    contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
 function! s:mcColumn(group,nextgroup,serial)
         execute 'syn match mcColumn'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         execute 'hi def link mcColumn'.a:group 'mcColumn'.a:serial
@@ -85,11 +88,13 @@ hi def link mcColumn2                   mcCoordinate2
 " Same as Column, but no caret allowed
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn match mcRotation   contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/
+syn match mcRotation2  contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/
 function! s:mcRotation(group,nextgroup,serial)
         execute 'syn match mcRotation'.a:group 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         execute 'hi def link mcRotation'.a:group 'mcRotation'.a:serial
 endfunction
 hi def link mcRotation                  mcCoordinate
+hi def link mcRotation2                 mcCoordinate2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Path
@@ -510,8 +515,7 @@ syn keyword mcCommand forceload contained skipwhite nextgroup=mcDoubleSpace,mcFo
 
 " Forceload add
 syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart                       add
-call s:mcColumn("ForceloadStart","mcColumnForceloadEnd","")
-call s:mcColumn("ForceloadEnd","mcAnySpace","2")
+call s:mcColumn("ForceloadStart","mcColumn2","")
 
 " Forceload remove
 syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart,mcForceloadRemKeyword remove
@@ -921,8 +925,10 @@ hi def link mcTitleTime3        mcCoordinate3
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate,mcEntityTpTarget
 
-call s:mcEntity("TpFacing", "mcTpAnchoredValue")
-call s:mcCoordinate("Tp","mcExecuteFacingKeyword,mcRotation","")
+" Entity is defined in the entity area
+call s:mcCoordinate("Tp","mcTpFacing,mcRotation2","")
+syn keyword mcTpFacing contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate2 facing
+hi def link mcTpFacing mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trigger
