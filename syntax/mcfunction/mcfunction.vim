@@ -697,7 +697,17 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc recipe
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ReplaceItem
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc replaceitem
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemWhere replaceitem
+
+syn keyword mcReplaceitemWhere contained skipwhite nextgroup=mcDoubleSpace,mcEntityReplaceitem entity
+        call s:mcEntity('Replaceitem','mcReplaceitemSlot')
+syn keyword mcReplaceitemWhere contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateReplaceitem block
+        call s:mcCoordinate('Replaceitem','mcReplaceitemSlot',"")
+syn match   mcReplaceitemSlot  contained skipwhite nextgroup=mcDoubleSpace,mcItemReplaceitem /armor\.\(chest\|feet\|head\|legs\)\|container.\([1-4]\?\d\|5[0-3]\)\|\(inventory\|enderchest\)\.\(1\?\d\|2[0-6]\)\|horse\.\(armor\|saddle\|chest\|\d\|1[0-5]\)\|hotbar.[0-8]\|villager.[0-7]\|weapon\(\.\(main\|off\)hand\)\?/
+call s:mcData('Item','Replaceitem','mcUInt')
+
+hi def link mcReplaceitemWhere mcKeyword
+hi def link mcReplaceitemSlot  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Schedule

@@ -40,9 +40,10 @@ to your .vimrc
 - loot
 - me
 - msg
-- reload
 - particle
 - playsound
+- reload
+- replaceitem
 - say
 - scoreboard
 - seed
@@ -65,7 +66,6 @@ to your .vimrc
 
 ### Commands not yet implemented:
 - recipe
-- replaceitem
 - schedule
 - spreadplayers
 - tag

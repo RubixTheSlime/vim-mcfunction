@@ -1,4 +1,5 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+replaceitem entity @s weapon.mainhand apple 12
 stopsound @s ambient minecraft:eirsnt
 playsound minecraft:arseitn ambient @s 1 2 3 123 2.000000 0001
 setblock 1 2 3 red_banner replace
