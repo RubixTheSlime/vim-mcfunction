@@ -1,8 +1,9 @@
+particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
 setblock 1 2 3 red_banner replace
 setblock 1 2 3 red_banner[snowy=true] replace
 setblock 1 2 3 red_banner{areisnt:ient} replace
 setblock 1 2 3 dirt[snowy=true]{ienrstiaen:{ienrset:'ariesnt',entiesrn:'yunst'},irstn:r1} replace
-execute if score @s arst = @e arst if score @s arst matches 123 run
+execute if score @s arst >= @e arst if score @s arst matches 123 run
 clone 1 2 3 4 5 6 7 8 9 filtered dirt[open=true]{yusrnt} force
 give @s red_carpet
 advancement grant @s only iesnrietn
@@ -17,7 +18,7 @@ fill 1 2 3 4 5 6 dirt[istern]replace
 give @s apple
 scoreboard players add @s arst 123
 scoreboard players get @s arst
-scoreboard players operation @s arst = @s ast
+scoreboard players operation @s arst += @s ast
 scoreboard objectives add arst minecraft.custom:minecraft.animals_bred "iersnt"
 scoreboard objectives add arst minecraft.custom:minecraft.aviate_one_cm "airsentei"
 scoreboard objectives add arst minecraft.broken:minecraft.apple "airsentei"

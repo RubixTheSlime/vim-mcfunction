@@ -658,7 +658,18 @@ syn match   mcChatMessage       /.*/    contained
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Particle
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc particle
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcParticleParticle particle
+
+call s:mcData('Particle','Particle','mcCoordinateParticle')
+call s:mcCoordinate('Particle','mcCoordinateParticleDelta','')
+call s:mcCoordinate('ParticleDelta','mcParticleSpeed','2')
+syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcParticleCount /\(\d*\.\)\?\d\+/ 
+syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/ 
+syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcEntity        force normal
+
+hi def link mcParticleSpeed mcValue
+hi def link mcParticleCount mcValue
+hi def link mcParticleMode  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Playsound
