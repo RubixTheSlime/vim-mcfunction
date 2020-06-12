@@ -362,22 +362,19 @@ hi def link mcEnchantLevel  mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Execute
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand execute contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
-syn cluster mcExecuteKeyword add=mcExecuteKeyword
+syn keyword mcCommand execute contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 
 " Execute align
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteAlignValue                         align
-syn match   mcExecuteAlignValue         contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword                           /\<\(x\([^ x]*x\)\@!\|y\([^ y]*y\)\@!\|z\([^ z]*z\)\@!\)\{1,3\}\>/
+syn match   mcExecuteAlignValue         contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                           /\<\(x\([^ x]*x\)\@!\|y\([^ y]*y\)\@!\|z\([^ z]*z\)\@!\)\{1,3\}\>/
 
 " Execute anchored
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteAnchoredValue                      anchored
-syn keyword mcExecuteAnchoredValue      contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword                           eyes feet
+syn keyword mcExecuteAnchoredValue      contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                           eyes feet
 
 " Execute as/at
-syn cluster mcExecuteKeyword add=mcExecuteAsKeyword
-syn keyword mcExecuteAsKeyword          contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecute                             as
-syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecute                             at
-call s:mcEntity("Execute", "@mcExecuteKeyword")
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecute                             at as
+call s:mcEntity("Execute", "mcExecuteKeyword")
 
 " Execute facing
 syn keyword mcExecuteKeyword             contained skipwhite nextgroup=mcDoubleSpace,mcExecuteFacingEntityKeyword,mcCoordinate facing
@@ -386,41 +383,42 @@ call s:mcEntity("ExecuteFacing", "mcExecuteAnchoredValue")
 
 " Execute in
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcDimensionExecute                          in
-call s:mcData("Dimension","ExecuteIn","@mcExecuteKeyword")
+call s:mcData("Dimension","ExecuteIn","mcExecuteKeyword")
 
 " Execute positioned
-syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecute,mcExecuteAsKeyword      positioned
-call s:mcCoordinate("Execute","@mcExecuteKeyword","")
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecute,mcExecutePosAs          positioned
+syn keyword mcExecutePosAs              contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecute                             as
+call s:mcCoordinate("Execute","mcExecuteKeyword","")
 
 " Execute rotated
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcRotationExecute,mcExecuteAsKeyword        rotated
-call s:mcRotation("Execute","@mcExecuteKeyword","")
+call s:mcRotation("Execute","mcExecuteKeyword","")
 
 " Execute run
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcCommand                                   run
 
 " Execute store
 """""""""""""""""""""""""
-syn keyword mcExecuteKeyword                    store           contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhat
-syn keyword mcExecuteStoreWhat  result success  contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhere
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhat                  store           
+syn keyword mcExecuteStoreWhat          contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhere                         result success  
 
 " block/entity
-syn keyword mcExecuteStoreWhere block           contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteStoreBlock
-        call s:mcCoordinate("ExecuteStoreBlock","@mcNBTPathExecuteStore","")
-syn keyword mcExecuteStoreWhere entity          contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteStore
+syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteStore            block           
+        call s:mcCoordinate("ExecuteStore","@mcNBTPathExecuteStore","")
+syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteStore                entity          
         call s:mcEntity("ExecuteStore", "@mcNBTPathExecuteStore")
 
 call s:mcNBTPath("ExecuteStore","mcExecuteStoreType")
-syn keyword mcExecuteStoreType  byte short int long float double        contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreScale
-syn match   mcExecuteStoreScale /-\?\d*\.\?\d\+/                        contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+syn keyword mcExecuteStoreType          contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreScale                 byte short int long float double        
+syn match   mcExecuteStoreScale         contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   /-\?\d*\.\?\d\+/                        
 
 " bossbar
-syn keyword mcExecuteStoreWhere        contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdExecuteStore    bossbar
+syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdExecuteStore             bossbar
 call s:mcData('BossbarId','ExecuteStore','mcExecuteStoreBossbarFeild')
-syn keyword mcExecuteStoreBossbarFeild contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword          max value
+syn keyword mcExecuteStoreBossbarFeild  contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   max value
 
 " score
-syn keyword mcExecuteStoreWhere score           contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteStoreScore
+syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteStoreScore           score           
 call s:mcEntity("ExecuteStoreScore", "mcExecuteStoreObjectiveName")
 "TODO after finishing scoreboard, include objective
 
@@ -431,14 +429,14 @@ syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSp
 " block
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondBlock        block
 call s:mcCoordinate("ExecuteCondBlock","mcBlockExecute","")
-call s:mcBlock("Execute","@mcExecuteKeyword")
+call s:mcBlock("Execute","mcExecuteKeyword")
 
 " blocks
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondStart        blocks
 call s:mcCoordinate("ExecuteCondStart","mcCoordinateExecuteCondEnd","")
 call s:mcCoordinate("ExecuteCondEnd","mcCoordinateExecuteCondDest","2")
 call s:mcCoordinate("ExecuteCondDest","mcExecuteCondBlocksMask","3")
-syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword                   all masked
+syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   all masked
 
 " data
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCondData                   data
@@ -446,11 +444,11 @@ syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSp
         call s:mcCoordinate("ExecuteCondData","@mcNBTPathExecute","")
 syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondData             entity
         call s:mcEntity("ExecuteCondData", "@mcNBTPathExecute")
-call s:mcNBTPath("Execute","@mcExecuteKeyword")
+call s:mcNBTPath("Execute","mcExecuteKeyword")
 
 " entity
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCond                 entity
-call s:mcEntity("ExecuteCond", "@mcExecuteKeyword")
+call s:mcEntity("ExecuteCond", "mcExecuteKeyword")
 
 " score
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondScoreTarget      score
@@ -459,12 +457,14 @@ syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSp
 "" TODO after finishing scoreboard
 "syn match   mcExecuteCondScoreOp        /[<>=]\@=[<>]\?=\?/     contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondScoreSource
 "syn keyword mcExecuteCondScoreMatch     matches                 contained skipwhite nextgroup=mcDoubleSpace,mcExecuteIR1,mcExecuteIR2
-"syn match   mcExecuteIR1                /-\?\d\+/               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteRangeInf,mcExecuteIR2,@mcExecuteKeyword
-"syn match   mcExecuteIR2                / \@!\.\.-\?\d\+/       contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
-"syn match   mcExecuteRangeInf           /\.\.\_[ ]/             contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+"syn match   mcExecuteIR1                /-\?\d\+/               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteRangeInf,mcExecuteIR2,mcExecuteKeyword
+"syn match   mcExecuteIR2                / \@!\.\.-\?\d\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
+"syn match   mcExecuteRangeInf           /\.\.\_[ ]/             contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 
 " Links
-hi def link mcExecuteAsKeyword                  mcKeyword
+hi def link mcExecuteAsKeyword                  mcExecuteKeyword
+
+hi def link mcExecuteKeyword                    mcKeyword
 hi def link mcExecuteCond                       mcKeyword
 hi def link mcExecuteCondData                   mcKeyword
 hi def link mcExecuteCondScoreMatch             mcKeyword
@@ -662,10 +662,10 @@ syn match   mcTeamName                    /\(\w\|[.+-]\)\+/       contained
 syn match   mcTagName                     /\(\w\|[.+-]\)\+/       contained
 
 syn match   mcObjectiveName                             /\(\w\|[.+-]\)\+/       contained
-syn match   mcObjectiveNameExecuteStore                 /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+syn match   mcObjectiveNameExecuteStore                 /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 syn match   mcObjectiveNameFilter                       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcFilterEqScore
 syn match   mcObjectiveNameExecuteCondScoreTarget       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCondScoreMatch,mcExecuteCondScoreOp
-syn match   mcObjectiveNameExecuteCondScoreSource       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,@mcExecuteKeyword
+syn match   mcObjectiveNameExecuteCondScoreSource       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 hi def link mcObjectiveNameExecuteStore                 mcObjectiveName
 hi def link mcObjectiveNameFilter                       mcObjectiveName
 hi def link mcObjectiveNameExecuteCondScoreTarget       mcObjectiveName
