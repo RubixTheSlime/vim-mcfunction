@@ -13,43 +13,47 @@ let b:current_syntax = "mc"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:mcEntity(group, nextgroup)
       execute 'hi def link mcEntity'.a:group 'mcEntity'
-      execute 'syn match   mcEntity'.a:group 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn match   mcEntity'.a:group 'contained /@[eaprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcEntity'.a:group 'contained /\w\{3,16}\>-\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcEntity'.a:group 'contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
       execute 'syn match   mcEntity'.a:group 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
       execute 'syn region  mcEntity'.a:group 'contained matchgroup=mcEntity start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
       execute 'syn cluster mcFilter add='.a:group
 endfunction
 
-syn match   mcEntity contained /\w\{3,16}\>-\@!/
-syn match   mcEntity contained /@[eaprs]\>\[\@!/
+syn match   mcEntity contained /\w\{3,16}\>-\@1!/
+syn match   mcEntity contained /@[eaprs]\>\[\@1!/
 syn match   mcEntity contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
 syn region  mcEntity contained matchgroup=mcEntity start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 
 "This one requires a special name regex
-hi def link mcEntityTpTarget mcEntity
+"Don't touch it just works
 syn match   mcEntityTpTarget contained /\<\(\d\+\(\s\+[0-9~.-]\+\)\{1,2}\s*$\)\@!\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcEntity
-syn match   mcEntityTpTarget contained /@[eaprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcEntity
+syn match   mcEntityTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcEntity
 syn match   mcEntityTpTarget contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcEntity
 syn region  mcEntityTpTarget contained matchgroup=mcEntity start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcEntity
+hi def link mcEntityTpTarget mcEntity
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Player
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcPlayer mcEntity
 function! s:mcPlayer(group, nextgroup)
       execute 'hi def link mcPlayer'.a:group 'mcPlayer'
-      execute 'syn cluster mcPlayer'.a:group 'add=mcPlayer'.a:group
-      execute 'syn match   mcPlayer'.a:group 'contained /\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn match   mcPlayer'.a:group 'contained /@[aprs]\>\[\@!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcPlayer'.a:group 'contained /\w\{3,16}\>-\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn match   mcPlayer'.a:group 'contained /@[aprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
       execute 'syn match   mcPlayer'.a:group 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn region  mcPlayer'.a:group 'contained matchgroup=mcEntity start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+      execute 'syn region  mcPlayer'.a:group 'contained matchgroup=mcPlayer start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
       execute 'syn cluster mcFilter add='.a:group
 endfunction
 
-syn match   mcPlayer contained /\w\{3,16}\>-\@!/
-syn match   mcPlayer contained /@[aprs]\>\[\@!/
+syn match   mcPlayer contained /\w\{3,16}\>-\@1!/
+syn match   mcPlayer contained /@[eaprs]\>\[\@1!/
 syn match   mcPlayer contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
-syn region  mcPlayer contained matchgroup=mcEntity start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
+syn region  mcPlayer contained matchgroup=mcPlayer start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
+
+hi def link mcPlayer mcEntity
+
+" for filters
+syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Coordinate
@@ -57,10 +61,10 @@ syn region  mcPlayer contained matchgroup=mcEntity start=/@[aprs]\[/rs=e end=/]/
 " ~|~?-?\d*\.?\d+ *3 OR ^[n][.n] *3
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-syn match mcCoordinate contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
+syn match mcCoordinate contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
 
 function! s:mcCoordinate(group,nextgroup,serial)
-        execute 'syn match mcCoordinate'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@!\_[ ]\)\{3}\|\(\^-\?\d*\.\?\d* \?\)\{3}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'syn match mcCoordinate'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\)\{3}\|\(\^-\?\d*\.\?\d* \?\)\{3}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         execute 'hi def link mcCoordinate'.a:group 'mcCoordinate'.a:serial
 endfunction
 
@@ -68,9 +72,9 @@ endfunction
 " Column
 " Same as Coordinate, but 2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn match mcColumn     contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
+syn match mcColumn     contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
 function! s:mcColumn(group,nextgroup,serial)
-        execute 'syn match mcColumn'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'syn match mcColumn'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         execute 'hi def link mcColumn'.a:group 'mcColumn'.a:serial
 endfunction
 hi def link mcColumn                    mcCoordinate
@@ -80,9 +84,9 @@ hi def link mcColumn2                   mcCoordinate2
 " Rotation
 " Same as Column, but no caret allowed
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn match mcRotation   contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@! \?\)\{2\}/
+syn match mcRotation   contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/
 function! s:mcRotation(group,nextgroup,serial)
-        execute 'syn match mcRotation'.a:group 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'syn match mcRotation'.a:group 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         execute 'hi def link mcRotation'.a:group 'mcRotation'.a:serial
 endfunction
 hi def link mcRotation                  mcCoordinate
@@ -559,9 +563,9 @@ hi def link mcGameruleNumber    mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Give
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcEntityGive
+syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerGive
 
-call s:mcEntity("Give", "mcItemGive")
+call s:mcPlayer("Give", "mcItemGive")
 call s:mcData('Item','Give','mcNBTTagGive')
 call s:mcNBTTag("Give","mcUInt")
 

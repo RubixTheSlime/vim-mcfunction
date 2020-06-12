@@ -15,7 +15,7 @@ hi mcNBTPath            ctermfg=6
 hi mcNBTPathDot         ctermfg=4
 hi mcNBTValue           ctermfg=4
 hi mcValue              ctermfg=11
-hi mcFilterKeyword      ctermfg=10 cterm=italic
+hi mcFilterNot          ctermfg=1
 
 hi def link mcBlockStateBracket         mcSelector
 hi def link mcBlockStateEq              mcFilterEq
