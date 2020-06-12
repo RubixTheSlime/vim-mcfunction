@@ -20,6 +20,11 @@ hi def link mcEntityType                mcValue
 hi def link mcItem                      mcValue
 hi def link mcNamespace                 mcValue
 
+hi def link mcBlockStateBracket         mcBlockStateEq
+hi def link mcBlockStateEq              mcFilterEq
+hi def link mcBlockStateKeyword         mcFilterKeyword
+hi def link mcBlockStateValue           mcFilterValue
+
 syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
 hi def link mcBadWhiteSpaceBlock mcBadWhitespace
 

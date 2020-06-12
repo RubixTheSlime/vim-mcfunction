@@ -4,6 +4,10 @@ syn match   mcAdvancementCriterionNameFilter    contained skipwhite nextgroup=mc
 hi def link mcAdvancementNameFilter     mcAdvancementName
 hi def link mcAdvancementCriterionNameFilter    mcAdvanecmentCriterionName
 
+hi def link mcFilterKeyValue            mcKeyValue
+hi def link mcFilterKeyword             mcKeyword
+hi def link mcFilterValue               mcValue
+
 syn match   mcFilterComma       contained /,/
 " Keywords
 syn keyword mcFilterKeyword     contained x y z dx dy dz        skipwhite nextgroup=mcFilterEqF

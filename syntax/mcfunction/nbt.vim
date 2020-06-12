@@ -18,5 +18,11 @@ hi def link mcNBTComma          mcNBTPathDot
 hi def link mcNBTColon          mcNBTPathDot
 hi def link mcNBTValueQuote     mcNBTValue
 
+hi def link mcNBTIndex                  mcNBTPathDot
+hi def link mcNBTPath                   mcKeyValue
+hi def link mcNBTPathDot                mcNBTBracket
+hi def link mcNBTQuote                  mcNBTPath
+hi def link mcNBTString                 mcNBTValue
+
 " For debugging purposes
 syn keyword mcCommand nbt skipwhite contained nextgroup=@mcNBTPath

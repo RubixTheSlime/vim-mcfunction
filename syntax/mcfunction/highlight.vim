@@ -2,41 +2,21 @@ hi def link mcBadWhitespace     Error
 hi def link mcChatMessage       String
 hi def link mcComment           Comment
 
-hi mcCommand            ctermfg=4 cterm=bold
-hi mcEntity             ctermfg=10
-hi mcCoordinate         ctermfg=14
-hi mcCoordinate2        ctermfg=11
-hi mcCoordinate3        ctermfg=10
-hi mcJSONText           ctermfg=3
-hi mcKeyValue           ctermfg=11 cterm=bold
+hi mcCommand            ctermfg=DarkBlue cterm=bold
+
+hi mcEntity             ctermfg=Green
+
+hi mcCoordinate         ctermfg=Cyan
+hi mcCoordinate2        ctermfg=Yellow
+hi mcCoordinate3        ctermfg=Green
+
 hi mcKeyword            cterm=italic
-hi mcNBTBracket         ctermfg=2
-hi mcNBTPath            ctermfg=6
-hi mcNBTPathDot         ctermfg=4
-hi mcNBTValue           ctermfg=4
-hi mcValue              ctermfg=11
-hi mcFilterNot          ctermfg=1
+hi mcKeyValue           ctermfg=Yellow cterm=bold
+hi mcValue              ctermfg=Yellow
 
-hi def link mcBlockStateBracket         mcSelector
-hi def link mcBlockStateEq              mcFilterEq
-hi def link mcBlockStateKeyword         mcFilterKeyword
-hi def link mcBlockStateValue           mcFilterValue
+hi mcJSONText           ctermfg=Brown
 
-hi def link mcFilterKeyValue            mcFilterValue
-hi def link mcFilterKeyword             mcKeyword
-hi def link mcFilterValue               mcValue
-
-hi def link mcNBTIndex                  mcNBTPathDot
-hi def link mcNBTPath                   mcKeyValue
-hi def link mcNBTPathDot                mcNBTBracket
-hi def link mcNBTQuote                  mcNBTPath
-hi def link mcNBTString                 mcNBTValue
-
-hi def link mcBuiltin                   mcKeyValue
-hi def link mcBuiltinNamespace          mcBuiltin
-hi def link mcBuiltinBlock              mcBuiltin
-hi def link mcBuiltinDimension          mcBuiltin
-hi def link mcBuiltinEffect             mcBuiltin
-hi def link mcBuiltinEnchantment        mcBuiltin
-hi def link mcBuiltinEntity             mcBuiltin
-hi def link mcBuiltinItem               mcBuiltin
+hi mcNBTBracket         ctermfg=DarkGreen
+hi mcNBTPath            ctermfg=DarkCyan
+hi mcNBTPathDot         ctermfg=DarkBlue
+hi mcNBTValue           ctermfg=DarkBlue

@@ -1,6 +1,15 @@
 " Namespace
 syn match mcBuiltinNamespace contained /minecraft:/
 
+hi def link mcBuiltin                   mcKeyValue
+hi def link mcBuiltinNamespace          mcBuiltin
+hi def link mcBuiltinBlock              mcBuiltin
+hi def link mcBuiltinDimension          mcBuiltin
+hi def link mcBuiltinEffect             mcBuiltin
+hi def link mcBuiltinEnchantment        mcBuiltin
+hi def link mcBuiltinEntity             mcBuiltin
+hi def link mcBuiltinItem               mcBuiltin
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Blocks
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
