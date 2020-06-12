@@ -1,27 +1,90 @@
 " Namespace
-"syn match mcBuiltinNamespace contained /minecraft:/
+syn match mcBuiltinNamespace contained /minecraft:/
 
+hi def link mcBuiltin                   mcKeyValue
+hi def link mcBuiltinNamespace          mcBuiltin
+hi def link mcBuiltinBlock              mcBuiltin
+hi def link mcBuiltinDimension          mcBuiltin
+hi def link mcBuiltinEffect             mcBuiltin
+hi def link mcBuiltinEnchantment        mcBuiltin
+hi def link mcBuiltinEntity             mcBuiltin
+hi def link mcBuiltinItem               mcBuiltin
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Blocks
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinBlock mcKeyValue
 syn keyword mcBuiltinBlock contained dirt
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Dimensions
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcBuiltinDimension contained overworld the_nether the_end
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enchantments
-syn keyword mcBuiltinEnchantment contained aqua_affinity bane_of_arthropods binding_curse blast_protection channeling depth_strider efficiency feather_falling fire_aspect fire_protection flame fortune frost_walker impaling infinity knockback looting loyalty luck_of_the_sea lure mending multishot piercing power projectile_protection protection punch quick_charge respiration riptide sharpness silk_touch smite sweeping thorns unbreaking vanishing_curse
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Generic
+syn keyword mcBuiltinEnchantment contained mending unbreaking
+" Curse
+syn keyword mcBuiltinEnchantment contained vanishing_curse binding_curse 
+" Armor
+syn keyword mcBuiltinEnchantment contained thorns respiration projectile_protection protection frost_walker fire_protection feather_falling depth_strider bane_of_arthropods aqua_affinity 
+" Tool
+syn keyword mcBuiltinEnchantment contained fortune efficiency silk_touch
+" Sword/Axe
+syn keyword mcBuiltinEnchantment contained looting knockback fire_aspect sharpness smite sweeping
+" Bow
+syn keyword mcBuiltinEnchantment contained infinity flame power punch
+" Triden
+syn keyword mcBuiltinEnchantment contained loyalty impaling channeling riptide
+" Crossbow
+syn keyword mcBuiltinEnchantment contained multishot piercing quick_charge
+" Rod
+syn keyword mcBuiltinEnchantment contained lure luck_of_the_sea
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Entities
-syn keyword mcBuiltinEntity contained blaze cave_spider creeper drowned elder_guardian enderman endermite evoker ghast giant guardian husk illusioner magma_cube phantom pillager pufferfish ravager shulker silverfish skeleton slime spider stray vex vindicator witch wither_skeleton zombie zombie_pigman zombie_villager
-syn keyword mcBuiltinEntity contained bat cat chicken cod cow dolphin donkey fox horse llama mooshroom mule ocelot panda parrot pig polar_bear rabbit salmon sheep skeleton_horse squid trader_llama tropical_fish turtle villager wandering_trader wolf zombie_horse
-syn keyword mcBuiltinEntity contained iron_golem snow_golem wither ender_dragon
-syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal evoker_fangs item_frame leash_knot painting
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Villagers/Illagers
+syn keyword mcBuiltinEntity contained villager evoker wandering_trader illusioner pillager ravager vex vindicator witch
+" Undead Mobs
+syn keyword mcBuiltinEntity contained drowned giant husk phantom skeleton stray wither_skeleton
+" Arthropods
+syn keyword mcBuiltinEntity contained cave_spider endermite silverfish spider zombie zombie_pigman zombie_villager
+" Other hostile Mobs
+syn keyword mcBuiltinEntity contained blaze creeper elder_guardian enderman ghast guardian magma_cube shulker slime 
+" Ambient/Aquatic Mobs
+syn keyword mcBuiltinEntity contained bat cod dolphin salmon squid tropical_fish turtle pufferfish
+" Horses
+syn keyword mcBuiltinEntity contained horse zombie_horse skeleton_horse donkey mule llama trader_llama
+" Passive Mobs
+syn keyword mcBuiltinEntity contained cat chicken cow fox mooshroom ocelot panda parrot pig polar_bear rabbit sheep villager wandering_trader wolf
+" Utility etc Mobs
+syn keyword mcBuiltinEntity contained iron_golem snow_golem wither ender_dragon player
+" Projectiles
 syn keyword mcBuiltinEntity contained arrow dragon_fireball egg ender_pearl experience_bottle eye_of_ender fireball firework_rocket llama_spit potion shulker_bullet small_fireball snowball spectral_arrow trident wither_skull
+" Boats/Carts
 syn keyword mcBuiltinEntity contained boat chest_minecart furnace_minecart command_block_minecart hopper_minecart minecart spawner_minecart tnt_minecart
-syn keyword mcBuiltinEntity contained falling_block tnt experience_orb item
+" Misc
+syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal evoker_fangs item_frame leash_knot painting falling_block tnt experience_orb item
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Effects
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_power dolphins_grace fire_resistance glowing haste health_boost hero_of_the_village hunger instant_health instant_damage invisibility jump_boost levitation luck mining_fatigue nausea night_vision poison regeneration resistance saturation slow_falling slowness speed strength unluck water_breathing weakness wither
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Items
-syn keyword mcBuiltinItem contianed bread apple
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinItem mcBuiltinBlock
+syn keyword mcBuiltinItem contained bread apple
+syn match   mcBuiltinItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Items/Blocks
+" Many items and blocks are the same
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinItemBlock mcBuiltinBlock
+syn match mcBuiltinItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
 

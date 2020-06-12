@@ -1,3 +1,12 @@
+" From other files to reorganize
+syn match   mcAdvancementNameFilter             contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[/:]\)\+/        
+syn match   mcAdvancementCriterionNameFilter    contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[.+-]\)\+/       
+hi def link mcAdvancementNameFilter     mcAdvancementName
+hi def link mcAdvancementCriterionNameFilter    mcAdvanecmentCriterionName
+
+hi def link mcFilterKeyValue            mcKeyValue
+hi def link mcFilterKeyword             mcKeyword
+hi def link mcFilterValue               mcValue
 
 syn match   mcFilterComma       contained /,/
 " Keywords
@@ -44,6 +53,13 @@ syn match   mcFilterUI          contained /\d\+/
 syn match   mcFilterF           contained /-\?\d*\.\?\d\+/
 
 " Ranges
+" I = integer
+" U = unsigned integer
+" UF = unsigned float
+" R = range
+" X = x rotation (-90 - 90)
+" Y = y rotation (-180 - 180
+" Inf = infinity
 syn match   mcFilterIR1         contained /-\?\d\+/                                                                        nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterIR2
 syn match   mcFilterUIR1        contained /\d\+/                                                                           nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterUIR2
 syn match   mcFilterUFR1        contained /-\?\d*\.\?\d\+/                                                                 nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterUFR2
@@ -54,7 +70,7 @@ syn match   mcFilterUIR2        contained /\.\.\d\+/
 syn match   mcFilterUFR2        contained /\.\.-\?\d*\.\?\d\+/
 syn match   mcFilterXR2         contained /\.\.\(90\(\.0\+\)\?\|-\?[0-8]\?\d\(\.\d\+\)\?\|-\?\.\d\+\)/
 syn match   mcFilterYR2         contained /\.\.\(-\?180\(\.0\+\)\?\|-\?1[0-7]\d\(\.\d\+\)\?\|-\?\d\?\d\(\.\d\+\)\?\|-\?\.\d\+\)/
-syn match   mcFilterRangeInf    contained /\.\.\s*\_[,\]]\@=/
+syn match   mcFilterRangeInf    contained /\.\.\s*\ze\_[,\]]=/
 
 " Lists
 syn region  mcFilterScores                      matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcObjectiveNameFilter
@@ -66,7 +82,7 @@ syn region  mcFilterAdvancementCriterion        matchgroup=mcSelector start=/{/r
 hi def link mcFilterComma               mcFilterEq
 hi def link mcFilterSort                mcKeyValue
 hi def link mcFilterKeyword             mcKeyword
-hi def link mcFilterEq                  mcSelector
+hi def link mcFilterEq                  mcEntity
 hi def link mcFilterRange               mcFilterValue
 hi def link mcFilterValue               mcValue
 
