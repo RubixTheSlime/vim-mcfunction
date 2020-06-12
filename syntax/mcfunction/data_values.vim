@@ -2,20 +2,23 @@
 syn match   mcAdvancement                       /\(\w\+[:/]\)*\w\+/     contained contains=mcNamespace,mcBuiltinAdvancement
 syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
 syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinBlock nextgroup=mcBlockstate
+syn match   mcBossbarId                         /\(\w[:./-]\)*\w\+/     contained contains=mcNamespace,mcBuiltinBossbarId
 syn match   mcDimension                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinDimension
 syn match   mcEffect                            /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEffect
+syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
 syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
 syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinItem
-syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
 syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
-hi def link mcAdvancement   mcValue
-hi def link mcBlock         mcValue
-hi def link mcDimension     mcValue
-hi def link mcEffect        mcValue
-hi def link mcEntityType    mcValue
-hi def link mcItem          mcValue
-hi def link mcEnchantment   mcValue
-hi def link mcNamespace     mcValue
+hi def link mcAdvancement               mcValue
+hi def link mcAdvancementCriteria       mcValue
+hi def link mcBlock                     mcValue
+hi def link mcBossbarId                 mcValue
+hi def link mcDimension                 mcValue
+hi def link mcEffect                    mcValue
+hi def link mcEnchantment               mcValue
+hi def link mcEntityType                mcValue
+hi def link mcItem                      mcValue
+hi def link mcNamespace                 mcValue
 
 syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
 hi def link mcBadWhiteSpaceBlock mcBadWhitespace
