@@ -41,6 +41,8 @@ to your .vimrc
 - me
 - msg
 - reload
+- particle
+- playsound
 - say
 - scoreboard
 - seed
@@ -61,8 +63,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- particle
-- playsound
 - recipe
 - replaceitem
 - schedule

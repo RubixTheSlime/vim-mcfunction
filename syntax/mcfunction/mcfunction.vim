@@ -674,7 +674,20 @@ hi def link mcParticleMode  mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Playsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc playsound
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSoundPlay playsound
+
+call s:mcData('Sound','Play','mcSoundChannelPlay')
+call s:mcData('SoundChannel','Play','mcEntityPlaysound')
+call s:mcEntity('Playsound','mcCoordinatePlaysound')
+call s:mcCoordinate('Playsound','mcPlaysoundVolume','')
+
+syn match   mcPlaysoundVolume    contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundPitch     /\(\d*\.\)\?\d\+/ 
+syn match   mcPlaysoundPitch     contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundMinVolume /0*1\?\.\d\+\|0*2\(\.0*\)\?\ze\_[ ]/ 
+syn match   mcPlaysoundMinVolume contained                                                        /0*\.\d\+\|0*1\(\.0*\)\?\ze\_[ ]/
+
+hi def link mcPlaysoundVolume    mcValue
+hi def link mcPlaysoundPitch     mcValue
+hi def link mcPlaysoundMinVolume mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Recipe
