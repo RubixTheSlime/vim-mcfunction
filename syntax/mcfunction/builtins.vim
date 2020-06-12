@@ -77,7 +77,7 @@ syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_powe
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Items
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinItem mcKeyValue
+hi def link mcBuiltinItem mcBuiltinBlock
 syn keyword mcBuiltinItem contained bread apple
 syn match   mcBuiltinItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
 
@@ -85,6 +85,6 @@ syn match   mcBuiltinItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\
 " Items/Blocks
 " Many items and blocks are the same
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinItemBlock mcKeyValue
+hi def link mcBuiltinItemBlock mcBuiltinBlock
 syn match mcBuiltinItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
 
