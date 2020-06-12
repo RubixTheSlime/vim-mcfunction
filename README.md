@@ -47,6 +47,7 @@ to your .vimrc
 - replaceitem
 - say
 - scoreboard
+- schedule
 - seed
 - setblock
 - setworldspawn
@@ -66,7 +67,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- schedule
 - spreadplayers
 - tag
 - team

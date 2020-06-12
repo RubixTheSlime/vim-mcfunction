@@ -7,6 +7,7 @@ syn match   mcDimension                         /\(\w\+:\)*\w\+/        containe
 syn match   mcEffect                            /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEffect
 syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
 syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
+syn match   mcFunction                          /#\?[a-z0-9_-]\+:[a-z0-9./_-]*/ contained contains=mcNamespace
 syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinItem
 syn match   mcObjective                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinObjective
 syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
@@ -24,6 +25,7 @@ hi def link mcDimension                 mcValue
 hi def link mcEffect                    mcValue
 hi def link mcEnchantment               mcValue
 hi def link mcEntityType                mcValue
+hi def link mcFunction                  mcValue
 hi def link mcItem                      mcValue
 hi def link mcObjective                 mcValue
 hi def link mcSound                     mcValue

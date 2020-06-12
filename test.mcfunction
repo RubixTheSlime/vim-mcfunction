@@ -1,4 +1,5 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+schedule function rsent:arst 123t
 recipe give @s bread
 recipe take @a *
 replaceitem entity @s weapon.mainhand apple 12

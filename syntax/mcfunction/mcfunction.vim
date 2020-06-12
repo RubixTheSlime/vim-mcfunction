@@ -529,8 +529,6 @@ hi def link mcForceloadKeyword    mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand function contained skipwhite nextgroup=mcDoubleSpace,mcFunction
 
-syn match   mcFunction  contained /#?[a-z0-9_-]\+:[a-z0-9./_-]*/
-hi def link mcFuncion   mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gamemode
@@ -716,7 +714,13 @@ hi def link mcReplaceitemSlot  mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Schedule
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc schedule
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcScheduleKeyword schedule
+
+syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunctionSchedule function
+call s:mcData('Function','Schedule','mcScheduleTime')
+syn match   mcScheduleTime    contained /\d\+[dst]\?/
+hi def link mcScheduleKeyword mcKeyword
+hi def link mcScheduleTime    mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Scoreboard
