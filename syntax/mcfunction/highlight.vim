@@ -3,6 +3,7 @@ hi def link mcChatMessage       String
 hi def link mcComment           Comment
 
 hi mcCommand            ctermfg=4 cterm=bold
+hi mcEntity             ctermfg=10
 hi mcCoordinate         ctermfg=14
 hi mcCoordinate2        ctermfg=11
 hi mcCoordinate3        ctermfg=10
