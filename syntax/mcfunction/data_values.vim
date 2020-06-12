@@ -9,6 +9,8 @@ syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        containe
 syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
 syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinItem
 syn match   mcObjective                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinObjective
+syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
+syn match   mcSound                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinSound
 syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
 hi def link mcAdvancement               mcValue
 hi def link mcAdvancementCriteria       mcValue
@@ -19,7 +21,9 @@ hi def link mcEffect                    mcValue
 hi def link mcEnchantment               mcValue
 hi def link mcEntityType                mcValue
 hi def link mcItem                      mcValue
-hi def link mcObjective                 mcKeyValue
+hi def link mcObjective                 mcValue
+hi def link mcSound                     mcValue
+hi def link mcParticle                  mcValue
 hi def link mcNamespace                 mcValue
 
 hi def link mcBlockStateBracket         mcBlockStateEq

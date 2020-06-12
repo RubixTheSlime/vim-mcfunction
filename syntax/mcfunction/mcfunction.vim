@@ -656,9 +656,33 @@ call s:mcEntity("Msg", "mcChatMessage")
 syn match   mcChatMessage       /.*/    contained
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Particle
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc particle
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Playsound
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc playsound
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Recipe
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc recipe
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ReplaceItem
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc replaceitem
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Schedule
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc schedule
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Scoreboard
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" TODO finish execute store/cond score after finishing this
 syn keyword mcCommand scoreboard contained skipwhite nextgroup=mcDoubleSpace,mcScoreboardKeyword
 
 " players
@@ -702,20 +726,32 @@ hi def link mcScoreboardModifyWhat      mcKeyword
 hi def link mcScoreboardModifyRender    mcKeyword
 hi def link mcScoreboardOp              mcOp
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Spreadplayers
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc spreadplayers
 
-"syn match   mcTeamName                    /\(\w\|[.+-]\)\+/       contained
-"syn match   mcTagName                     /\(\w\|[.+-]\)\+/       contained
-"
-"syn match   mcObjectiveName                             /\(\w\|[.+-]\)\+/       contained
-"syn match   mcObjectiveNameExecuteStore                 /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
-"syn match   mcObjectiveNameFilter                       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcFilterEqScore
-"syn match   mcObjectiveNameExecuteCondScoreTarget       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCondScoreMatch,mcExecuteCondScoreOp
-"syn match   mcObjectiveNameExecuteCondScoreSource       /\(\w\|[.+-]\)\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
-"hi def link mcObjectiveNameExecuteStore                 mcObjectiveName
-"hi def link mcObjectiveNameFilter                       mcObjectiveName
-"hi def link mcObjectiveNameExecuteCondScoreTarget       mcObjectiveName
-"hi def link mcObjectiveNameExecuteCondScoreSource       mcObjectiveName
-"hi def link mcObjectiveName             mcValue
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Stopsound
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc stopsound
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Tag
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc tag
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Team
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc team
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Tellraw
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntityTellraw tellraw
+
+call s:mcEntity('Tellraw','mcJSONText')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Setblock
@@ -781,6 +817,11 @@ call s:mcEntity("TpFacing", "mcTpAnchoredValue")
 call s:mcCoordinate("Tp","mcExecuteFacingKeyword,mcRotation","")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Trigger
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc trigger
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trivial Commands
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand reload seed contained
@@ -795,6 +836,11 @@ syn match   mcWeatherDuration   contained /\d\{0,6\}/
 
 hi def link mcWeather           mcKeyword
 hi def link mcWeatherDuration   mcValue
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Worldborder
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc worldborder
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Xp

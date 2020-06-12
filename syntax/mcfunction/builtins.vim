@@ -88,3 +88,12 @@ syn match   mcBuiltinItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\
 hi def link mcBuiltinItemBlock mcBuiltinBlock
 syn match mcBuiltinItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Particles
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sounds
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+

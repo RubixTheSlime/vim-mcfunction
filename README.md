@@ -51,6 +51,8 @@ to your .vimrc
 - teammsg
 - teleport
 - tell
+- tellraw
+- title
 - tp
 - w
 - weather
@@ -68,9 +70,7 @@ to your .vimrc
 - stopsound
 - tag
 - team
-- tellraw
 - time
-- title
 - trigger
 - worldborder
 
