@@ -52,6 +52,7 @@ to your .vimrc
 - setblock
 - setworldspawn
 - spawnpoint
+- spreadplayers
 - stopsound
 - summon
 - teammsg
@@ -67,7 +68,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- spreadplayers
 - tag
 - team
 - time

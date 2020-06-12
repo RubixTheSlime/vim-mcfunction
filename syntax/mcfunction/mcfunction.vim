@@ -529,7 +529,6 @@ hi def link mcForceloadKeyword    mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand function contained skipwhite nextgroup=mcDoubleSpace,mcFunction
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gamemode
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -719,6 +718,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcScheduleKeyw
 syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunctionSchedule function
 call s:mcData('Function','Schedule','mcScheduleTime')
 syn match   mcScheduleTime    contained /\d\+[dst]\?/
+
 hi def link mcScheduleKeyword mcKeyword
 hi def link mcScheduleTime    mcValue
 
@@ -771,7 +771,16 @@ hi def link mcScoreboardOp              mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spreadplayers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc spreadplayers
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcColumnSpread spreadplayers
+
+call s:mcColumn('Spread','mcSpreadPlayersDistance','')
+syn match   mcSpreadPlayersDistance contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRange    /\(\d*\.\)\?\d\+/
+syn match   mcSpreadPlayersRange    contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRespect  /\(\d*\.\)\?\d\+/
+syn keyword mcSpreadPlayersRespect  contained skipwhite nextgroup=mcDoubleSpace,mcEntity                true false
+
+hi def link mcSpreadPlayersDistance mcValue
+hi def link mcSpreadPlayersRange    mcValue
+hi def link mcSpreadPlayersRespect  mcBool
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Stopsound
