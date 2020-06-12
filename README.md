@@ -25,6 +25,7 @@ to your .vimrc
 - difficulty
 - effect
 - enchant
+- execute
 - experience
 - fill
 - forceload
@@ -41,6 +42,7 @@ to your .vimrc
 - msg
 - reload
 - say
+- scoreboard
 - seed
 - setblock
 - setworldspawn
@@ -55,7 +57,6 @@ to your .vimrc
 - xp
 
 ### Commands partially implemented:
-- execute
 
 ### Commands not yet implemented:
 - particle
@@ -63,7 +64,6 @@ to your .vimrc
 - recipe
 - replaceitem
 - schedule
-- scoreboard
 - spreadplayers
 - stopsound
 - tag

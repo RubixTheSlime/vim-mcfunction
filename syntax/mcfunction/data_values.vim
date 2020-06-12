@@ -8,6 +8,7 @@ syn match   mcEffect                            /\(\w\+:\)*\w\+/        containe
 syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
 syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
 syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinItemBlock,mcBuiltinItem
+syn match   mcObjective                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinObjective
 syn match   mcNamespace         /\w\+:/ contained contains=mcBuiltinNamespace
 hi def link mcAdvancement               mcValue
 hi def link mcAdvancementCriteria       mcValue
@@ -18,6 +19,7 @@ hi def link mcEffect                    mcValue
 hi def link mcEnchantment               mcValue
 hi def link mcEntityType                mcValue
 hi def link mcItem                      mcValue
+hi def link mcObjective                 mcKeyValue
 hi def link mcNamespace                 mcValue
 
 hi def link mcBlockStateBracket         mcBlockStateEq
@@ -27,6 +29,42 @@ hi def link mcBlockStateValue           mcFilterValue
 
 syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
 hi def link mcBadWhiteSpaceBlock mcBadWhitespace
+
+" Scoreboard criteria
+syn keyword mcCriteria contained air armor deathcount dummy food health level trigger xp playerKillCount
+syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcCriteriaTeam /teamkill\.\|killedByTeam./
+syn match   mcCriteriaTeam contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
+" item
+syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_up\|used\):minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinItem,mcBuiltinItemBlock
+"block
+syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinBlock,mcBuiltinItemBlock
+" entity
+syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinEntity
+" custom things, this'll be a pain to maintain
+syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCriteriaCustomNamespace
+syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcCriteriaCustom
+syn match   mcCriteriaCustom contained /animals_bred\|bell_ring\|deaths\|eat_cake_slice\|enchant_item\|fill_cauldron\|fish_caught\|jump\|leave_game\|pot_flower\|sleep_in_bed\|sneak_time\|trigger_trapped_chest\|tune_noteblock\|use_cauldron/
+syn match   mcCriteriaCustom contained /raid_\(trigger\|win\)/
+syn match   mcCriteriaCustom contained /time_since_\(death\|rest\)/
+syn match   mcCriteriaCustom contained /\(talked_to\|traded_with\)_villager/
+syn match   mcCriteriaCustom contained /play_\(noteblock\|one_minute\|record\)/
+syn match   mcCriteriaCustom contained /open_\(barrel\|\(ender_\)chest\)/
+syn match   mcCriteriaCustom contained /\(mob\|player\)_kills/
+syn match   mcCriteriaCustom contained /inspect_\(dropper\|hopper\|dispenser\)/
+syn match   mcCriteriaCustom contained /clean_\(armor\|banner\|shulker_box\)/
+syn match   mcCriteriaCustom contained /damage_\(\(dealt_\)\?\(absorbed\|resisted\)\|blocked_by_shield\|dealt\|taken\)/
+syn match   mcCriteriaCustom contained /\(aviate\|boat\|climb\|crouch\|fall\|fly\|horse\|minecart\|pig\|sprint\|swim\|walk\(_\(on\|under\)_water\)\?\)_one_cm/
+syn match   mcCriteriaCustom contained /interact_with_\(beacon\|blast_furnace\|brewingstand\|campfire\|c\(artography\|rafting\)_table\|furnace\|lectern\|loom\|smoker\)/
+hi def link mcCriteriaCustomNamespace mcCriteria
+hi def link mcCriteriaCustom mcCriteria
+hi def link mcCriteriaTeam   mcCriteria
+hi def link mcCriteria       mcKeyValue
+
+" Scoreboard displays
+syn keyword mcScoreDisplay contained belowName list 
+syn match   mcScoreDisplay contained /sidebar\ze[^.]/
+syn match   mcScoreDisplay contained /sidebar\.team\./ skipwhite nextgroup=mcAnySpace,mcCriteriaTeam
+hi def link mcScoreDisplay mcKeyValue
 
 " Block States
 syn region  mcBlockState                matchgroup=mcBlockStateBracket start=/\[/rs=e end=/]/ contained skipwhite contains=mcBlockStateKeyword
