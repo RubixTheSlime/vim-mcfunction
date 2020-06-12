@@ -2,6 +2,7 @@ setblock 1 2 3 red_banner replace
 setblock 1 2 3 red_banner[snowy=true] replace
 setblock 1 2 3 red_banner{areisnt:ient} replace
 setblock 1 2 3 dirt[snowy=true]{ienrstiaen:{ienrset:'ariesnt',entiesrn:'yunst'},irstn:r1} replace
+execute if score @s arst = @e arst if score @s arst matches 123 run
 clone 1 2 3 4 5 6 7 8 9 filtered dirt[open=true]{yusrnt} force
 give @s red_carpet
 advancement grant @s only iesnrietn
@@ -14,6 +15,14 @@ loot give @s mine 1 2 3 bread
 loot give @e kill @e
 fill 1 2 3 4 5 6 dirt[istern]replace
 give @s apple
+scoreboard players add @s arst 123
+scoreboard players get @s arst
+scoreboard players operation @s arst = @s ast
+scoreboard objectives add arst minecraft.custom:minecraft.animals_bred "iersnt"
+scoreboard objectives add arst minecraft.custom:minecraft.aviate_one_cm "airsentei"
+scoreboard objectives add arst minecraft.broken:minecraft.apple "airsentei"
+scoreboard objectives setdisplay sidebar arst
+scoreboard objectives setdisplay sidebar.team.aqua arst
 spawnpoint @a 1 2 3
 nbt arstne.hhft."ent".f[234].rhtnyun{rtei:'ernt'}
 nbt {"sthn":[{"rsnt":[eni]},{ein:'iernst rtf'}]}
