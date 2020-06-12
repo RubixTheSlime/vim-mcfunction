@@ -1,4 +1,4 @@
-# mcfunction-vim-syntax
+# vim-mcfunction
 Vim syntax definitions for mcfunction. Still a work in progress, currently being developed for Minecraft 1.14. Once it is finished, other versions will be released as well. More than just highlights keywords, anything that isn't colored will cause an error.
 
 ## Installation
