@@ -61,7 +61,9 @@ to your .vimrc
 - teleport
 - tell
 - tellraw
+- time
 - title
+- trigger
 - tp
 - w
 - weather
@@ -70,8 +72,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- time
-- trigger
 - worldborder
 
 

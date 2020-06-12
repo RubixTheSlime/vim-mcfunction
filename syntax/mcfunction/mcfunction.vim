@@ -846,7 +846,20 @@ call s:mcEntity('Tellraw','mcJSONText')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Time
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc time
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcTimeKeyword time
+
+syn keyword mcTimeKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcTimeQuery         query
+        syn keyword mcTimeQuery contained skipwhite                                             day daytime gametime
+syn keyword mcTimeKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcTimeAdd           add
+        syn match   mcTimeAdd   contained skipwhite                                             /\d\+[dst]\?/
+syn keyword mcTimeKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcTimeAdd,mcTimeSet set
+        syn keyword mcTimeSet   contained skipwhite                                             day night midnight noon
+
+hi def link mcTimeKeyword mcKeyword
+hi def link mcTimeQuery   mcKeyword
+hi def link mcTimeSet     mcKeyword
+
+hi def link mcTimeAdd     mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Setblock
@@ -914,7 +927,12 @@ call s:mcCoordinate("Tp","mcExecuteFacingKeyword,mcRotation","")
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trigger
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc trigger
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTrigger trigger
+
+call s:mcData('Objective','Trigger','mcTriggerMode')
+syn keyword mcTriggerMode contained add set
+
+hi def link mcTriggerMode mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trivial Commands

@@ -1,4 +1,7 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+time set noon
+time add 123t
+time query day
 tag @s add arst
 tag @s list
 team add arst "iaresnt"
