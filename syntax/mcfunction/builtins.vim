@@ -14,6 +14,7 @@ hi def link mcBuiltinItem               mcBuiltin
 " Blocks
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 hi def link mcBuiltinBlock mcKeyValue
+syn cluster mcBuiltinBlock contains=mcBuiltinBlock,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
 syn keyword mcBuiltinBlock contained dirt
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""

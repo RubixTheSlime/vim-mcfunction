@@ -626,7 +626,7 @@ syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mc
         syn match   mcLootTable                 contained contains=mcNamespace                                                          /\(\w\|:\)\+/
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcEntity                                    kill
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine                        mine
-        call s:mcCoordinate("LootMine","mcExecuteFacingKeyword,mcItem,mcLootHand","")
+        call s:mcCoordinate("LootMine","mcItem,mcLootHand","")
 syn keyword mcLootHand                          contained                                                                               mainhand offhand
 
 " Links
@@ -930,7 +930,7 @@ call s:mcCoordinate("Tp","mcExecuteFacingKeyword,mcRotation","")
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTrigger trigger
 
 call s:mcData('Objective','Trigger','mcTriggerMode')
-syn keyword mcTriggerMode contained add set
+syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcUInt add set
 
 hi def link mcTriggerMode mcKeyword
 
@@ -953,7 +953,24 @@ hi def link mcWeatherDuration   mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Worldborder
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc worldborder
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderKeyword worldborder
+
+syn keyword mcWorldborderKeyword         contained                                                               get
+syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcColumn                    center
+syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderSet            set
+        syn match   mcWorldborderSet     contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      /\(\d*\.\)\?\d\+/
+syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderAdd            add
+        syn match   mcWorldborderAdd     contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      /-\?\(\d*\.\)\?\d\+/
+syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderDamage         damage
+        syn keyword mcWorldborderDamage  contained skipwhite nextgroup=mcDoubleSpace,mcUFloat                    amount buffer
+syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderWarning        warning
+        syn keyword mcWorldborderWarning contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      time distance
+
+hi def link mcWorldborderKeyword        mcKeyword
+hi def link mcWorldborderAdd            mcValue
+hi def link mcWorldborderSet            mcValue
+hi def link mcWorldborderDamage         mcKeyword
+hi def link mcWorldborderWarning        mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Xp

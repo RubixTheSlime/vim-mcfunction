@@ -14,66 +14,7 @@ call plug#end()
 to your .vimrc
 
 ## Current Progress
-### Commands implemented:
-- advancement
-- bossbar
-- clear
-- clone
-- data
-- datapack
-- defaultgamemode
-- difficulty
-- effect
-- enchant
-- execute
-- experience
-- fill
-- forceload
-- function
-- gamemode
-- gamerule
-- give
-- help
-- kill
-- list
-- locate
-- loot
-- me
-- msg
-- particle
-- playsound
-- recipe
-- reload
-- replaceitem
-- say
-- scoreboard
-- schedule
-- seed
-- setblock
-- setworldspawn
-- spawnpoint
-- spreadplayers
-- stopsound
-- summon
-- tag
-- team
-- teammsg
-- teleport
-- tell
-- tellraw
-- time
-- title
-- trigger
-- tp
-- w
-- weather
-- xp
-
-### Commands partially implemented:
-
-### Commands not yet implemented:
-- worldborder
-
+All commands have been implemented as of 1.14. Still missing the (massive) lists of items, blocks, etc. After that, it will need to be updated to 1.16 and it will be ready for release
 
 ## Final notes
 If there's any commands missed, it's likely because I was planning on making it only for single player commands first. Otherwise, please submit an issue if there's any discrepancies. Also, there are plans to add Carpetmod (with Scarpet) and WorldEdit commands after each Minecraft version has a release. I am not certain if any other mods will be implemented (at least by myself).

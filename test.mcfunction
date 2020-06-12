@@ -1,4 +1,7 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+worldborder set 123
+worldborder damage buffer 123.3123
+trigger arst add 123
 time set noon
 time add 123t
 time query day
@@ -35,7 +38,7 @@ scoreboard players get @s arst
 scoreboard players operation @s arst += @s ast
 scoreboard objectives add arst minecraft.custom:minecraft.animals_bred "iersnt"
 scoreboard objectives add arst minecraft.custom:minecraft.aviate_one_cm "airsentei"
-scoreboard objectives add arst minecraft.broken:minecraft.apple "airsentei"
+scoreboard objectives add arst minecraft.used:minecraft.apple "airsentei"
 scoreboard objectives setdisplay sidebar arst
 scoreboard objectives setdisplay sidebar.team.aqua arst
 spawnpoint @a 1 2 3
