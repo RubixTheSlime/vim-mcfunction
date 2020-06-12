@@ -56,6 +56,7 @@ to your .vimrc
 - stopsound
 - summon
 - tag
+- team
 - teammsg
 - teleport
 - tell
@@ -69,7 +70,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- team
 - time
 - trigger
 - worldborder

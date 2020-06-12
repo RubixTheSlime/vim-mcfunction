@@ -808,7 +808,33 @@ hi def link mcTag mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Team
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc team
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcTeamKeyword team
+
+syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcEntity          leave
+syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamAdd         add
+        call s:mcData('Team','Add','mcJSONText')
+syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeam            empty remove list
+syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamJoin        join
+        call s:mcData('Team','Join','mcEntity')
+syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamModify      modify
+        call s:mcData('Team','Modify','mcTeamModifyHow')
+
+" Team modify
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamModifyCollision   collisionRule
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamColor             color
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamModifyVisibility  deathMessageVisibility nametagVisibility
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcJSONText              displayName prefix suffix
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcBool                  friendlyFire seeFriendlyInvisibles
+syn keyword mcTeamModifyCollision  contained                                                           always never pushOtherTeams pushOwnTeam
+syn keyword mcTeamModifyVisibility contained                                                           always never hideForOtherTeams hideForOwnTeam
+
+
+syn match   mcTeam contained /\w\+/
+hi def link mcTeamKeyword          mcKeyword
+hi def link mcTeamModifyHow        mcKeyword
+hi def link mcTeamModifyCollision  mcKeyword
+hi def link mcTeamModifyVisibility mcKeyword
+hi def link mcTeam                 mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tellraw

@@ -43,8 +43,8 @@ hi def link mcBadWhiteSpaceBlock mcBadWhitespace
 
 " Scoreboard criteria
 syn keyword mcCriteria contained air armor deathcount dummy food health level trigger xp playerKillCount
-syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcCriteriaTeam /teamkill\.\|killedByTeam./
-syn match   mcCriteriaTeam contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
+syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcTeamColor /teamkill\.\|killedByTeam./
+syn match   mcTeamColor contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
 " item
 syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_up\|used\):minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinItem,mcBuiltinItemBlock
 "block
@@ -68,7 +68,7 @@ syn match   mcCriteriaCustom contained /\(aviate\|boat\|climb\|crouch\|fall\|fly
 syn match   mcCriteriaCustom contained /interact_with_\(beacon\|blast_furnace\|brewingstand\|campfire\|c\(artography\|rafting\)_table\|furnace\|lectern\|loom\|smoker\)/
 hi def link mcCriteriaCustomNamespace mcCriteria
 hi def link mcCriteriaCustom mcCriteria
-hi def link mcCriteriaTeam   mcCriteria
+hi def link mcTeamColor      mcCriteria
 hi def link mcCriteria       mcKeyValue
 
 " Scoreboard displays
