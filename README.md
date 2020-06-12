@@ -55,6 +55,7 @@ to your .vimrc
 - spreadplayers
 - stopsound
 - summon
+- tag
 - teammsg
 - teleport
 - tell
@@ -68,7 +69,6 @@ to your .vimrc
 ### Commands partially implemented:
 
 ### Commands not yet implemented:
-- tag
 - team
 - time
 - trigger

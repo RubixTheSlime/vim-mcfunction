@@ -795,7 +795,15 @@ hi def link mcStopsoundGlob mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tag
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mc tag
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntityTag tag
+
+call s:mcEntity('Tag','mcTagKeyword')
+syn keyword mcTagKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTag add remove
+syn keyword mcTagKeyword contained                                         list
+syn match mcTag /\w\+/ contained
+
+hi def link mcTagKeyword mcKeyword
+hi def link mcTag mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Team

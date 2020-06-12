@@ -13,6 +13,7 @@ syn match   mcObjective                         /\(\w\+:\)*\w\+/        containe
 syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
 syn match   mcSound                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinSound
 
+
 syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
 syn match   mcSoundChannel                      /\w\+/                  contained contains=mcBuiltinSoundChannel
 

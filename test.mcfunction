@@ -1,4 +1,6 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+tag @s add arst
+tag @s list
 spreadplayers 1 2 1 3 true @s
 schedule function rsent:arst 123t
 recipe give @s bread

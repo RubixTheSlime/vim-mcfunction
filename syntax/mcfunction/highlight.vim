@@ -52,6 +52,9 @@ hi mcNBTValue           ctermfg=DarkBlue
 "    ^^^^                       ^^^^^
 "hi mcFilterKeyword
 
+"Tags
+"hi mcTag
+
 
 " @e[type=zombie]   grass_block[snowy=true]
 "         ^^^^^^                      ^^^^
