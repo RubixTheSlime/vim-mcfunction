@@ -720,11 +720,14 @@ hi def link mcReplaceitemSlot  mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcScheduleKeyword schedule
 
-syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunctionSchedule function
+syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunction            clear
+syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunctionSchedule    function
 call s:mcData('Function','Schedule','mcScheduleTime')
-syn match   mcScheduleTime    contained /\d\+[dst]\?/
+syn match   mcScheduleTime    contained skipwhite nextgroup=mcDoubleSpace,mcScheduleMode        /\d\+[dst]\?/
+syn keyword mcScheduleMode    contained append replace
 
 hi def link mcScheduleKeyword mcKeyword
+hi def link mcScheduleMode    mcKeyword
 hi def link mcScheduleTime    mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -14,7 +14,8 @@ tag @s list
 team add arst "iaresnt"
 team modify arst collisionRule always
 spreadplayers 1 2 1 3 true @s
-schedule function rsent:arst 123t
+schedule function rsent:arst 123t append
+schedule clear art:resnt
 recipe give @s bread
 recipe take @a *
 replaceitem entity @s weapon.mainhand apple 12
