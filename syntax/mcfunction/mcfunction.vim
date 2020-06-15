@@ -791,6 +791,13 @@ hi def link mcSpreadPlayersRange    mcValue
 hi def link mcSpreadPlayersRespect  mcBool
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Spreadplayers
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntitySpectateTarget spectate
+
+call s:mcEntity('SpectateTarget','mcPlayer')
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Stopsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntityStopsound stopsound
