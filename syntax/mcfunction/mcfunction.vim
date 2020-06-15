@@ -96,6 +96,35 @@ endfunction
 hi def link mcRotation                  mcCoordinate
 hi def link mcRotation2                 mcCoordinate2
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Entity Block
+" initializes both Entity and Block with respective keywords
+" not to be confused with a 'Block Entity'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:mcEntityBlock(group,nextgroup)
+        execute 'syn keyword mcEntityBlock'.a:group 'entity contained skipwhite nextgroup=mcDoubleSpace,mcEntity'.a:group
+        execute 'syn keyword mcEntityBlock'.a:group 'block contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate'.a:group
+        call s:mcEntity(a:group,a:nextgroup)
+        call s:mcCoordinate(a:group,a:nextgroup,'')
+        execute 'hi def link mcEntityBlock'.a:group 'mcKeyword'
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Entity Block Storage
+" initializes all three similarly to EntityBlock
+" not to be confused with a 'Block Entity'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:mcEBS(group,nextgroup)
+        execute 'syn keyword mcEBS'.a:group 'entity contained skipwhite nextgroup=mcDoubleSpace,mcEntity'.a:group
+        execute 'syn keyword mcEBS'.a:group 'block contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate'.a:group
+        execute 'syn keyword mcEBS'.a:group 'storage contained skipwhite nextgroup=mcDoubleSpace,mcStorage'.a:group
+        call s:mcEntity(a:group,a:nextgroup)
+        call s:mcCoordinate(a:group,a:nextgroup,'')
+        call s:mcData('Storage',a:group,a:nextgroup)
+        execute 'hi def link mcEBS'.a:group 'mcKeyword'
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Path
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -244,31 +273,18 @@ syn keyword mcCommand data contained skipwhite nextgroup=mcDoubleSpace,mcDataKey
 
 
 " Data get
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordGet    get
-
-syn keyword mcDataKeywordGet    contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataGet     entity
-        call s:mcEntity("DataGet", "@mcNBTPathDataGet")
-syn keyword mcDataKeywordGet    contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataGet block
-        call s:mcCoordinate("DataGet","@mcNBTPathDataGet","")
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataGet    get
+call s:mcEBS('DataGet','@mcNBTPathDataGet')
 call s:mcNBTPath("DataGet","mcDataGetScale")
 syn match   mcDataGetScale      contained                                                       /-\?\d*\.\?\d\+/
 
 " Data merge
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordMerge    merge
-
-syn keyword mcDataKeywordMerge  contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataMerge     entity
-        call s:mcEntity("DataMerge", "mcNBTTag")
-syn keyword mcDataKeywordMerge  contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataMerge block
-        call s:mcCoordinate("DataMerge","mcNBTTag","")
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataMerge    merge
+call s:mcEBS('DataMerge','mcNBTTag')
 
 " Data modify
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordModify    modify
-
-syn keyword mcDataKeywordModify contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataModify     entity
-        call s:mcEntity("DataModify", "@mcNBTPathDataModify")
-syn keyword mcDataKeywordModify contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataModify block
-        call s:mcCoordinate("DataModify","@mcNBTPathDataModify","")
-
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataModify    modify
+call s:mcEBS('DataModify','@mcNBTPathDataModify')
 call s:mcNBTPath("DataModify","mcDataModifyHow")
 
 syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  append merge prepend set
@@ -279,17 +295,11 @@ syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSp
         syn match   mcDataModifyIndex   contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  /\d\+/
 
 " Data remove
-syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcDataKeywordRemove    remove
-syn keyword mcDataKeywordRemove contained skipwhite nextgroup=mcDoubleSpace,mcEntityDataRemove     entity
-        call s:mcEntity("DataRemove", "@mcNBTPath")
-syn keyword mcDataKeywordRemove contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateDataRemove block
-        call s:mcCoordinate("DataRemove","@mcNBTPath","")
+syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataRemove    remove
+call s:mcEBS('DataRemove','@mcNBTPath')
 
 " Links
-hi def link mcDataKeywordGet    mcKeyword
-hi def link mcDataKeywordModify mcKeyword
-hi def link mcDataKeywordRemove mcKeyword
-hi def link mcDataKeywordMerge  mcKeyword
+hi def link mcDataKeyword       mcKeyword
 hi def link mcDataModifyHow     mcKeyword
 hi def link mcDataModifySource  mcKeyword
 hi def link mcDataGetScale      mcValue
@@ -404,15 +414,11 @@ syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSp
 
 " Execute store
 """""""""""""""""""""""""
-syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhat                  store
-syn keyword mcExecuteStoreWhat          contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhere                         result success
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhat                          store
+syn keyword mcExecuteStoreWhat          contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreWhere,mcEBSExecuteStore       result success
 
 " block/entity
-syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteStore            block
-        call s:mcCoordinate("ExecuteStore","@mcNBTPathExecuteStore","")
-syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteStore                entity
-        call s:mcEntity("ExecuteStore", "@mcNBTPathExecuteStore")
-
+call s:mcEBS('ExecuteStore','@mcNBTPathExecuteStore')
 call s:mcNBTPath("ExecuteStore","mcExecuteStoreType")
 syn keyword mcExecuteStoreType          contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreScale                 byte short int long float double
 syn match   mcExecuteStoreScale         contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   /-\?\d*\.\?\d\+/
@@ -441,14 +447,11 @@ syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSp
 call s:mcCoordinate("ExecuteCondStart","mcCoordinateExecuteCondEnd","")
 call s:mcCoordinate("ExecuteCondEnd","mcCoordinateExecuteCondDest","2")
 call s:mcCoordinate("ExecuteCondDest","mcExecuteCondBlocksMask","3")
-syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   all masked
+syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                    all masked
 
 " data
-syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteCondData                   data
-syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondData         block
-        call s:mcCoordinate("ExecuteCondData","@mcNBTPathExecute","")
-syn keyword mcExecuteCondData           contained skipwhite nextgroup=mcDoubleSpace,mcEntityExecuteCondData             entity
-        call s:mcEntity("ExecuteCondData", "@mcNBTPathExecute")
+syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEntityBlockExecuteCondData        data
+call s:mcEntityBlock('ExecuteCondData','@mcNBTPathExecute')
 call s:mcNBTPath("Execute","mcExecuteKeyword")
 
 " entity
@@ -614,11 +617,8 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
         call s:mcCoordinate("Loot","mcLootSourceKeyword","")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcEntityLoot                        give
         call s:mcEntity("Loot", "mcLootSourceKeyword")
-syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootReplaceKeyword                replace
-        syn keyword mcLootReplaceKeyword        contained skipwhite nextgroup=mcDoubleSpace,mcEntityLootReplace                 entity
-                call s:mcEntity("LootReplace", "mcItemSlotLoot")
-        syn keyword mcLootReplaceKeyword        contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootReplace             block
-                call s:mcCoordinate("LootReplace","mcItemSlotLoot","")
+syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcEntityBlockLootReplace            replace
+        call s:mcEntityBlock('LootReplace','mcItemSlotLoot')
         syn keyword mcItemSlotLoot              contained skipwhite nextgroup=mcDoubleSpace,mcLootCount,mcLootSourceKeyword     slot
                 syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/
 
@@ -702,12 +702,9 @@ hi def link mcRecipeKeyword mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ReplaceItem
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemWhere replaceitem
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcEntityBlockReplaceitem replaceitem
 
-syn keyword mcReplaceitemWhere contained skipwhite nextgroup=mcDoubleSpace,mcEntityReplaceitem entity
-        call s:mcEntity('Replaceitem','mcReplaceitemSlot')
-syn keyword mcReplaceitemWhere contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateReplaceitem block
-        call s:mcCoordinate('Replaceitem','mcReplaceitemSlot',"")
+call s:mcEntityBlock('Replaceitem','mcReplaceitemSlot')
 syn match   mcReplaceitemSlot  contained skipwhite nextgroup=mcDoubleSpace,mcItemReplaceitem /armor\.\(chest\|feet\|head\|legs\)\|container.\([1-4]\?\d\|5[0-3]\)\|\(inventory\|enderchest\)\.\(1\?\d\|2[0-6]\)\|horse\.\(armor\|saddle\|chest\|\d\|1[0-5]\)\|hotbar.[0-8]\|villager.[0-7]\|weapon\(\.\(main\|off\)hand\)\?/
 call s:mcData('Item','Replaceitem','mcUInt')
 

@@ -1,4 +1,5 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+data get block 1 2 3 
 forceload add 1 2 3 4 
 tp @s 1 2 3 4 5
 tp @s 1 2 3 facing 3 4 5
@@ -63,6 +64,7 @@ xp set @s 123 levels
 tp 123
 tp 123 1 2
 tp 123 1 2 3
+data get 
 tp 123a 1 2
 tp 123 ^ ^
 tp 123 ^ ^ ^
@@ -131,6 +133,8 @@ tp @e[gamemode=spectator,nbt={Health:20.0d}] ^ ^1 ^5 facing 2 ~3 1
 tp @e[advancements={story/killthing={rst=true}}}]
 tp @s 2 4 1 ~.35 -5.35 6
 tp @s @e
+data get storage arst arnsth
+data merge storage arst {iaresnt:'rsient'}
 data get block 1 2 3 pareinien 1
 data get entity @s esnh 1
 data merge entity @s {nyu:12}

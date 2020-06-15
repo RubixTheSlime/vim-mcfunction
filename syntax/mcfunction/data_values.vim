@@ -13,8 +13,8 @@ syn match   mcObjective                         /\(\w\+:\)*\w\+/        containe
 syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
 syn match   mcSound                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinSound
 
-
 syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
+syn match   mcStorage                           /\(\w\+:\)*\w\+/        contained contains=mcNamespace
 syn match   mcSoundChannel                      /\w\+/                  contained contains=mcBuiltinSoundChannel
 
 syn match   mcNamespace                         /\w\+:/                 contained contains=mcBuiltinNamespace
@@ -31,6 +31,7 @@ hi def link mcItem                      mcValue
 hi def link mcObjective                 mcValue
 hi def link mcSound                     mcValue
 hi def link mcParticle                  mcValue
+hi def link mcStorage                   mcValue
 hi def link mcNamespace                 mcValue
 
 hi def link mcBlockStateBracket         mcBlockStateEq
@@ -81,7 +82,8 @@ hi def link mcScoreDisplay mcKeyValue
 syn region  mcBlockState                matchgroup=mcBlockStateBracket start=/\[/rs=e end=/]/ contained skipwhite contains=mcBlockStateKeyword
 
 " keywords
-syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI          age bites delay distance eggs hatch layers level moisture note pickles power rotation stage
+" TODO limit unsigned ints
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI          age bites delay distance eggs hatch layers level moisture note pickles power rotation stage honey_level
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqBool        attached bottom conditional disarmed down drag enabled extended eye hanging has_book has_bottle_0 has_bottle_1 has_bottle_2 has_record in_wall inverted lit locked note occupied open persistent powered short signal_fire snowy triggered unstable up waterlogged
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAttachment  attachment
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAxis        axis
