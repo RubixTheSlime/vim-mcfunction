@@ -25,10 +25,12 @@ syn keyword mcFilterKeyword     contained tag                   skipwhite nextgr
 syn keyword mcFilterKeyword     contained type                  skipwhite nextgroup=mcFilterEqType
 syn keyword mcFilterKeyword     contained scores                skipwhite nextgroup=mcFilterEqScores
 syn keyword mcFilterKeyword     contained advancements          skipwhite nextgroup=mcFilterEqAdvances
+syn keyword mcFilterKeyword     contained predicate             skipwhite nextgroup=mcFilterEqPredicate
 
 " ... = ...
 syn match   mcFilterEqGamemode  contained /=/    skipwhite nextgroup=mcGamemode
 syn match   mcFilterEqNBT       contained /=/    skipwhite nextgroup=mcNBTTag
+syn match   mcFilterEqPredicate contained /=/    skipwhite nextgroup=mcPredicate
 syn match   mcFilterEqTag       contained /=/    skipwhite nextgroup=mcFilterTag
 syn match   mcFilterEqSort      contained /=/    skipwhite nextgroup=mcFilterSort
 syn match   mcFilterEqScores    contained /=/    skipwhite nextgroup=mcFilterScores

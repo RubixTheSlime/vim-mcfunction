@@ -15,7 +15,7 @@ syn match   mcSound                             /\(\w\+:\)*\w\+/        containe
 
 syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
 syn match   mcStorage                           /\(\w\+:\)*\w\+/        contained contains=mcNamespace
-syn match   mcPredicate                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace
+syn match   mcPredicate                         /\(\w\+:\)\?\w\+/        contained contains=mcNamespace
 syn match   mcSoundChannel                      /\w\+/                  contained contains=mcBuiltinSoundChannel
 
 syn match   mcNamespace                         /\w\+:/                 contained contains=mcBuiltinNamespace

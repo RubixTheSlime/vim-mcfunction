@@ -560,6 +560,8 @@ syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGam
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
+syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doInsomnia doImmediateRespawn drowningDamage fallDamage fireDamage
+syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               do PatrolSpawning doTraderSpawning
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber     maxCommandChainLength maxEntityCramming spawnRadius
         syn match mcGameruleNumber   contained skipwhite                                              /\<-\?\d\{1,10\}\>/
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber   randomTickSpeed
