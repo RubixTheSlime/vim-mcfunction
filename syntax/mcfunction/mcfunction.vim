@@ -470,6 +470,10 @@ syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSp
         syn match   mcExecuteIR2                / \@!\.\.-\?\d\+/       contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
         syn match   mcExecuteRangeInf           /\.\.\_[ ]/             contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 
+" predicate
+syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcPredicateExecuteCond              predicate
+call s:mcData('Predicate','ExecuteCond','mcExecuteKeyword')
+
 " Links
 hi def link mcExecuteAsKeyword                  mcExecuteKeyword
 

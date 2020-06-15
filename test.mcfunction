@@ -133,6 +133,7 @@ tp @e[gamemode=spectator,nbt={Health:20.0d}] ^ ^1 ^5 facing 2 ~3 1
 tp @e[advancements={story/killthing={rst=true}}}]
 tp @s 2 4 1 ~.35 -5.35 6
 tp @s @e
+execute if predicate arst run
 data get storage arst arnsth
 data merge storage arst {iaresnt:'rsient'}
 data get block 1 2 3 pareinien 1

@@ -15,6 +15,7 @@ syn match   mcSound                             /\(\w\+:\)*\w\+/        containe
 
 syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
 syn match   mcStorage                           /\(\w\+:\)*\w\+/        contained contains=mcNamespace
+syn match   mcPredicate                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace
 syn match   mcSoundChannel                      /\w\+/                  contained contains=mcBuiltinSoundChannel
 
 syn match   mcNamespace                         /\w\+:/                 contained contains=mcBuiltinNamespace
@@ -29,8 +30,9 @@ hi def link mcEntityType                mcValue
 hi def link mcFunction                  mcValue
 hi def link mcItem                      mcValue
 hi def link mcObjective                 mcValue
-hi def link mcSound                     mcValue
 hi def link mcParticle                  mcValue
+hi def link mcPredicate                 mcValue
+hi def link mcSound                     mcValue
 hi def link mcStorage                   mcValue
 hi def link mcNamespace                 mcValue
 
