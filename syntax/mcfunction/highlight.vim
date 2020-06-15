@@ -4,7 +4,7 @@ hi def link mcComment           Comment
 
 hi mcCommand            ctermfg=DarkBlue        cterm=bold
 hi mcOp                 ctermfg=DarkRed
-hi mcEntity             ctermfg=Green
+hi mcSelector             ctermfg=Green
 
 hi mcCoordinate         ctermfg=Cyan
 hi mcCoordinate2        ctermfg=Yellow
@@ -34,7 +34,7 @@ hi mcNBTValue           ctermfg=DarkBlue
 "hi mcBuiltinBlock
 
 "Entities not in vanilla MC eg 'unicorn', 'bullet'
-"hi mcEntityType
+"hi mcEntity
 
 "Entities in vanilla MC eg 'wither', 'zombified_piglin'
 "hi mcBuiltinEntity      ctermfg=
