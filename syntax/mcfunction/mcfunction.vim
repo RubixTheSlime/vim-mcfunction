@@ -128,11 +128,12 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Path
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! s:mcNBTPath(group,nextgroup)
-        execute 'syn match   mcNBTPath'.a:group           '/\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn match   mcNBTPath'.a:group           '/.\zs\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\zs"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\zs\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\zs{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
         execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
         execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
         execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
@@ -150,6 +151,7 @@ function! s:mcNBTTag(group,nextgroup)
         execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
         execute 'syn cluster mcNBT add=mcNBTTag'.a:group
         execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
 endfunction
 syn region  mcNBTTag            matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
 

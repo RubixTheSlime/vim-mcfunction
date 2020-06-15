@@ -1,5 +1,5 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
-data get block 1 2 3 
+data get block 1 2 3
 forceload add 1 2 3 4 
 tp @s 1 2 3 4 5
 tp @s 1 2 3 facing 3 4 5
