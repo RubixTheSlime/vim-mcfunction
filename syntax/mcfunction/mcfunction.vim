@@ -1,12 +1,47 @@
-" Vim syntax file
-" Language: Minecraft 1.14 Command
-" Maintainer: Lyle Lowry
-
-
 if exists("b:current_syntax")
         finish
 endif
-let b:current_syntax = "mc"
+let b:current_syntax = "mcfunction"
+
+syn match mcAnySpace contained / /
+hi def link mcAnySpace mcBadWhitespace
+
+
+syn match   mcUInt              /\d\+/  contained
+syn match   mcLineEnd           /\s*$/  contained
+syn match   mcGlob              /\*/    contained
+syn match   mcUFloat            /\(\d*\.\)\?\d\+/ contained
+hi def link mcGlob              mcOp
+hi def link mcUInt              mcValue
+hi def link mcUFloat            mcValue
+"TODO
+syn match   mcInt32             /-\?\d\+/ contained
+hi def link mcInt32 mcValue
+
+syn keyword mcBool              contained true false
+hi def link mcBool              mcValue
+
+"TODO
+syn match   mcJSONText          contained /.\+/
+hi def link mcJSONText          mcString
+
+" Can't have multiple spaces
+syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState
+hi def link mcDoubleSpace mcBadWhitespace
+
+" Optional Slash
+syn match mcOptionalSlash /^\/\?/ nextgroup=@mcCommand
+hi def link mcOptionalSlash mcCommand
+syn cluster mcCommand add=mcCommand
+
+" Illegal Whitespace
+syn match mcComment /^#.*/
+syn match mcBadWhitespace /\t/
+
+syn sync minlines=1
+" Vim syntax file
+" Language: Minecraft 1.14 Command
+" Maintainer: Lyle Lowry
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Entity
@@ -128,12 +163,11 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Path
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 function! s:mcNBTPath(group,nextgroup)
-        execute 'syn match   mcNBTPath'.a:group           '/.\zs\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\zs"/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\zs\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\zs{/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
         execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
         execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
         execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
@@ -151,7 +185,6 @@ function! s:mcNBTTag(group,nextgroup)
         execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
         execute 'syn cluster mcNBT add=mcNBTTag'.a:group
         execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
-        execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
 endfunction
 syn region  mcNBTTag            matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
 
@@ -1011,3 +1044,440 @@ hi def link mcXpAmount  mcValue
 hi def link mcXpUnit    mcKeyword
 hi def link mcXpKeyword mcKeyword
 
+" Data Values
+syn match   mcAdvancement                       /\(\w\+[:/]\)*\w\+/     contained contains=mcNamespace,mcBuiltinAdvancement
+syn match   mcBlock                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinBlock nextgroup=mcBlockstate
+syn match   mcBossbarId                         /\(\w[:./-]\)*\w\+/     contained contains=mcNamespace,mcBuiltinBossbarId
+syn match   mcCraftableItem                     /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinCraftableItem
+syn match   mcDimension                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinDimension
+syn match   mcEffect                            /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEffect
+syn match   mcEnchantment                       /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEnchantment
+syn match   mcEntityType                        /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinEntity
+syn match   mcFunction                          /#\?[a-z0-9_-]\+:[a-z0-9./_-]*/ contained contains=mcNamespace
+syn match   mcItem                              /\(\w\+:\)*\w\+/        contained contains=mcNamespace,@mcBuiltinItem
+syn match   mcObjective                         /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinObjective
+syn match   mcParticle                          /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinParticle
+syn match   mcSound                             /\(\w\+:\)*\w\+/        contained contains=mcNamespace,mcBuiltinSound
+
+syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/    contained contains=mcBuiltinAdvancementCriteria
+syn match   mcStorage                           /\(\w\+:\)*\w\+/        contained contains=mcNamespace
+syn match   mcPredicate                         /\(\w\+:\)\?\w\+/        contained contains=mcNamespace
+syn match   mcSoundChannel                      /\w\+/                  contained contains=mcBuiltinSoundChannel
+
+syn match   mcNamespace                         /\w\+:/                 contained contains=mcBuiltinNamespace
+hi def link mcAdvancement               mcValue
+hi def link mcAdvancementCriteria       mcValue
+hi def link mcBlock                     mcValue
+hi def link mcBossbarId                 mcValue
+hi def link mcDimension                 mcValue
+hi def link mcEffect                    mcValue
+hi def link mcEnchantment               mcValue
+hi def link mcEntityType                mcValue
+hi def link mcFunction                  mcValue
+hi def link mcItem                      mcValue
+hi def link mcObjective                 mcValue
+hi def link mcParticle                  mcValue
+hi def link mcPredicate                 mcValue
+hi def link mcSound                     mcValue
+hi def link mcStorage                   mcValue
+hi def link mcNamespace                 mcValue
+
+hi def link mcBlockStateBracket         mcBlockStateEq
+hi def link mcBlockStateEq              mcFilterEq
+hi def link mcBlockStateKeyword         mcFilterKeyword
+hi def link mcBlockStateValue           mcFilterValue
+
+syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
+hi def link mcBadWhiteSpaceBlock mcBadWhitespace
+
+" Scoreboard criteria
+syn keyword mcCriteria contained air armor deathcount dummy food health level trigger xp playerKillCount
+syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcTeamColor /teamkill\.\|killedByTeam./
+syn match   mcTeamColor contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
+" item
+syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_up\|used\):minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinItem,mcBuiltinItemBlock
+"block
+syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinBlock,mcBuiltinItemBlock
+" entity
+syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinEntity
+" custom things, this'll be a pain to maintain
+syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCriteriaCustomNamespace
+syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcCriteriaCustom
+syn match   mcCriteriaCustom contained /animals_bred\|bell_ring\|deaths\|eat_cake_slice\|enchant_item\|fill_cauldron\|fish_caught\|jump\|leave_game\|pot_flower\|sleep_in_bed\|sneak_time\|trigger_trapped_chest\|tune_noteblock\|use_cauldron/
+syn match   mcCriteriaCustom contained /raid_\(trigger\|win\)/
+syn match   mcCriteriaCustom contained /time_since_\(death\|rest\)/
+syn match   mcCriteriaCustom contained /\(talked_to\|traded_with\)_villager/
+syn match   mcCriteriaCustom contained /play_\(noteblock\|one_minute\|record\)/
+syn match   mcCriteriaCustom contained /open_\(barrel\|\(ender_\)chest\)/
+syn match   mcCriteriaCustom contained /\(mob\|player\)_kills/
+syn match   mcCriteriaCustom contained /inspect_\(dropper\|hopper\|dispenser\)/
+syn match   mcCriteriaCustom contained /clean_\(armor\|banner\|shulker_box\)/
+syn match   mcCriteriaCustom contained /damage_\(\(dealt_\)\?\(absorbed\|resisted\)\|blocked_by_shield\|dealt\|taken\)/
+syn match   mcCriteriaCustom contained /\(aviate\|boat\|climb\|crouch\|fall\|fly\|horse\|minecart\|pig\|sprint\|swim\|walk\(_\(on\|under\)_water\)\?\)_one_cm/
+syn match   mcCriteriaCustom contained /interact_with_\(beacon\|blast_furnace\|brewingstand\|campfire\|c\(artography\|rafting\)_table\|furnace\|lectern\|loom\|smoker\)/
+hi def link mcCriteriaCustomNamespace mcCriteria
+hi def link mcCriteriaCustom mcCriteria
+hi def link mcTeamColor      mcCriteria
+hi def link mcCriteria       mcKeyValue
+
+" Scoreboard displays
+syn keyword mcScoreDisplay contained belowName list 
+syn match   mcScoreDisplay contained /sidebar\ze[^.]/
+syn match   mcScoreDisplay contained /sidebar\.team\./ skipwhite nextgroup=mcAnySpace,mcCriteriaTeam
+hi def link mcScoreDisplay mcKeyValue
+
+" Block States
+syn region  mcBlockState                matchgroup=mcBlockStateBracket start=/\[/rs=e end=/]/ contained skipwhite contains=mcBlockStateKeyword
+
+" keywords
+" TODO limit unsigned ints
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI          age bites delay distance eggs hatch layers level moisture note pickles power rotation stage honey_level
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqBool        attached bottom conditional disarmed down drag enabled extended eye hanging has_book has_bottle_0 has_bottle_1 has_bottle_2 has_record in_wall inverted lit locked note occupied open persistent powered short signal_fire snowy triggered unstable up waterlogged
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAttachment  attachment
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAxis        axis
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqCardinal    north east south west
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqFace        face
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqFacing      facing
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqHalf        half
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqHinge       hinge
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqInstrument  instrument
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqLeaves      leaves
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqMode        mode
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqPart        part
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqShape       shape
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqType        type
+" ...=...
+syn match   mcBlockStateEqUI            contained skipwhite nextgroup=mcBlockStateValueUI               /=/
+syn match   mcBlockStateEqBool          contained skipwhite nextgroup=mcBlockStateValueBool             /=/
+syn match   mcBlockStateEqAttachment    contained skipwhite nextgroup=mcBlockStateValueAttachment       /=/
+syn match   mcBlockStateEqAxis          contained skipwhite nextgroup=mcBlockStateValueAxis             /=/
+syn match   mcBlockStateEqCardinal      contained skipwhite nextgroup=mcBlockStateValueCardinal         /=/
+syn match   mcBlockStateEqFace          contained skipwhite nextgroup=mcBlockStateValueFace             /=/
+syn match   mcBlockStateEqFacing        contained skipwhite nextgroup=mcBlockStateValueFacing           /=/
+syn match   mcBlockStateEqHalf          contained skipwhite nextgroup=mcBlockStateValueHalf             /=/
+syn match   mcBlockStateEqHinge         contained skipwhite nextgroup=mcBlockStateValueHinge            /=/
+syn match   mcBlockStateEqInstrument    contained skipwhite nextgroup=mcBlockStateValueInstrument       /=/
+syn match   mcBlockStateEqLeaves        contained skipwhite nextgroup=mcBlockStateValueLeaves           /=/
+syn match   mcBlockStateEqMode          contained skipwhite nextgroup=mcBlockStateValueMode             /=/
+syn match   mcBlockStateEqPart          contained skipwhite nextgroup=mcBlockStateValuePart             /=/
+syn match   mcBlockStateEqShape         contained skipwhite nextgroup=mcBlockStateValueShape            /=/
+syn match   mcBlockStateEqType          contained skipwhite nextgroup=mcBlockStateValueType             /=/
+" values
+syn match   mcBlockStateValueUI         contained skipwhite     /\d\+/
+syn match   mcBlockStateValueShape      contained skipwhite     /ascending_\(north\|east\|south\|west\)\|east_west\|north_south\|\(inner\|outer\)_\(left\|right\)\|\(nort\|south\)_\(east\|west\)\|straight/
+syn keyword mcBlockStateValueBool       contained skipwhite     true false
+syn keyword mcBlockStateValueAttachment contained skipwhite     ceiling double_wall floor single_wall
+syn keyword mcBlockStateValueAxis       contained skipwhite     x y z
+syn keyword mcBlockStateValueCardinal   contained skipwhite     true false none syde up
+syn keyword mcBlockStateValueFace       contained skipwhite     ceiling floor wall
+syn keyword mcBlockStateValueFacing     contained skipwhite     up down north east south west
+syn keyword mcBlockStateValueHalf       contained skipwhite     lower upper bottom top
+syn keyword mcBlockStateValueHinge      contained skipwhite     left right
+syn keyword mcBlockStateValueInstrument contained skipwhite     basedrum bass bell chime flute guitar harp hat snare xylophone
+syn keyword mcBlockStateValueLeaves     contained skipwhite     large none small
+syn keyword mcBlockStateValueMode       contained skipwhite     compare subtract corner data load save
+syn keyword mcBlockStateValuePart       contained skipwhite     foot head
+syn keyword mcBlockStateValueType       contained skipwhite     normal sticky left right single bottom double top
+" Block State Links
+hi def link mcBlockStateEqUI            mcBlockStateEq
+hi def link mcBlockStateEqBool          mcBlockStateEq
+hi def link mcBlockStateEqAttachment    mcBlockStateEq
+hi def link mcBlockStateEqAxis          mcBlockStateEq
+hi def link mcBlockStateEqCardinal      mcBlockStateEq
+hi def link mcBlockStateEqFace          mcBlockStateEq
+hi def link mcBlockStateEqFacing        mcBlockStateEq
+hi def link mcBlockStateEqHalf          mcBlockStateEq
+hi def link mcBlockStateEqHinge         mcBlockStateEq
+hi def link mcBlockStateEqInstrument    mcBlockStateEq
+hi def link mcBlockStateEqLeaves        mcBlockStateEq
+hi def link mcBlockStateEqMode          mcBlockStateEq
+hi def link mcBlockStateEqPart          mcBlockStateEq
+hi def link mcBlockStateEqShape         mcBlockStateEq
+hi def link mcBlockStateEqType          mcBlockStateEq
+
+hi def link mcBlockStateValueUI         mcBlockStateValue
+hi def link mcBlockStateValueBool       mcBlockStateValue
+hi def link mcBlockStateValueAttachment mcBlockStateValue
+hi def link mcBlockStateValueAxis       mcBlockStateValue
+hi def link mcBlockStateValueCardinal   mcBlockStateValue
+hi def link mcBlockStateValueFace       mcBlockStateValue
+hi def link mcBlockStateValueFacing     mcBlockStateValue
+hi def link mcBlockStateValueHalf       mcBlockStateValue
+hi def link mcBlockStateValueHinge      mcBlockStateValue
+hi def link mcBlockStateValueInstrument mcBlockStateValue
+hi def link mcBlockStateValueLeaves     mcBlockStateValue
+hi def link mcBlockStateValueMode       mcBlockStateValue
+hi def link mcBlockStateValuePart       mcBlockStateValue
+hi def link mcBlockStateValueShape      mcBlockStateValue
+hi def link mcBlockStateValueType       mcBlockStateValue
+" From other files to reorganize
+syn match   mcAdvancementNameFilter             contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[/:]\)\+/        
+syn match   mcAdvancementCriterionNameFilter    contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[.+-]\)\+/       
+hi def link mcAdvancementNameFilter     mcAdvancementName
+hi def link mcAdvancementCriterionNameFilter    mcAdvanecmentCriterionName
+
+hi def link mcFilterKeyValue            mcKeyValue
+hi def link mcFilterKeyword             mcKeyword
+hi def link mcFilterValue               mcValue
+
+syn match   mcFilterComma       contained /,/
+" Keywords
+syn keyword mcFilterKeyword     contained x y z dx dy dz        skipwhite nextgroup=mcFilterEqF
+syn keyword mcFilterKeyword     contained x_rotation            skipwhite nextgroup=mcFilterEqXR
+syn keyword mcFilterKeyword     contained y_rotation            skipwhite nextgroup=mcFilterEqYR
+syn keyword mcFilterKeyword     contained distance              skipwhite nextgroup=mcFilterEqUFR
+syn keyword mcFilterKeyword     contained limit                 skipwhite nextgroup=mcFilterEqUI
+syn keyword mcFilterKeyword     contained level                 skipwhite nextgroup=mcFilterEqUIR
+syn keyword mcFilterKeyword     contained nbt                   skipwhite nextgroup=mcFilterEqNBT
+syn keyword mcFilterKeyword     contained sort                  skipwhite nextgroup=mcFilterEqSort
+syn keyword mcFilterKeyword     contained gamemode              skipwhite nextgroup=mcFilterEqGamemode
+syn keyword mcFilterKeyword     contained team                  skipwhite nextgroup=mcFilterEqTeam
+syn keyword mcFilterKeyword     contained name                  skipwhite nextgroup=mcFilterEqName
+syn keyword mcFilterKeyword     contained tag                   skipwhite nextgroup=mcFilterEqTag
+syn keyword mcFilterKeyword     contained type                  skipwhite nextgroup=mcFilterEqType
+syn keyword mcFilterKeyword     contained scores                skipwhite nextgroup=mcFilterEqScores
+syn keyword mcFilterKeyword     contained advancements          skipwhite nextgroup=mcFilterEqAdvances
+syn keyword mcFilterKeyword     contained predicate             skipwhite nextgroup=mcFilterEqPredicate
+
+" ... = ...
+syn match   mcFilterEqGamemode  contained /=/    skipwhite nextgroup=mcGamemode
+syn match   mcFilterEqNBT       contained /=/    skipwhite nextgroup=mcNBTTag
+syn match   mcFilterEqPredicate contained /=/    skipwhite nextgroup=mcPredicate
+syn match   mcFilterEqTag       contained /=/    skipwhite nextgroup=mcFilterTag
+syn match   mcFilterEqSort      contained /=/    skipwhite nextgroup=mcFilterSort
+syn match   mcFilterEqScores    contained /=/    skipwhite nextgroup=mcFilterScores
+syn match   mcFilterEqAdvances  contained /=/    skipwhite nextgroup=mcFilterAdvancements
+syn match   mcFilterEqScore     contained /=/    skipwhite nextgroup=mcFilterIR1,mcFilterIR2
+syn match   mcFilterEqAdvance   contained /=/    skipwhite nextgroup=mcFilterAdvancementCriterion,mcBool
+syn match   mcFilterEqName      contained /=!\?/ skipwhite nextgroup=mcPlayerName
+syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeamName
+syn match   mcFilterEqType      contained /=!\?/ skipwhite nextgroup=mcEntityType
+syn match   mcFilterEqTag       contained /=!\?/ skipwhite nextgroup=mcTagName
+syn match   mcFilterEqF         contained /=/    skipwhite nextgroup=mcFilterF
+syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcFilterUI
+syn match   mcFilterEqUFR       contained /=/    skipwhite nextgroup=mcFilterUFR1,mcFilterUFR2
+syn match   mcFilterEqXR        contained /=/    skipwhite nextgroup=mcFilterXR1,mcFilterXR2
+syn match   mcFilterEqYR        contained /=/    skipwhite nextgroup=mcFilterYR1,mcFilterYR2
+
+" Key Values
+syn keyword mcFilterSort        contained nearest furthest random arbitrary
+
+" Values
+syn match   mcFilterUI          contained /\d\+/
+syn match   mcFilterF           contained /-\?\d*\.\?\d\+/
+
+" Ranges
+" I = integer
+" U = unsigned integer
+" UF = unsigned float
+" R = range
+" X = x rotation (-90 - 90)
+" Y = y rotation (-180 - 180
+" Inf = infinity
+syn match   mcFilterIR1         contained /-\?\d\+/                                                                        nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterIR2
+syn match   mcFilterUIR1        contained /\d\+/                                                                           nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterUIR2
+syn match   mcFilterUFR1        contained /-\?\d*\.\?\d\+/                                                                 nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterUFR2
+syn match   mcFilterXR1         contained /-\?90\(\.0\+\)\?\|-\?[0-8]\?\d\(\.\d\+\)\?\|-\?\.\d\+/                          nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterXR2
+syn match   mcFilterYR1         contained /-\?180\(\.0\+\)\?\|-\?1[0-7]\d\(\.\d\+\)\?\|-\?\d\?\d\(\.\d\+\)\?\|-\?\.\d\+/   nextgroup=mcAnySpace,mcFilterRangeInf,mcFilterYR2
+syn match   mcFilterIR2         contained /\.\.-\?\d\+/
+syn match   mcFilterUIR2        contained /\.\.\d\+/
+syn match   mcFilterUFR2        contained /\.\.-\?\d*\.\?\d\+/
+syn match   mcFilterXR2         contained /\.\.\(90\(\.0\+\)\?\|-\?[0-8]\?\d\(\.\d\+\)\?\|-\?\.\d\+\)/
+syn match   mcFilterYR2         contained /\.\.\(-\?180\(\.0\+\)\?\|-\?1[0-7]\d\(\.\d\+\)\?\|-\?\d\?\d\(\.\d\+\)\?\|-\?\.\d\+\)/
+syn match   mcFilterRangeInf    contained /\.\.\s*\ze\_[,\]]=/
+
+" Lists
+syn region  mcFilterScores                      matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcObjectiveNameFilter
+syn region  mcFilterAdvancements                matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcAdvancementNameFilter
+syn region  mcFilterAdvancementCriterion        matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcAdvancementCriterionNameFilter
+
+
+" Links
+hi def link mcFilterComma               mcFilterEq
+hi def link mcFilterSort                mcKeyValue
+hi def link mcFilterKeyword             mcKeyword
+hi def link mcFilterEq                  mcEntity
+hi def link mcFilterRange               mcFilterValue
+hi def link mcFilterValue               mcValue
+
+hi def link mcFilterEqGamemode          mcFilterEq
+hi def link mcFilterEqNBT               mcFilterEq
+hi def link mcFilterEqTag               mcFilterEq
+hi def link mcFilterEqSort              mcFilterEq
+hi def link mcFilterEqScores            mcFilterEq
+hi def link mcFilterEqAdvances          mcFilterEq
+hi def link mcFilterEqScore             mcFilterEq
+hi def link mcFilterEqAdvance           mcFilterEq
+hi def link mcFilterEqName              mcFilterEq
+hi def link mcFilterEqTeam              mcFilterEq
+hi def link mcFilterEqType              mcFilterEq
+hi def link mcFilterEqTag               mcFilterEq
+hi def link mcFilterEqF                 mcFilterEq
+hi def link mcFilterEqUI                mcFilterEq
+hi def link mcFilterEqUFR               mcFilterEq
+hi def link mcFilterEqXR                mcFilterEq
+hi def link mcFilterEqYR                mcFilterEq
+
+hi def link mcFilterUI                  mcFilterValue
+hi def link mcFilterF                   mcFilterValue
+
+hi def link mcFilterIR1                 mcFilterRange
+hi def link mcFilterUIR1                mcFilterRange
+hi def link mcFilterUFR1                mcFilterRange
+hi def link mcFilterXR1                 mcFilterRange
+hi def link mcFilterYR1                 mcFilterRange
+hi def link mcFilterIR2                 mcFilterRange
+hi def link mcFilterUIR2                mcFilterRange
+hi def link mcFilterUFR2                mcFilterRange
+hi def link mcFilterXR2                 mcFilterRange
+hi def link mcFilterYR2                 mcFilterRange
+hi def link mcFilterRangeInf            mcFilterRange
+
+" Namespace
+syn match mcBuiltinNamespace contained /minecraft:/
+
+hi def link mcBuiltin                   mcKeyValue
+hi def link mcBuiltinNamespace          mcBuiltin
+hi def link mcBuiltinBlock              mcBuiltin
+hi def link mcBuiltinDimension          mcBuiltin
+hi def link mcBuiltinEffect             mcBuiltin
+hi def link mcBuiltinEnchantment        mcBuiltin
+hi def link mcBuiltinEntity             mcBuiltin
+hi def link mcBuiltinItem               mcBuiltin
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Blocks
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinBlock mcKeyValue
+syn cluster mcBuiltinBlock contains=mcBuiltinBlock,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
+syn keyword mcBuiltinBlock contained dirt
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Dimensions
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcBuiltinDimension contained overworld the_nether the_end
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enchantments
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Generic
+syn keyword mcBuiltinEnchantment contained mending unbreaking
+" Curse
+syn keyword mcBuiltinEnchantment contained vanishing_curse binding_curse 
+" Armor
+syn keyword mcBuiltinEnchantment contained thorns respiration projectile_protection protection frost_walker fire_protection feather_falling depth_strider bane_of_arthropods aqua_affinity 
+" Tool
+syn keyword mcBuiltinEnchantment contained fortune efficiency silk_touch
+" Sword/Axe
+syn keyword mcBuiltinEnchantment contained looting knockback fire_aspect sharpness smite sweeping
+" Bow
+syn keyword mcBuiltinEnchantment contained infinity flame power punch
+" Triden
+syn keyword mcBuiltinEnchantment contained loyalty impaling channeling riptide
+" Crossbow
+syn keyword mcBuiltinEnchantment contained multishot piercing quick_charge
+" Rod
+syn keyword mcBuiltinEnchantment contained lure luck_of_the_sea
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Entities
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Villagers/Illagers
+syn keyword mcBuiltinEntity contained villager evoker wandering_trader illusioner pillager ravager vex vindicator witch
+" Undead Mobs
+syn keyword mcBuiltinEntity contained drowned giant husk phantom skeleton stray wither_skeleton
+" Arthropods
+syn keyword mcBuiltinEntity contained cave_spider endermite silverfish spider zombie zombie_pigman zombie_villager
+" Other hostile Mobs
+syn keyword mcBuiltinEntity contained blaze creeper elder_guardian enderman ghast guardian magma_cube shulker slime 
+" Ambient/Aquatic Mobs
+syn keyword mcBuiltinEntity contained bat cod dolphin salmon squid tropical_fish turtle pufferfish
+" Horses
+syn keyword mcBuiltinEntity contained horse zombie_horse skeleton_horse donkey mule llama trader_llama
+" Passive Mobs
+syn keyword mcBuiltinEntity contained cat chicken cow fox mooshroom ocelot panda parrot pig polar_bear rabbit sheep villager wandering_trader wolf
+" Utility etc Mobs
+syn keyword mcBuiltinEntity contained iron_golem snow_golem wither ender_dragon player
+" Projectiles
+syn keyword mcBuiltinEntity contained arrow dragon_fireball egg ender_pearl experience_bottle eye_of_ender fireball firework_rocket llama_spit potion shulker_bullet small_fireball snowball spectral_arrow trident wither_skull
+" Boats/Carts
+syn keyword mcBuiltinEntity contained boat chest_minecart furnace_minecart command_block_minecart hopper_minecart minecart spawner_minecart tnt_minecart
+" Misc
+syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal evoker_fangs item_frame leash_knot painting falling_block tnt experience_orb item
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Effects
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_power dolphins_grace fire_resistance glowing haste health_boost hero_of_the_village hunger instant_health instant_damage invisibility jump_boost levitation luck mining_fatigue nausea night_vision poison regeneration resistance saturation slow_falling slowness speed strength unluck water_breathing weakness wither
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Items
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn cluster mcBuiltinItem contains=mcBuiltinItem,mcBuiltinCraftableItem,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
+syn cluster mcBuiltinCraftableItem contains=mcBuiltinCraftableItem,mcBuiltinCraftableItemBlock
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Craftable Items
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinCraftableItem mcBuiltinBlock
+syn keyword mcBuiltinCraftableItem contained bread
+syn match   mcBuiltinCraftableItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Craftable Items/Blocks
+" Many items and blocks are the same
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinCraftableItemBlock mcBuiltinItem
+syn match mcBuiltinCraftableItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Uncraftable Items
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcBuiltinItem contained apple
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Uncraftable Items/Blocks
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinItemBlock mcBuiltinItem
+syn keyword mcBuiltinItemBlock contained dragon_egg
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Particles
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sounds
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sound channels
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcBuiltinSoundChannel mcKeyWord
+syn keyword mcBuiltinSoundChannel contained ambient block hostile master music neutral player record voice weather
+syn match   mcNBTIndex          /\s*\d\+\s*/                                                            contained
+syn match   mcNBTComma          /,/                                                                     contained
+syn match   mcNBTColon          /:/                                                                     contained skipwhite nextgroup=@mcNBTValue
+syn match   mcNBTTagKey         /\w\+/                                                                  contained skipwhite nextgroup=mcNBTColon
+syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/            oneline contained skipwhite nextgroup=mcNBTColon
+syn keyword mcNBTBool           true false                                                              contained
+syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>/                                        contained
+syn match   mcNBTString         /\(\d*\h\)\@=\w*/                                                       contained
+syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"/ skip=/\\"/       oneline contained
+syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'/ skip=/\\'/       oneline contained
+syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}/                   oneline contained contains=mcNBTTagKey,mcNBTComma
+syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]/      oneline contained contains=@mcNBTValue,mcNBTComma
+syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool
+syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool
+hi def link mcNBTBool           mcBool
+hi def link mcNBTTagKey         mcNBTPath
+hi def link mcNBTComma          mcNBTPathDot
+hi def link mcNBTColon          mcNBTPathDot
+hi def link mcNBTValueQuote     mcNBTValue
+
+hi def link mcNBTIndex                  mcNBTPathDot
+hi def link mcNBTPath                   mcKeyValue
+hi def link mcNBTPathDot                mcNBTBracket
+hi def link mcNBTQuote                  mcNBTPath
+hi def link mcNBTString                 mcNBTValue
+
+" For debugging purposes
+syn keyword mcCommand nbt skipwhite contained nextgroup=@mcNBTPath
