@@ -1,5 +1,7 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
 summon vex
+summon iron_golem
+summon tnt
 effect give @s haste
 setblock 1 2 3 blackstone
 setblock 1 2 3 campfire

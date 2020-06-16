@@ -1571,17 +1571,17 @@ for s:file in s:files
                 elseif s:filename =='things'
                         let s:parts = split(s:line, ' ')
                         " Block
-                        if s:parts[0] =~ 'b'    | execute 'syn match mcBuiltinBlock     contained /\v<'.s:parts[1].'>/' | endif
+                        if s:parts[0] =~ 'b'    | execute 'syn match mcBuiltinBlock     contained /\v(<'.s:parts[1].'>)/' | endif
                         " Craftable Item
-                        if s:parts[0] =~ 'c'    | execute 'syn match mcBuiltinCraftable contained /\v<'.s:parts[1].'>/' | endif
+                        if s:parts[0] =~ 'c'    | execute 'syn match mcBuiltinCraftable contained /\v(<'.s:parts[1].'>)/' | endif
                         " Item
-                        if s:parts[0] =~ '[ci]' | execute 'syn match mcBuiltinItem      contained /\v<'.s:parts[1].'>/' | endif
+                        if s:parts[0] =~ '[ci]' | execute 'syn match mcBuiltinItem      contained /\v(<'.s:parts[1].'>)/' | endif
                         " Spawn Egg
-                        if s:parts[0] =~ 'm'    | execute 'syn match mcBuiltinItem      contained /\v<'.s:parts[1].'_spawn_egg'.'>/' | endif
+                        if s:parts[0] =~ 'm'    | execute 'syn match mcBuiltinItem      contained /\v(<'.s:parts[1].'_spawn_egg'.'>)/' | endif
                         " Entity
-                        if s:parts[0] =~ '[me]' | execute 'syn match mcBuiltinEntity    contained /\v<'.s:parts[1].'>/' | endif
+                        if s:parts[0] =~ '[me]' | execute 'syn match mcBuiltinEntity    contained /\v(<'.s:parts[1].'>)/' | endif
                 else
-                        execute 'syn match mcBuiltin'.s:filename 'contained /\v<'.s:line.'>/'
+                        execute 'syn match mcBuiltin'.s:filename 'contained /\v(<'.s:line.'>)/'
                 endif
         endfor
 endfor
