@@ -1,10 +1,15 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+summon vex
+effect give @s haste
+setblock 1 2 3 blackstone
+setblock 1 2 3 campfire
 data get block 1 2 3 arst
 forceload add 1 2 3 4 
 tp @s 1 2 3 4 5
 tp @s 1 2 3 facing 3 4 5
 worldborder set 123
 worldborder damage buffer 123.3123
+give @s apple
 trigger arst add 123
 time set noon
 time add 123t
@@ -56,7 +61,9 @@ nbt arstne.hhft."ent".f[234].rhtnyun{rtei:'ernt'}
 nbt {"sthn":[{"rsnt":[eni]},{ein:'iernst rtf'}]}
 nbt arst[{"f  t":1}].arst{}
 nbt arst[3].renti
-summon armor_stand ~ ~ ~
+data get block 1 2 3
+summon or_stand ~ ~ ~ {SRietn}
+summon vex
 bossbar add minecraft:arst eiarsntyu
 title @s times 123 3239 32901
 bossbar set arst value 123

@@ -1,0 +1,11 @@
+!17w43a
+i apple
+ib dirt
+c bread
+cb (red|pink|magenta|purple|blue|cyan|(ligth_)?blue|green|lime|yellow|orange|brown|black|(ligth_)?gray|gray|white)_(banner|bed|carpet|concrete(_powder)?|(glazed_)terracotta|shulker_box|stained_glass(_pane)?|wool)
+i (red|pink|magenta|purple|blue|cyan|(ligth_)?blue|green|lime|yellow|orange|brown|black|(ligth_)?gray|gray|white)_dye
+m vex
+!1.14
+ib campfire
+!1.16
+ib blackstone

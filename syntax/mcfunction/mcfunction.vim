@@ -5,7 +5,234 @@ let b:current_syntax = "mcfunction"
 
 syn match mcAnySpace contained / /
 hi def link mcAnySpace mcBadWhitespace
+let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/'
 
+" MC Version identifier
+function! s:toNumericVersion(version)
+        let l:version = a:version
+        if l:version !~ '\d\dw\d\d\w'
+                let l:version =  s:toSnapshot(l:version)
+        endif
+        let l:year=matchstr(l:version,'^\d\+\zew')
+        let l:week=matchstr(l:version,'w\zs\d\+')
+        let l:day=tr(matchstr(l:version,'\a$'),'xyzabcdefg','0123456789')
+        return l:year*10000 + l:week*100 + l:day
+endfunction
+function! s:isPrerelease(name,major,pre)
+        return a:name =~ a:major.'[^.0-9]\{-}\cp\%[re-]\%[release].\{-}'.a:pre
+endfunction
+function! s:toSnapshot(name)
+        "TODO optimize
+        "week numbers are whatever week `ncal -w` says PLUS ONE
+        if a:name =~ '\<c\%[ombat]'
+                let l:num = matchstr(a:name,'\d\+$')
+                if l:num == 1
+                        return '19w26z'
+                elseif l:num == 2
+                        return '19w33a'
+                elseif l:num == 3
+                        return '19w44a'
+                elseif l:num == 4
+                        return '19w48c'
+                elseif l:num == 5
+                        return '19w03c'
+                endif
+        elseif a:name =~ '1.13'
+                if s:isPrerelease(a:name,'1.13',1)
+                        return '18w23a'
+                elseif s:isPrerelease(a:name,'1.13',2)
+                        return '18w24a'
+                elseif s:isPrerelease(a:name,'1.13',3)
+                        return '18w25a'
+                elseif s:isPrerelease(a:name,'1.13',4)
+                        return '18w26a'
+                elseif s:isPrerelease(a:name,'1.13',5)
+                        return '18w26b'
+                elseif s:isPrerelease(a:name,'1.13',6)
+                        return '18w27a'
+                elseif s:isPrerelease(a:name,'1.13',7)
+                        return '18w28a'
+                elseif s:isPrerelease(a:name,'1.13',8)
+                        return '18w28b'
+                elseif s:isPrerelease(a:name,'1.13',9)
+                        return '18w29a'
+                elseif s:isPrerelease(a:name,'1.13',10)
+                        return '18w29b'
+                elseif a:name == '1.13'
+                        return '18w29c'
+
+                        " 1.13.1
+                elseif s:isPrerelease(a:name,'1.13.1',1)
+                        return '18w33b'
+                elseif s:isPrerelease(a:name,'1.13.1',2)
+                        return '18w34a'
+                elseif a:name == '1.13.1'
+                        return '18w34b'
+
+                        "1.13.2
+                elseif s:isPrerelease(a:name,'1.13.2',1)
+                        return '18w42a'
+                elseif s:isPrerelease(a:name,'1.13.2',2)
+                        return '18w42b'
+                elseif a:name == '1.13.2'
+                        return '18w43z'
+                endif
+
+        elseif a:name =~ '1.14'
+                if s:isPrerelease(a:name,'1.14',1)
+                        return '19w15a'
+                elseif s:isPrerelease(a:name,'1.14',2)
+                        return '19w15b'
+                elseif s:isPrerelease(a:name,'1.14',3)
+                        return '19w16a'
+                elseif s:isPrerelease(a:name,'1.14',4)
+                        return '19w16b'
+                elseif s:isPrerelease(a:name,'1.14',5)
+                        return '19w16c'
+                elseif a:name == '1.14'
+                        return '19w17a'
+
+                        "1.14.1
+                elseif s:isPrerelease(a:name,'1.14.1',1)
+                        return '19w19a'
+                elseif s:isPrerelease(a:name,'1.14.1',2)
+                        return '19w19b'
+                elseif a:name == '1.14.1'
+                        return '19w20a'
+
+                        "1.14.2
+                elseif s:isPrerelease(a:name,'1.14.2',1)
+                        return '19w20b'
+                elseif s:isPrerelease(a:name,'1.14.2',2)
+                        return '19w20c'
+                elseif s:isPrerelease(a:name,'1.14.2',3)
+                        return '19w21a'
+                elseif s:isPrerelease(a:name,'1.14.2',4)
+                        return '19w21b'
+                elseif a:name == '1.14.2'
+                        return '19w22a'
+
+                        "1.14.3
+                elseif s:isPrerelease(a:name,'1.14.3',1)
+                        return '19w23a'
+                elseif s:isPrerelease(a:name,'1.14.3',2)
+                        return '19w23b'
+                elseif s:isPrerelease(a:name,'1.14.3',3)
+                        return '19w24a'
+                elseif s:isPrerelease(a:name,'1.14.3',4)
+                        return '19w25a'
+                elseif a:name == '1.14.3'
+                        return '19w26a'
+
+                        "1.14.4
+                elseif s:isPrerelease(a:name,'1.14.4',1)
+                        return '19w27a'
+                elseif s:isPrerelease(a:name,'1.14.4',2)
+                        return '19w27b'
+                elseif s:isPrerelease(a:name,'1.14.4',3)
+                        return '19w28a'
+                elseif s:isPrerelease(a:name,'1.14.4',4)
+                        return '19w28b'
+                elseif s:isPrerelease(a:name,'1.14.4',5)
+                        return '19w28c'
+                elseif s:isPrerelease(a:name,'1.14.4',6)
+                        return '19w29a'
+                elseif s:isPrerelease(a:name,'1.14.4',7)
+                        return '19w29b'
+                elseif a:name == '1.14.4'
+                        return '19w30a'
+                endif
+        elseif a:name =~ '1.15'
+                if s:isPrerelease(a:name,'1.15',1)
+                        return '19w47a'
+                elseif s:isPrerelease(a:name,'1.15',2)
+                        return '19w48a'
+                elseif s:isPrerelease(a:name,'1.15',3)
+                        return '19w48b'
+                elseif s:isPrerelease(a:name,'1.15',4)
+                        return '19w49a'
+                elseif s:isPrerelease(a:name,'1.15',5)
+                        return '19w49b'
+                elseif s:isPrerelease(a:name,'1.15',6)
+                        return '19w49c'
+                elseif s:isPrerelease(a:name,'1.15',7)
+                        return '19w50a'
+                elseif a:name == '1.15'
+                        return '19w50b'
+
+                        "1.15.1
+                elseif s:isPrerelease(a:name,'1.15.1',1)
+                        return '19w50c'
+                elseif a:name == '1.15.1'
+                        return '19w51a'
+
+                        "1.15.2
+                elseif s:isPrerelease(a:name,'1.15.2',1)
+                        return '20w03a'
+                elseif s:isPrerelease(a:name,'1.15.2',2)
+                        return '20w03b'
+                elseif a:name == '1.15.2'
+                        return '20w04a'
+
+                endif
+        elseif a:name =~ '1.16'
+                if s:isPrerelease(a:name,'1.16',1)
+                        return '20w23a'
+                elseif s:isPrerelease(a:name,'1.16',2)
+                        return '20w23b'
+                elseif s:isPrerelease(a:name,'1.16',3)
+                        return '20w24a'
+                elseif s:isPrerelease(a:name,'1.16',4)
+                        return '20w24b'
+                elseif s:isPrerelease(a:name,'1.16',5)
+                        return '20w24c'
+                elseif s:isPrerelease(a:name,'1.16',6)
+                        return '20w25b'
+                else
+                        return '99w99e'
+                endif
+        endif
+endfunction
+
+" Determine minecraft version
+if !exists('g:mcversion')
+        let g:mcversion='release'
+endif
+let g:numericVersion=0
+let s:combatVersion=0
+
+if g:mcversion=~'\<l\%[atest]\>'
+        let g:numericVersion = 9999999
+else
+        let s:versions = readfile(s:path.'currentmcversions')
+        let s:auto = 0
+        if g:mcversion=~'\<r\%[elease]\>'
+                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[0])])
+                let s:auto = 1
+        endif
+        if g:mcversion=~'\<p\%[rerelease]\>'
+                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[1])])
+                let s:auto = 1
+        endif
+        if g:mcversion=~'\<s\%[napshot]\>'
+                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[2])])
+                let s:auto = 1
+        endif
+        if g:mcversion=~'\<e\%[xperimental]\>'
+                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[3])])
+                let s:auto = 1
+        endif
+        if !s:auto
+                let g:numericVersion = s:toNumericVersion(g:mcversion)
+        endif
+endif
+
+" Determine the experimental combat version
+if g:mcversion =~ '\<e\%[xperimental]\>\'
+        let s:combatVersion=9999999
+elseif g:mcversion =~ '|\<c\%[ombat]'
+        let s:combatVersion=matchstr(g:mcversion,'\<c\%[ombat]\s*\zs\d\+')
+endif
 
 syn match   mcUInt              /\d\+/  contained
 syn match   mcLineEnd           /\s*$/  contained
@@ -182,11 +409,11 @@ call s:mcNBTPath("","")
 " NBT Tag
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:mcNBTTag(group,nextgroup)
-        execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
+        execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
         execute 'syn cluster mcNBT add=mcNBTTag'.a:group
         execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
 endfunction
-syn region  mcNBTTag            matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
+syn region  mcNBTTag            matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Block
@@ -940,8 +1167,8 @@ syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcNsEntitySummon
 
-call s:createNewInstance("EntityType","Summon","mcCoordinateSummon")
-call s:mcCoordinate("Summon","mcLineEnd,@mcNBT","")
+call s:createNewInstance("NsEntity","Summon","mcCoordinateSummon")
+call s:mcCoordinate("Summon","mcNBTTag","")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Title
@@ -1048,8 +1275,9 @@ hi def link mcXpKeyword mcKeyword
 
 for x in ['Advancement', 'Block', 'BossbarId', 'CratableItem', 'Dimension', 'Effect', 'Enchantment', 'Entity', 'Function', 'Item', 'Objective', 'Particle', 'Sound', 'Storage', 'Predicate', 'SoundChannel', 'AdvancementCriteria']
         execute 'syn match mcNs'.x '/\(\w\+:\)\?\S\+/ contained contains=mcNamespace,mc'.x
-        execute 'syn match mcNamesaced'.x '/\w\+:\S\+/ contained contains=mcNamespace,mc'.x
+        execute 'syn match mcNamespaced'.x '/\w\+:\S\+/ contained contains=mcNamespace,mc'.x
         execute 'hi def link mc'.x 'mcValue'
+        execute 'hi def link mcBuiltin'.x 'mcKeyValue'
         if x =~ 'dvance\|ossbar\|unction\|lock'
         else
                 execute 'syn match mc'.x '/\w\+/ contained contains=mcBuiltin'.x
@@ -1059,7 +1287,7 @@ endfor
 syn match   mcAdvancement                       /\(\w\+[:/]\)*\w\+/             contained contains=mcNamespace,mcBuiltinAdvancement
 syn match   mcBossbarId                         /\(\w[:./-]\)*\w\+/             contained contains=mcNamespace,mcBuiltinBossbarId
 syn match   mcFunction                          /#\?[a-z0-9_-]\+:[a-z0-9./_-]*/ contained contains=mcNamespace
-syn match   mcBlock                             /\(\w\+:\)*\w\+/                contained contains=@mcBuiltinBlock nextgroup=mcBlockstate
+syn match   mcBlock                             /\(\w\+:\)*\w\+/                contained contains=mcBuiltinBlock nextgroup=mcBlockstate
 syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/            contained contains=mcBuiltinAdvancementCriteria
 
 syn match   mcNamespace                         /\w\+:/                         contained contains=mcBuiltinNamespace
@@ -1328,100 +1556,130 @@ hi def link mcBuiltinEnchantment        mcBuiltin
 hi def link mcBuiltinEntity             mcBuiltin
 hi def link mcBuiltinItem               mcBuiltin
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Blocks
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinBlock mcKeyValue
-syn cluster mcBuiltinBlock contains=mcBuiltinBlock,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
-syn keyword mcBuiltinBlock contained dirt
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Dimensions
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcBuiltinDimension contained overworld the_nether the_end
+let s:files = split(globpath(s:path.'data','*'),'\n')
+for s:file in s:files
+        let s:filename = fnamemodify(s:file,':t:r') 
+        let s:lines = readfile(s:file)
+        for s:line in s:lines
+                if s:line =~ '^!'
+                        let g:ver = substitute(s:line,'!','','')
+                        let g:numver = s:toNumericVersion(g:ver) 
+                        if s:toNumericVersion(g:ver) > g:numericVersion
+                                break
+                        endif
+                elseif s:filename =='things'
+                        let s:parts = split(s:line, ' ')
+                        " Block
+                        if s:parts[0] =~ 'b'    | execute 'syn match mcBuiltinBlock     contained /\v<'.s:parts[1].'>/' | endif
+                        " Craftable Item
+                        if s:parts[0] =~ 'c'    | execute 'syn match mcBuiltinCraftable contained /\v<'.s:parts[1].'>/' | endif
+                        " Item
+                        if s:parts[0] =~ '[ci]' | execute 'syn match mcBuiltinItem      contained /\v<'.s:parts[1].'>/' | endif
+                        " Spawn Egg
+                        if s:parts[0] =~ 'm'    | execute 'syn match mcBuiltinItem      contained /\v<'.s:parts[1].'_spawn_egg'.'>/' | endif
+                        " Entity
+                        if s:parts[0] =~ '[me]' | execute 'syn match mcBuiltinEntity    contained /\v<'.s:parts[1].'>/' | endif
+                else
+                        execute 'syn match mcBuiltin'.s:filename 'contained /\v<'.s:line.'>/'
+                endif
+        endfor
+endfor
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Enchantments
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Generic
-syn keyword mcBuiltinEnchantment contained mending unbreaking
-" Curse
-syn keyword mcBuiltinEnchantment contained vanishing_curse binding_curse 
-" Armor
-syn keyword mcBuiltinEnchantment contained thorns respiration projectile_protection protection frost_walker fire_protection feather_falling depth_strider bane_of_arthropods aqua_affinity 
-" Tool
-syn keyword mcBuiltinEnchantment contained fortune efficiency silk_touch
-" Sword/Axe
-syn keyword mcBuiltinEnchantment contained looting knockback fire_aspect sharpness smite sweeping
-" Bow
-syn keyword mcBuiltinEnchantment contained infinity flame power punch
-" Triden
-syn keyword mcBuiltinEnchantment contained loyalty impaling channeling riptide
-" Crossbow
-syn keyword mcBuiltinEnchantment contained multishot piercing quick_charge
-" Rod
-syn keyword mcBuiltinEnchantment contained lure luck_of_the_sea
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Entities
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Villagers/Illagers
-syn keyword mcBuiltinEntity contained villager evoker wandering_trader illusioner pillager ravager vex vindicator witch
-" Undead Mobs
-syn keyword mcBuiltinEntity contained drowned giant husk phantom skeleton stray wither_skeleton
-" Arthropods
-syn keyword mcBuiltinEntity contained cave_spider endermite silverfish spider zombie zombie_pigman zombie_villager
-" Other hostile Mobs
-syn keyword mcBuiltinEntity contained blaze creeper elder_guardian enderman ghast guardian magma_cube shulker slime 
-" Ambient/Aquatic Mobs
-syn keyword mcBuiltinEntity contained bat cod dolphin salmon squid tropical_fish turtle pufferfish
-" Horses
-syn keyword mcBuiltinEntity contained horse zombie_horse skeleton_horse donkey mule llama trader_llama
-" Passive Mobs
-syn keyword mcBuiltinEntity contained cat chicken cow fox mooshroom ocelot panda parrot pig polar_bear rabbit sheep villager wandering_trader wolf
-" Utility etc Mobs
-syn keyword mcBuiltinEntity contained iron_golem snow_golem wither ender_dragon player
-" Projectiles
-syn keyword mcBuiltinEntity contained arrow dragon_fireball egg ender_pearl experience_bottle eye_of_ender fireball firework_rocket llama_spit potion shulker_bullet small_fireball snowball spectral_arrow trident wither_skull
-" Boats/Carts
-syn keyword mcBuiltinEntity contained boat chest_minecart furnace_minecart command_block_minecart hopper_minecart minecart spawner_minecart tnt_minecart
-" Misc
-syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal evoker_fangs item_frame leash_knot painting falling_block tnt experience_orb item
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Effects
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_power dolphins_grace fire_resistance glowing haste health_boost hero_of_the_village hunger instant_health instant_damage invisibility jump_boost levitation luck mining_fatigue nausea night_vision poison regeneration resistance saturation slow_falling slowness speed strength unluck water_breathing weakness wither
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Items
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn cluster mcBuiltinItem contains=mcBuiltinItem,mcBuiltinCraftableItem,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
-syn cluster mcBuiltinCraftableItem contains=mcBuiltinCraftableItem,mcBuiltinCraftableItemBlock
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Craftable Items
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinCraftableItem mcBuiltinBlock
-syn keyword mcBuiltinCraftableItem contained bread
-syn match   mcBuiltinCraftableItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Craftable Items/Blocks
-" Many items and blocks are the same
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinCraftableItemBlock mcBuiltinItem
-syn match mcBuiltinCraftableItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Uncraftable Items
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcBuiltinItem contained apple
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Uncraftable Items/Blocks
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinItemBlock mcBuiltinItem
-syn keyword mcBuiltinItemBlock contained dragon_egg
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Blocks
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"hi def link mcBuiltinBlock mcKeyValue
+"syn cluster mcBuiltinBlock contains=mcBuiltinBlock,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
+"syn keyword mcBuiltinBlock contained dirt
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Dimensions
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"syn keyword mcBuiltinDimension contained overworld the_nether the_end
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Enchantments
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Generic
+"syn keyword mcBuiltinEnchantment contained mending unbreaking
+"" Curse
+"syn keyword mcBuiltinEnchantment contained vanishing_curse binding_curse 
+"" Armor
+"syn keyword mcBuiltinEnchantment contained thorns respiration projectile_protection protection frost_walker fire_protection feather_falling depth_strider bane_of_arthropods aqua_affinity 
+"" Tool
+"syn keyword mcBuiltinEnchantment contained fortune efficiency silk_touch
+"" Sword/Axe
+"syn keyword mcBuiltinEnchantment contained looting knockback fire_aspect sharpness smite sweeping
+"" Bow
+"syn keyword mcBuiltinEnchantment contained infinity flame power punch
+"" Triden
+"syn keyword mcBuiltinEnchantment contained loyalty impaling channeling riptide
+"" Crossbow
+"syn keyword mcBuiltinEnchantment contained multishot piercing quick_charge
+"" Rod
+"syn keyword mcBuiltinEnchantment contained lure luck_of_the_sea
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Entities
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Villagers/Illagers
+"syn keyword mcBuiltinEntity contained villager evoker wandering_trader illusioner pillager ravager vex vindicator witch
+"" Undead Mobs
+"syn keyword mcBuiltinEntity contained drowned giant husk phantom skeleton stray wither_skeleton
+"" Arthropods
+"syn keyword mcBuiltinEntity contained cave_spider endermite silverfish spider zombie zombie_pigman zombie_villager
+"" Other hostile Mobs
+"syn keyword mcBuiltinEntity contained blaze creeper elder_guardian enderman ghast guardian magma_cube shulker slime 
+"" Ambient/Aquatic Mobs
+"syn keyword mcBuiltinEntity contained bat cod dolphin salmon squid tropical_fish turtle pufferfish
+"" Horses
+"syn keyword mcBuiltinEntity contained horse zombie_horse skeleton_horse donkey mule llama trader_llama
+"" Passive Mobs
+"syn keyword mcBuiltinEntity contained cat chicken cow fox mooshroom ocelot panda parrot pig polar_bear rabbit sheep villager wandering_trader wolf
+"" Utility etc Mobs
+"syn keyword mcBuiltinEntity contained iron_golem snow_golem wither ender_dragon player
+"" Projectiles
+"syn keyword mcBuiltinEntity contained arrow dragon_fireball egg ender_pearl experience_bottle eye_of_ender fireball firework_rocket llama_spit potion shulker_bullet small_fireball snowball spectral_arrow trident wither_skull
+"" Boats/Carts
+"syn keyword mcBuiltinEntity contained boat chest_minecart furnace_minecart command_block_minecart hopper_minecart minecart spawner_minecart tnt_minecart
+"" Misc
+"syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal evoker_fangs item_frame leash_knot painting falling_block tnt experience_orb item
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Effects
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_power dolphins_grace fire_resistance glowing haste health_boost hero_of_the_village hunger instant_health instant_damage invisibility jump_boost levitation luck mining_fatigue nausea night_vision poison regeneration resistance saturation slow_falling slowness speed strength unluck water_breathing weakness wither
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Items
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"syn cluster mcBuiltinItem contains=mcBuiltinItem,mcBuiltinCraftableItem,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
+"syn cluster mcBuiltinCraftableItem contains=mcBuiltinCraftableItem,mcBuiltinCraftableItemBlock
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Craftable Items
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"hi def link mcBuiltinCraftableItem mcBuiltinBlock
+"syn keyword mcBuiltinCraftableItem contained bread
+"syn match   mcBuiltinCraftableItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Craftable Items/Blocks
+"" Many items and blocks are the same
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"hi def link mcBuiltinCraftableItemBlock mcBuiltinItem
+"syn match mcBuiltinCraftableItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Uncraftable Items
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"syn keyword mcBuiltinItem contained apple
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"" Uncraftable Items/Blocks
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"hi def link mcBuiltinItemBlock mcBuiltinItem
+"syn keyword mcBuiltinItemBlock contained dragon_egg
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Particles
