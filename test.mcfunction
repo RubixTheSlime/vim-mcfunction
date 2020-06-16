@@ -53,6 +53,8 @@ loot give @s mine 1 2 3 bread
 loot give @e kill @e
 fill 1 2 3 4 5 6 dirt[istern]replace
 give @s apple
+gamerule doTileDrops true
+gamerule ra
 scoreboard players add @s arst 123
 scoreboard players get @s arst
 scoreboard players operation @s arst += @s ast
@@ -93,7 +95,7 @@ say  srat
 kill 12345678-1234-1234-123456789abc
 enchant @s minecraft:sweeping 3
 gamerule doDaylightCycle true
-gamerule maxCommandChainLength 213123293012
+gamerule maxCommandChainLength 2131232912
 gamerule randomTickSpeed 0
 gamerule randomTickSpeed 4096
 gamerule randomTickSpeed 4097

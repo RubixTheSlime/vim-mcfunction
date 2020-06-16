@@ -822,19 +822,19 @@ hi def link mcGamemode          mcKeyValue
 syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
 
 ""bools
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doInsomnia doImmediateRespawn drowningDamage fallDamage fireDamage
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               do PatrolSpawning doTraderSpawning
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber     maxCommandChainLength maxEntityCramming spawnRadius
-        syn match mcGameruleNumber   contained skipwhite                                              /\<-\?\d\{1,10\}\>/
-syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber   randomTickSpeed
-        syn match mcRandomTickNumber contained skipwhite                                              /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/
-
-hi def link mcGamerule          mcKeyWord
-hi def link mcRandomTickNumber  mcGameruleNumber
-hi def link mcGameruleNumber    mcValue
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doInsomnia doImmediateRespawn drowningDamage fallDamage fireDamage
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               do PatrolSpawning doTraderSpawning
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber     maxCommandChainLength maxEntityCramming spawnRadius
+"        syn match mcGameruleNumber   contained skipwhite                                              /\<-\?\d\{1,10\}\>/
+"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber   randomTickSpeed
+"        syn match mcRandomTickNumber contained skipwhite                                              /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/
+"
+"hi def link mcGamerule          mcKeyWord
+"hi def link mcRandomTickNumber  mcGameruleNumber
+"hi def link mcGameruleNumber    mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Give
@@ -1316,7 +1316,7 @@ syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgr
 syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinEntity
 " custom things, this'll be a pain to maintain
 syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCriteriaCustomNamespace
-syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcCriteriaCustom
+syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinCustomCriteria
 syn match   mcCriteriaCustom contained /animals_bred\|bell_ring\|deaths\|eat_cake_slice\|enchant_item\|fill_cauldron\|fish_caught\|jump\|leave_game\|pot_flower\|sleep_in_bed\|sneak_time\|trigger_trapped_chest\|tune_noteblock\|use_cauldron/
 syn match   mcCriteriaCustom contained /raid_\(trigger\|win\)/
 syn match   mcCriteriaCustom contained /time_since_\(death\|rest\)/
@@ -1560,7 +1560,16 @@ hi def link mcBuiltinEntity             mcBuiltin
 hi def link mcBuiltinItem               mcBuiltin
 
 function! s:addBuiltin(type,match)
-        execute 'syn match mcBuiltin'.a:type 'contained /\v(<'.a:match.'>)/'
+        execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.a:match.'>)`'
+endfunction
+function! s:addGamerule(name, values)
+        if a:values != ''
+                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcGameruleValue'.a:name
+                execute 'syn match   mcGameruleValue'.a:name a:values 'contained'
+                execute 'hi def link mcGameruleValue'.a:name 'mcValue'
+        else
+                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcBool'
+        endif
 endfunction
 
 let s:files = split(globpath(s:path.'data','*'),'\n')
@@ -1577,9 +1586,9 @@ for s:file in s:files
                                 break
                         endif
                 elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-                        "no longer supported
+                        " the item is no longer part of the game
                 elseif s:filename =='things'
-                        let s:parts = split(s:line, ' ')
+                        let s:parts = split(s:line, '\s\+')
                         " Block
                         if s:parts[0] =~ 'b'    | call s:addBuiltin('Block',    s:parts[1]) | endif
                         " Craftable Item
@@ -1591,17 +1600,23 @@ for s:file in s:files
                         " Entity
                         if s:parts[0] =~ '[me]' | call s:addBuiltin('Entity',s:parts[1]) | endif
                 elseif s:filename == 'Gamerule'
+                        call s:addGamerule(matchstr(s:line,'^\S\+\>'), matchstr(s:line,'/.\{-}/'))
+                elseif s:filename == 'Criteria'
+                        call s:addBuiltin('CustomCriteria',matchstr(s:line, '^[^!]*'))
                 else
-                       call s:addBuiltin(s:filename,s:parts[1])
+                        call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
                 endif
         endfor
 endfor
 
+" literally the only difference in the entire experimental snapshots so far
+if s:combatVersion >= 3
+        addBuiltin('Enchantment','chopping')
+endif
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sound channels
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-hi def link mcBuiltinSoundChannel mcKeyWord
-syn keyword mcBuiltinSoundChannel contained ambient block hostile master music neutral player record voice weather
 
 syn match   mcNBTIndex          /\s*\d\+\s*/                                                            contained
 syn match   mcNBTComma          /,/                                                                     contained
