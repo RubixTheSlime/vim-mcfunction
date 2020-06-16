@@ -872,11 +872,7 @@ hi def link mcListUUIDs         mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Locate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocatable
-
-" TODO: add namespace and contains stuff
-syn keyword mcLocatable contained Buried_Treasure EndCity Fortress Mansion Mineshaft Monument Ocean_Ruin Shipwreck Stronghold Desert_Pyramid Igloo Jungle_Pyramid Swamp_Hut Village Pillager_Outpost
-hi def link mcLocatable                 mcKeyValue
+syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcBuiltinLocatable
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Loot
@@ -1603,6 +1599,20 @@ for s:file in s:files
                         call s:addGamerule(matchstr(s:line,'^\S\+\>'), matchstr(s:line,'/.\{-}/'))
                 elseif s:filename == 'Criteria'
                         call s:addBuiltin('CustomCriteria',matchstr(s:line, '^[^!]*'))
+                elseif s:filename == 'Structure'
+                        call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
+                        if s:line =~ '^\*'
+                                if atLeastVersion('20w21a')
+                                        call s:addBuiltin('Locatable',matchstr(s:line,'^\*\?\zs\S*\>'))
+                                else
+                                        " it would be very consistent if it weren't for EndCity
+                                        if s:line=~ 'endcity'
+                                                call s:addBuiltin('Locatable','EndCity')
+                                        else
+                                                call s:addBuiltin('Locatable',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\<\a', '\u&', 'g'))
+                                        endif
+                                endif
+                        endif
                 else
                         call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
                 endif
