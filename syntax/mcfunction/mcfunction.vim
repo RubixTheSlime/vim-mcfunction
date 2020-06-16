@@ -18,6 +18,9 @@ function! s:toNumericVersion(version)
         let l:day=tr(matchstr(l:version,'\a$'),'xyzabcdefg','0123456789')
         return l:year*10000 + l:week*100 + l:day
 endfunction
+function! s:atLeastVersion(version)
+        return s:toNumericVersion(a:version) <= g:numericVersion
+endfunction
 function! s:isPrerelease(name,major,pre)
         return a:name =~ a:major.'[^.0-9]\{-}\cp\%[re-]\%[release].\{-}'.a:pre
 endfunction
@@ -818,7 +821,7 @@ hi def link mcGamemode          mcKeyValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
 
-"bools
+""bools
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle
 syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
@@ -839,7 +842,7 @@ hi def link mcGameruleNumber    mcValue
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerGive
 
 call s:mcPlayer("Give", "mcNsItemGive")
-call s:createNewInstance('Item','Give','mcNBTTagGive')
+call s:createNewInstance('NsItem','Give','mcNBTTagGive')
 call s:mcNBTTag("Give","mcUInt")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1556,144 +1559,50 @@ hi def link mcBuiltinEnchantment        mcBuiltin
 hi def link mcBuiltinEntity             mcBuiltin
 hi def link mcBuiltinItem               mcBuiltin
 
+function! s:addBuiltin(type,match)
+        execute 'syn match mcBuiltin'.a:type 'contained /\v(<'.a:match.'>)/'
+endfunction
 
 let s:files = split(globpath(s:path.'data','*'),'\n')
 for s:file in s:files
         let s:filename = fnamemodify(s:file,':t:r') 
         let s:lines = readfile(s:file)
         for s:line in s:lines
-                if s:line =~ '^!'
+                if s:line =~ '^\s*\_[#]'
+                        "just whitespace/comment, skip
+                elseif s:line =~ '^!'
                         let g:ver = substitute(s:line,'!','','')
                         let g:numver = s:toNumericVersion(g:ver) 
                         if s:toNumericVersion(g:ver) > g:numericVersion
                                 break
                         endif
+                elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                        "no longer supported
                 elseif s:filename =='things'
                         let s:parts = split(s:line, ' ')
                         " Block
-                        if s:parts[0] =~ 'b'    | execute 'syn match mcBuiltinBlock     contained /\v(<'.s:parts[1].'>)/' | endif
+                        if s:parts[0] =~ 'b'    | call s:addBuiltin('Block',    s:parts[1]) | endif
                         " Craftable Item
-                        if s:parts[0] =~ 'c'    | execute 'syn match mcBuiltinCraftable contained /\v(<'.s:parts[1].'>)/' | endif
+                        if s:parts[0] =~ '[cr]' | call s:addBuiltin('Craftable',s:parts[1]) | endif
                         " Item
-                        if s:parts[0] =~ '[ci]' | execute 'syn match mcBuiltinItem      contained /\v(<'.s:parts[1].'>)/' | endif
+                        if s:parts[0] =~ '[ci]' | call s:addBuiltin('Item',s:parts[1]) | endif
                         " Spawn Egg
-                        if s:parts[0] =~ 'm'    | execute 'syn match mcBuiltinItem      contained /\v(<'.s:parts[1].'_spawn_egg'.'>)/' | endif
+                        if s:parts[0] =~ 'm'    | call s:addBuiltin('Item',s:parts[1].'_spawn_egg') | endif
                         " Entity
-                        if s:parts[0] =~ '[me]' | execute 'syn match mcBuiltinEntity    contained /\v(<'.s:parts[1].'>)/' | endif
+                        if s:parts[0] =~ '[me]' | call s:addBuiltin('Entity',s:parts[1]) | endif
+                elseif s:filename == 'Gamerule'
                 else
-                        execute 'syn match mcBuiltin'.s:filename 'contained /\v(<'.s:line.'>)/'
+                       call s:addBuiltin(s:filename,s:parts[1])
                 endif
         endfor
 endfor
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Blocks
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"hi def link mcBuiltinBlock mcKeyValue
-"syn cluster mcBuiltinBlock contains=mcBuiltinBlock,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
-"syn keyword mcBuiltinBlock contained dirt
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Dimensions
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"syn keyword mcBuiltinDimension contained overworld the_nether the_end
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Enchantments
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Generic
-"syn keyword mcBuiltinEnchantment contained mending unbreaking
-"" Curse
-"syn keyword mcBuiltinEnchantment contained vanishing_curse binding_curse 
-"" Armor
-"syn keyword mcBuiltinEnchantment contained thorns respiration projectile_protection protection frost_walker fire_protection feather_falling depth_strider bane_of_arthropods aqua_affinity 
-"" Tool
-"syn keyword mcBuiltinEnchantment contained fortune efficiency silk_touch
-"" Sword/Axe
-"syn keyword mcBuiltinEnchantment contained looting knockback fire_aspect sharpness smite sweeping
-"" Bow
-"syn keyword mcBuiltinEnchantment contained infinity flame power punch
-"" Triden
-"syn keyword mcBuiltinEnchantment contained loyalty impaling channeling riptide
-"" Crossbow
-"syn keyword mcBuiltinEnchantment contained multishot piercing quick_charge
-"" Rod
-"syn keyword mcBuiltinEnchantment contained lure luck_of_the_sea
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Entities
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Villagers/Illagers
-"syn keyword mcBuiltinEntity contained villager evoker wandering_trader illusioner pillager ravager vex vindicator witch
-"" Undead Mobs
-"syn keyword mcBuiltinEntity contained drowned giant husk phantom skeleton stray wither_skeleton
-"" Arthropods
-"syn keyword mcBuiltinEntity contained cave_spider endermite silverfish spider zombie zombie_pigman zombie_villager
-"" Other hostile Mobs
-"syn keyword mcBuiltinEntity contained blaze creeper elder_guardian enderman ghast guardian magma_cube shulker slime 
-"" Ambient/Aquatic Mobs
-"syn keyword mcBuiltinEntity contained bat cod dolphin salmon squid tropical_fish turtle pufferfish
-"" Horses
-"syn keyword mcBuiltinEntity contained horse zombie_horse skeleton_horse donkey mule llama trader_llama
-"" Passive Mobs
-"syn keyword mcBuiltinEntity contained cat chicken cow fox mooshroom ocelot panda parrot pig polar_bear rabbit sheep villager wandering_trader wolf
-"" Utility etc Mobs
-"syn keyword mcBuiltinEntity contained iron_golem snow_golem wither ender_dragon player
-"" Projectiles
-"syn keyword mcBuiltinEntity contained arrow dragon_fireball egg ender_pearl experience_bottle eye_of_ender fireball firework_rocket llama_spit potion shulker_bullet small_fireball snowball spectral_arrow trident wither_skull
-"" Boats/Carts
-"syn keyword mcBuiltinEntity contained boat chest_minecart furnace_minecart command_block_minecart hopper_minecart minecart spawner_minecart tnt_minecart
-"" Misc
-"syn keyword mcBuiltinEntity contained area_effect_cloud armor_stand end_crystal evoker_fangs item_frame leash_knot painting falling_block tnt experience_orb item
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Effects
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"syn keyword mcBuiltinEffect contained absorption bad_omen blindness conduit_power dolphins_grace fire_resistance glowing haste health_boost hero_of_the_village hunger instant_health instant_damage invisibility jump_boost levitation luck mining_fatigue nausea night_vision poison regeneration resistance saturation slow_falling slowness speed strength unluck water_breathing weakness wither
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Items
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"syn cluster mcBuiltinItem contains=mcBuiltinItem,mcBuiltinCraftableItem,mcBuiltinItemBlock,mcBuiltinCraftableItemBlock
-"syn cluster mcBuiltinCraftableItem contains=mcBuiltinCraftableItem,mcBuiltinCraftableItemBlock
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Craftable Items
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"hi def link mcBuiltinCraftableItem mcBuiltinBlock
-"syn keyword mcBuiltinCraftableItem contained bread
-"syn match   mcBuiltinCraftableItem contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_dye/
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Craftable Items/Blocks
-"" Many items and blocks are the same
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"hi def link mcBuiltinCraftableItemBlock mcBuiltinItem
-"syn match mcBuiltinCraftableItemBlock contained /\(red\|pink\|magenta\|purple\|blue\|cyan\|\(ligth_\)\?blue\|green\|lime\|yellow\|orange\|brown\|black\|\(ligth_\)\?gray\|gray\|white\)_\(banner\|bed\|carpet\|concrete\(_powder\)\?\|\(glazed_\)terracotta\|shulker_box\|stained_glass\(_pane\)\?\|wool\)/ 
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Uncraftable Items
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"syn keyword mcBuiltinItem contained apple
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Uncraftable Items/Blocks
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"hi def link mcBuiltinItemBlock mcBuiltinItem
-"syn keyword mcBuiltinItemBlock contained dragon_egg
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Particles
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Sounds
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sound channels
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 hi def link mcBuiltinSoundChannel mcKeyWord
 syn keyword mcBuiltinSoundChannel contained ambient block hostile master music neutral player record voice weather
+
 syn match   mcNBTIndex          /\s*\d\+\s*/                                                            contained
 syn match   mcNBTComma          /,/                                                                     contained
 syn match   mcNBTColon          /:/                                                                     contained skipwhite nextgroup=@mcNBTValue

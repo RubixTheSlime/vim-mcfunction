@@ -282,4 +282,5 @@ m villager
 m vindicator
 m witch
 m wolf
-m zombie(_pigman|_villager)?
+m zombie(_villager)?
+m zombie_pigman !20w09a
