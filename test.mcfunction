@@ -34,7 +34,7 @@ tp @s 1 2 3 4 5
 tp @s 1 2 3 facing 3 4 5
 worldborder set 123
 worldborder damage buffer 123.3123
-give @s apple
+give @s apple 12
 trigger arst add 123
 time set noon
 time add 123t

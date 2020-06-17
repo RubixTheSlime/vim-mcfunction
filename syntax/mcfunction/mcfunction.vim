@@ -384,10 +384,12 @@ endfunction
 function! s:mcEBS(group,nextgroup)
         execute 'syn keyword mcEBS'.a:group 'entity contained skipwhite nextgroup=mcDoubleSpace,mcSelector'.a:group
         execute 'syn keyword mcEBS'.a:group 'block contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate'.a:group
-        execute 'syn keyword mcEBS'.a:group 'storage contained skipwhite nextgroup=mcDoubleSpace,mcStorage'.a:group
         call s:mcSelector(a:group,a:nextgroup)
         call s:mcCoordinate(a:group,a:nextgroup,'')
-        call s:addInstance('Storage',a:group,a:nextgroup)
+        if s:atLeastVersion('19w38a')
+                execute 'syn keyword mcEBS'.a:group 'storage contained skipwhite nextgroup=mcDoubleSpace,mcStorage'.a:group
+                call s:addInstance('Storage',a:group,a:nextgroup)
+        endif
         execute 'hi def link mcEBS'.a:group 'mcKeyword'
 endfunction
 
@@ -519,8 +521,8 @@ hi def link mcBossbarIdSet              mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcSelectorClear
 
-call s:mcSelector("Clear","mcNsItemClear")
-call s:addInstance('NsItem','Clear','mcUInt')
+call s:mcSelector("Clear","mcNsTItemClear")
+call s:addInstance('NsTItem','Clear','mcUInt')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clone
@@ -532,9 +534,9 @@ call s:mcCoordinate("CloneTo","mcCoordinateCloneDest","2")
 call s:mcCoordinate("CloneDest","mcCloneMask","3")
 
 syn keyword mcCloneMask         masked replace          contained skipwhite nextgroup=mcDoubleSpace,mcCloneMode
-syn keyword mcCloneMask         filtered                contained skipwhite nextgroup=mcDoubleSpace,mcTaggableNsBlockClone
+syn keyword mcCloneMask         filtered                contained skipwhite nextgroup=mcDoubleSpace,mcNsTBlockClone
 hi def link mcCloneMask         mcKeyword
-call s:addTaggableInstance('NsBlock','Clone','mcCloneMode')
+call s:addInstance('NsTBlock','Clone','mcCloneMode')
 
 syn keyword mcCloneMode         force move normal       contained
 hi def link mcCloneMode         mcKeyword
@@ -706,9 +708,10 @@ syn keyword mcExecuteStoreBossbarFeild  contained skipwhite nextgroup=mcDoubleSp
 
 " score
 syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteStoreScore           score
-" no namespace
 call s:mcSelector("ExecuteStoreScore", "mcObjectiveExecuteStore")
 call s:addInstance("Objective","ExecuteStore","mcExecuteKeyword")
+
+
 
 " Execute if/unless
 """""""""""""""""""""""
@@ -716,8 +719,8 @@ syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSp
 
 " block
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondBlock        block
-call s:mcCoordinate("ExecuteCondBlock","mcNsBlockExecute","")
-call s:mcNsBlock("Execute","mcExecuteKeyword")
+call s:mcCoordinate("ExecuteCondBlock","mcNsTBlockExecute","")
+call s:addInstance("NsTBlock","Execute","mcExecuteKeyword")
 
 " blocks
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondStart        blocks
@@ -728,9 +731,9 @@ syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSp
 
 " data
 if s:atLeastVersion('18w43a')
-syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockExecuteCondData        data
-call s:mcSelectorBlock('ExecuteCondData','@mcNBTPathExecute')
-call s:mcNBTPath("Execute","mcExecuteKeyword")
+        syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEBSExecuteCondData        data
+        call s:mcEBS('ExecuteCondData','@mcNBTPathExecute')
+        call s:mcNBTPath("Execute","mcExecuteKeyword")
 endif
 
 " entity
@@ -750,8 +753,10 @@ syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSp
         syn match   mcExecuteRangeInf           /\.\.\_[ ]/             contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 
 " predicate
-syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcNsPredicateExecuteCond              predicate
-call s:addInstance('NsPredicate','ExecuteCond','mcExecuteKeyword')
+if s:atLeastVersion('19w38a')
+        syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcNsPredicateExecuteCond              predicate
+        call s:addInstance('NsPredicate','ExecuteCond','mcExecuteKeyword')
+endif
 
 " Links
 hi def link mcExecuteAsKeyword                  mcExecuteKeyword
@@ -786,10 +791,10 @@ syn keyword mcCommand fill contained skipwhite nextgroup=mcDoubleSpace,mcCoordin
 
 call s:mcCoordinate("FillFrom","mcCoordinateFillTo","")
 call s:mcCoordinate("FillTo","mcNsBlockFill","2")
-call s:mcNsBlock("Fill","mcFillMode")
+call s:addInstance('NsBlock',"Fill","mcFillMode")
 syn keyword mcFillMode contained                                                        destroy hollow keep outline
-syn keyword mcFillMode contained skipwhite nextgroup=mcDoubleSpace,mcNsBlockFillReplace   replace
-        call s:mcNsBlock("FillReplace","")
+syn keyword mcFillMode contained skipwhite nextgroup=mcDoubleSpace,mcNsTBlockFillReplace   replace
+        call s:addInstance('NsTBlock',"FillReplace","")
 
 " Links
 hi def link mcFillMode          mcKeyword
@@ -835,28 +840,13 @@ hi def link mcGamemode          mcKeyValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
 
-""bools
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               announceAdvancements commandBlockOutput disableElytraMovementCheck disableRaids
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doDaylightCycle doEntityDrops doMobLoot doMobSpawning doTileDrops doWeatherCycle
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               naturalRegeneration reducedDebugInfo sendCommandFeedback showDeathMessages spectatorsGenerateChunks
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               doInsomnia doImmediateRespawn drowningDamage fallDamage fireDamage
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcBool               do PatrolSpawning doTraderSpawning
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcGameruleNumber     maxCommandChainLength maxEntityCramming spawnRadius
-"        syn match mcGameruleNumber   contained skipwhite                                              /\<-\?\d\{1,10\}\>/
-"syn keyword mcGamerule               contained skipwhite nextgroup=mcDoubleSpace,mcRandomTickNumber   randomTickSpeed
-"        syn match mcRandomTickNumber contained skipwhite                                              /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/
-"
-"hi def link mcGamerule          mcKeyWord
-"hi def link mcRandomTickNumber  mcGameruleNumber
-"hi def link mcGameruleNumber    mcValue
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Give
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerGive
 
-call s:mcPlayer("Give", "mcTaggableNsItemGive")
-call s:addTaggableInstance('NsItem','Give','mcNBTTagGive')
+call s:mcPlayer("Give", "mcNsTItemGive")
+call s:addInstance('NsTItem','Give','mcNBTTagGive')
 call s:mcNBTTag("Give","mcUInt")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -866,7 +856,15 @@ syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcUInt,mc
 
 " Help commands (why am i even including this, or UUID highlighting for that matter)
 " (i guess you could /execute store result ... run help for a message generator)
-syn keyword mcHelpCommand contained advancement bossbar clear clone data datapack debug defaultgamemode difficulty effect enchant execute experience fill forceload function gamemode gamerule give help kill list locate loot me msg paraticle playsound recipe reload replaceitem say schedule scoreboard seed setblock setworldspawn spawnpoint spreadplayers stopsound summon tag team teleport teammsg tell tellraw time title tp trigger w weather worldborder xp
+syn keyword mcHelpCommand contained advancement bossbar clear clone data datapack debug defaultgamemode difficulty effect enchant execute experience fill forceload function gamemode gamerule give help kill list locate loot me msg paraticle playsound recipe reload replaceitem say scoreboard seed setblock setworldspawn spawnpoint spreadplayers stopsound summon tag team teleport teammsg tell tellraw time title tp trigger w weather worldborder xp
+if s:atLeastVersion('18w43a')
+        if s:atLeastVersion('18w45a')
+                syn keyword mcHelpCommand contained loot
+        else
+                syn keyword mcHelpCommand contained drop
+        endif
+        syn keyword mcHelpCommand contained schedule
+endif
 hi def link mcHelpCommand mcKeyValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -923,7 +921,6 @@ syn keyword mcLootHand                          contained                       
 hi def link mcLootTargetKeyword         mcKeyword
 hi def link mcLootReplaceKeyword        mcKeyword
 hi def link mcLootSourceKeyword         mcKeyword
-hi def link mcNsItemSlotLoot              mcKeyword
 hi def link mcLootHand                  mcKeyword
 
 hi def link mcLootTableFish             mcLootTable
@@ -1173,7 +1170,7 @@ syn keyword mcCommand setblock contained skipwhite nextgroup=mcDoubleSpace,mcCoo
 
 call s:mcCoordinate("Setblock","mcNsBlockSetblock","")
 syn keyword mcSetblockMode      contained destroy keep replace
-call s:mcNsBlock("Setblock","mcSetblockMode")
+call s:addInstance('NsBlock',"Setblock","mcSetblockMode")
 
 hi def link mcSetblockMode      mcKeyword
 
@@ -1305,11 +1302,11 @@ syn keyword mcCriteria contained air armor deathcount dummy food health level tr
 syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcTeamColor /teamkill\.\|killedByTeam./
 syn match   mcTeamColor contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
 " item
-syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_up\|used\):minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinItem,mcBuiltinItemBlock
+syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_up\|used\):minecraft\./ skipwhite nextgroup=mcAnySpace,mcItem
 "block
-syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinBlock,mcBuiltinItemBlock
+syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBlock
 " entity
-syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinEntity
+syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcEntity
 "custom things
 syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCustomCriteria,mcCriteriaCustomNamespace
 syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcCustomCriteria
@@ -1412,7 +1409,7 @@ syn match   mcFilterEqScore     contained /=/    skipwhite nextgroup=mcFilterIR1
 syn match   mcFilterEqAdvance   contained /=/    skipwhite nextgroup=mcFilterAdvancementCriterion,mcBool
 syn match   mcFilterEqName      contained /=!\?/ skipwhite nextgroup=mcPlayerName
 syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeam
-syn match   mcFilterEqType      contained /=!\?/ skipwhite nextgroup=@mcTaggableNsEntity
+syn match   mcFilterEqType      contained /=!\?/ skipwhite nextgroup=mcNsTEntity
 syn match   mcFilterEqTag       contained /=!\?/ skipwhite nextgroup=mcTag
 syn match   mcFilterEqF         contained /=/    skipwhite nextgroup=mcFilterF
 syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcFilterUI
