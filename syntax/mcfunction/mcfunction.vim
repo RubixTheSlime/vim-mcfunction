@@ -2,6 +2,7 @@ if exists("b:current_syntax")
         finish
 endif
 let b:current_syntax = "mcfunction"
+let s:debug = 1
 
 syn match mcAnySpace contained / /
 hi def link mcAnySpace mcBadWhitespace
@@ -931,8 +932,8 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticlePa
 call s:createNewInstance('NsParticle','Particle','mcCoordinateParticle')
 call s:mcCoordinate('Particle','mcCoordinateParticleDelta','')
 call s:mcCoordinate('ParticleDelta','mcParticleSpeed','2')
-syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcParticleCount /\(\d*\.\)\?\d\+/ 
-syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/ 
+syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcParticleCount /\(\d*\.\)\?\d\+/
+syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
 
 hi def link mcParticleSpeed mcValue
@@ -949,8 +950,8 @@ call s:createNewInstance('SoundChannel','Play','mcSelectorPlaysound')
 call s:mcSelector('Playsound','mcCoordinatePlaysound')
 call s:mcCoordinate('Playsound','mcPlaysoundVolume','')
 
-syn match   mcPlaysoundVolume    contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundPitch     /\(\d*\.\)\?\d\+/ 
-syn match   mcPlaysoundPitch     contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundMinVolume /0*1\?\.\d\+\|0*2\(\.0*\)\?\ze\_[ ]/ 
+syn match   mcPlaysoundVolume    contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundPitch     /\(\d*\.\)\?\d\+/
+syn match   mcPlaysoundPitch     contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundMinVolume /0*1\?\.\d\+\|0*2\(\.0*\)\?\ze\_[ ]/
 syn match   mcPlaysoundMinVolume contained                                                        /0*\.\d\+\|0*1\(\.0*\)\?\ze\_[ ]/
 
 hi def link mcPlaysoundVolume    mcValue
@@ -1271,17 +1272,9 @@ hi def link mcXpAmount  mcValue
 hi def link mcXpUnit    mcKeyword
 hi def link mcXpKeyword mcKeyword
 
-" Data Values
-
-hi def link mcBlockStateBracket         mcBlockStateEq
-hi def link mcBlockStateEq              mcFilterEq
-hi def link mcBlockStateKeyword         mcFilterKeyword
-hi def link mcBlockStateValue           mcFilterValue
-
-syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
-hi def link mcBadWhiteSpaceBlock mcBadWhitespace
-
-" Scoreboard criteria
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Scoreboard Criteria
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCriteria contained air armor deathcount dummy food health level trigger xp playerKillCount
 syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcTeamColor /teamkill\.\|killedByTeam./
 syn match   mcTeamColor contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
@@ -1299,13 +1292,18 @@ hi def link mcCriteriaCustomNamespace mcCriteria
 hi def link mcTeamColor      mcCriteria
 hi def link mcCriteria       mcKeyId
 
-" Scoreboard displays
-syn keyword mcScoreDisplay contained belowName list 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Scoreboard Displays
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcScoreDisplay contained belowName list
 syn match   mcScoreDisplay contained /sidebar\ze[^.]/
 syn match   mcScoreDisplay contained /sidebar\.team\./ skipwhite nextgroup=mcAnySpace,mcCriteriaTeam
 hi def link mcScoreDisplay mcKeyValue
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Block States
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn region  mcBlockState                matchgroup=mcBlockStateBracket start=/\[/rs=e end=/]/ contained skipwhite contains=mcBlockStateKeyword
 
 " keywords
@@ -1325,22 +1323,7 @@ syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockSta
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqPart        part
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqShape       shape
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqType        type
-" ...=...
-syn match   mcBlockStateEqUI            contained skipwhite nextgroup=mcBlockStateValueUI               /=/
-syn match   mcBlockStateEqBool          contained skipwhite nextgroup=mcBlockStateValueBool             /=/
-syn match   mcBlockStateEqAttachment    contained skipwhite nextgroup=mcBlockStateValueAttachment       /=/
-syn match   mcBlockStateEqAxis          contained skipwhite nextgroup=mcBlockStateValueAxis             /=/
-syn match   mcBlockStateEqCardinal      contained skipwhite nextgroup=mcBlockStateValueCardinal         /=/
-syn match   mcBlockStateEqFace          contained skipwhite nextgroup=mcBlockStateValueFace             /=/
-syn match   mcBlockStateEqFacing        contained skipwhite nextgroup=mcBlockStateValueFacing           /=/
-syn match   mcBlockStateEqHalf          contained skipwhite nextgroup=mcBlockStateValueHalf             /=/
-syn match   mcBlockStateEqHinge         contained skipwhite nextgroup=mcBlockStateValueHinge            /=/
-syn match   mcBlockStateEqInstrument    contained skipwhite nextgroup=mcBlockStateValueInstrument       /=/
-syn match   mcBlockStateEqLeaves        contained skipwhite nextgroup=mcBlockStateValueLeaves           /=/
-syn match   mcBlockStateEqMode          contained skipwhite nextgroup=mcBlockStateValueMode             /=/
-syn match   mcBlockStateEqPart          contained skipwhite nextgroup=mcBlockStateValuePart             /=/
-syn match   mcBlockStateEqShape         contained skipwhite nextgroup=mcBlockStateValueShape            /=/
-syn match   mcBlockStateEqType          contained skipwhite nextgroup=mcBlockStateValueType             /=/
+
 " values
 syn match   mcBlockStateValueUI         contained skipwhite     /\d\+/
 syn match   mcBlockStateValueShape      contained skipwhite     /ascending_\(north\|east\|south\|west\)\|east_west\|north_south\|\(inner\|outer\)_\(left\|right\)\|\(nort\|south\)_\(east\|west\)\|straight/
@@ -1357,47 +1340,21 @@ syn keyword mcBlockStateValueLeaves     contained skipwhite     large none small
 syn keyword mcBlockStateValueMode       contained skipwhite     compare subtract corner data load save
 syn keyword mcBlockStateValuePart       contained skipwhite     foot head
 syn keyword mcBlockStateValueType       contained skipwhite     normal sticky left right single bottom double top
-" Block State Links
-hi def link mcBlockStateEqUI            mcBlockStateEq
-hi def link mcBlockStateEqBool          mcBlockStateEq
-hi def link mcBlockStateEqAttachment    mcBlockStateEq
-hi def link mcBlockStateEqAxis          mcBlockStateEq
-hi def link mcBlockStateEqCardinal      mcBlockStateEq
-hi def link mcBlockStateEqFace          mcBlockStateEq
-hi def link mcBlockStateEqFacing        mcBlockStateEq
-hi def link mcBlockStateEqHalf          mcBlockStateEq
-hi def link mcBlockStateEqHinge         mcBlockStateEq
-hi def link mcBlockStateEqInstrument    mcBlockStateEq
-hi def link mcBlockStateEqLeaves        mcBlockStateEq
-hi def link mcBlockStateEqMode          mcBlockStateEq
-hi def link mcBlockStateEqPart          mcBlockStateEq
-hi def link mcBlockStateEqShape         mcBlockStateEq
-hi def link mcBlockStateEqType          mcBlockStateEq
 
-hi def link mcBlockStateValueUI         mcBlockStateValue
-hi def link mcBlockStateValueBool       mcBlockStateValue
-hi def link mcBlockStateValueAttachment mcBlockStateValue
-hi def link mcBlockStateValueAxis       mcBlockStateValue
-hi def link mcBlockStateValueCardinal   mcBlockStateValue
-hi def link mcBlockStateValueFace       mcBlockStateValue
-hi def link mcBlockStateValueFacing     mcBlockStateValue
-hi def link mcBlockStateValueHalf       mcBlockStateValue
-hi def link mcBlockStateValueHinge      mcBlockStateValue
-hi def link mcBlockStateValueInstrument mcBlockStateValue
-hi def link mcBlockStateValueLeaves     mcBlockStateValue
-hi def link mcBlockStateValueMode       mcBlockStateValue
-hi def link mcBlockStateValuePart       mcBlockStateValue
-hi def link mcBlockStateValueShape      mcBlockStateValue
-hi def link mcBlockStateValueType       mcBlockStateValue
-" From other files to reorganize
-syn match   mcAdvancementNameFilter             contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[/:]\)\+/        
-syn match   mcAdvancementCriterionNameFilter    contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[.+-]\)\+/       
-hi def link mcAdvancementNameFilter     mcAdvancementName
-hi def link mcAdvancementCriterionNameFilter    mcAdvancementCriterionName
+for x in split('UI Bool Attachment Axis Cardinal Face Facing Half Hinge Instrument Leaves Mode Part Shape Type',' ')
+        execute 'syn match   mcBlockStateEq'.x '/=/ contained skipwhite nextgroup=mcBlockStateValue'.x
+        execute 'hi def link mcBlockStateEq'.x 'mcBlockStateEq'
+        execute 'hi def link mcBlockStateValue'.x 'mcBlockStateValue'
+endfor
 
-hi def link mcFilterKeyValue            mcKeyValue
-hi def link mcFilterKeyword             mcKeyword
-hi def link mcFilterValue               mcValue
+hi def link mcBlockStateBracket         mcOp
+hi def link mcBlockStateEq              mcOp
+hi def link mcBlockStateKeyword         mcKeyword
+hi def link mcBlockStateValue           mcValue
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Filter
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 syn match   mcFilterComma       contained /,/
 " Keywords
@@ -1422,16 +1379,15 @@ syn keyword mcFilterKeyword     contained predicate             skipwhite nextgr
 syn match   mcFilterEqGamemode  contained /=/    skipwhite nextgroup=mcGamemode
 syn match   mcFilterEqNBT       contained /=/    skipwhite nextgroup=mcNBTTag
 syn match   mcFilterEqPredicate contained /=/    skipwhite nextgroup=mcNsPredicate
-syn match   mcFilterEqTag       contained /=/    skipwhite nextgroup=mcFilterTag
 syn match   mcFilterEqSort      contained /=/    skipwhite nextgroup=mcFilterSort
 syn match   mcFilterEqScores    contained /=/    skipwhite nextgroup=mcFilterScores
 syn match   mcFilterEqAdvances  contained /=/    skipwhite nextgroup=mcFilterAdvancements
 syn match   mcFilterEqScore     contained /=/    skipwhite nextgroup=mcFilterIR1,mcFilterIR2
 syn match   mcFilterEqAdvance   contained /=/    skipwhite nextgroup=mcFilterAdvancementCriterion,mcBool
 syn match   mcFilterEqName      contained /=!\?/ skipwhite nextgroup=mcPlayerName
-syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeamName
+syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeam
 syn match   mcFilterEqType      contained /=!\?/ skipwhite nextgroup=mcNsEntity
-syn match   mcFilterEqTag       contained /=!\?/ skipwhite nextgroup=mcTagName
+syn match   mcFilterEqTag       contained /=!\?/ skipwhite nextgroup=mcTag
 syn match   mcFilterEqF         contained /=/    skipwhite nextgroup=mcFilterF
 syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcFilterUI
 syn match   mcFilterEqUFR       contained /=/    skipwhite nextgroup=mcFilterUFR1,mcFilterUFR2
@@ -1473,47 +1429,29 @@ syn region  mcFilterAdvancementCriterion        matchgroup=mcOp start=/{/rs=e en
 
 
 " Links
-hi def link mcFilterComma               mcFilterEq
-hi def link mcFilterSort                mcKeyValue
 hi def link mcFilterKeyword             mcKeyword
-hi def link mcFilterEq                  mcOp
-hi def link mcFilterRange               mcFilterValue
+hi def link mcFilterKeyValue            mcKeyValue
+hi def link mcFilterSort                mcKeyValue
 hi def link mcFilterValue               mcValue
-
-hi def link mcFilterEqGamemode          mcFilterEq
-hi def link mcFilterEqNBT               mcFilterEq
-hi def link mcFilterEqTag               mcFilterEq
-hi def link mcFilterEqSort              mcFilterEq
-hi def link mcFilterEqScores            mcFilterEq
-hi def link mcFilterEqAdvances          mcFilterEq
-hi def link mcFilterEqScore             mcFilterEq
-hi def link mcFilterEqAdvance           mcFilterEq
-hi def link mcFilterEqName              mcFilterEq
-hi def link mcFilterEqTeam              mcFilterEq
-hi def link mcFilterEqType              mcFilterEq
-hi def link mcFilterEqTag               mcFilterEq
-hi def link mcFilterEqF                 mcFilterEq
-hi def link mcFilterEqUI                mcFilterEq
-hi def link mcFilterEqUFR               mcFilterEq
-hi def link mcFilterEqXR                mcFilterEq
-hi def link mcFilterEqYR                mcFilterEq
+hi def link mcFilterEq                  mcOp
 
 hi def link mcFilterUI                  mcFilterValue
 hi def link mcFilterF                   mcFilterValue
+hi def link mcFilterRangeInf            mcFilterValue
+hi def link mcFilterComma               mcFilterEq
 
-hi def link mcFilterIR1                 mcFilterRange
-hi def link mcFilterUIR1                mcFilterRange
-hi def link mcFilterUFR1                mcFilterRange
-hi def link mcFilterXR1                 mcFilterRange
-hi def link mcFilterYR1                 mcFilterRange
-hi def link mcFilterIR2                 mcFilterRange
-hi def link mcFilterUIR2                mcFilterRange
-hi def link mcFilterUFR2                mcFilterRange
-hi def link mcFilterXR2                 mcFilterRange
-hi def link mcFilterYR2                 mcFilterRange
-hi def link mcFilterRangeInf            mcFilterRange
+for x in split('Gamemode NBT Tag Sort Scores Advances Score Advance Name Team Type Tag F UI UFR XR YR', ' ')
+        execute 'hi def link mcFilterEq'.x 'mcFilterEq'
+endfor
+for x in split('IR UIR UFR XR YR', ' ')
+        execute 'hi def link mcFilter'.x.'1' 'mcFilterValue'
+        execute 'hi def link mcFilter'.x.'2' 'mcFilterValue'
+endfor
 
-for s:x in ['Advancement', 'Block', 'BossbarId', 'Recipe', 'Dimension', 'Effect', 'Enchantment', 'Entity', 'Function', 'Item', 'Objective', 'Particle', 'Sound', 'Storage', 'Predicate', 'SoundChannel', 'AdvancementCriteria', 'Structure', 'LocatableStructure', 'CustomCriteria']
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Data Values
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+for s:x in split('Advancement AdvancementCriteria Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n]\S\+/ contained contains=mcNamespace,mc'.s:x
         execute 'hi def link mc'.s:x 'mcId'
@@ -1525,13 +1463,21 @@ for s:x in ['Advancement', 'Block', 'BossbarId', 'Recipe', 'Dimension', 'Effect'
 
 endfor
 
-syn match   mcBlock                             /\(\w\+:\)*\w\+/                contained contains=mcBuiltinBlock nextgroup=mcBlockstate
+syn match mcBlock /\(\w\+:\)*\w\+/ contained contains=mcBuiltinBlock nextgroup=mcBlockstate
+syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
+hi def link mcBadWhiteSpaceBlock mcBadWhitespace
 
-syn match   mcNamespace                         /\w\+:/                         contained contains=mcBuiltinNamespace
-hi def link mcNamespace                 mcId
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Namespace
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn match mcNamespace /\w\+:/ contained contains=mcBuiltinNamespace
+hi def link mcNamespace mcId
 syn match mcBuiltinNamespace contained /minecraft:/
 hi def link mcBuiltinNamespace mcKeyId
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Builtins
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addBuiltin(type,match)
         execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.a:match.'>)`'
 endfunction
@@ -1547,14 +1493,14 @@ endfunction
 
 let s:files = split(globpath(s:path.'data','*'),'\n')
 for s:file in s:files
-        let s:filename = fnamemodify(s:file,':t:r') 
+        let s:filename = fnamemodify(s:file,':t:r')
         let s:lines = readfile(s:file)
         for s:line in s:lines
                 if s:line =~ '^\s*\_[#]'
                         "just whitespace/comment, skip
                 elseif s:line =~ '^!'
                         let g:ver = substitute(s:line,'!','','')
-                        let g:numver = s:toNumericVersion(g:ver) 
+                        let g:numver = s:toNumericVersion(g:ver)
                         if s:toNumericVersion(g:ver) > g:numericVersion
                                 break
                         endif
@@ -1624,11 +1570,18 @@ hi def link mcNBTComma          mcNBTPathDot
 hi def link mcNBTColon          mcNBTPathDot
 hi def link mcNBTValueQuote     mcNBTValue
 
-hi def link mcNBTIndex                  mcNBTPathDot
-hi def link mcNBTPath                   mcKeyValue
-hi def link mcNBTPathDot                mcNBTBracket
-hi def link mcNBTQuote                  mcNBTPath
-hi def link mcNBTString                 mcNBTValue
+hi def link mcNBTIndex          mcNBTPathDot
+hi def link mcNBTPath           mcKeyValue
+hi def link mcNBTPathDot        mcNBTBracket
+hi def link mcNBTQuote          mcNBTPath
+hi def link mcNBTString         mcNBTValue
 
-" For debugging purposes
-syn keyword mcCommand nbt skipwhite contained nextgroup=@mcNBTPath
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Debugging
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:debug
+        syn keyword mcCommand contained skipwhite nextgroup=mcNBTKW    nbt
+        syn keyword mcNBTKW   contained skipwhite nextgroup=mcNBTTag   tag
+        syn keyword mcNBTKW   contained skipwhite nextgroup=@mcNBTPath path
+        hi def link mcNBTKW mcKeyword
+endif

@@ -1,5 +1,7 @@
 particle minecraft:poof 1 2 3 4 5 6 1 2 force @s
 /kill @e[type=minecraft:armor_stand,distance=1..3.14,x_rotation=-.2..90.0,sort=nearest]
+nbt tag {reistn}
+nbt path rastneie
 tp @e[advancements={adventure/kill_a_mob={rst=true}}]
 advancement grant @s only minecraft:story/lava_bucket
 kill @e[x=1,y=1,z=1]
