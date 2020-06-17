@@ -897,7 +897,7 @@ if s:atLeastVersion('18w43a')
         endif
 
 " Target
-syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot                    spawn insert
+syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot                            spawn insert
         call s:mcCoordinate("Loot","mcLootSourceKeyword","")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorLoot                        give
         call s:mcSelector("Loot", "mcLootSourceKeyword")
