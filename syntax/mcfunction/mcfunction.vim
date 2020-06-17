@@ -249,7 +249,7 @@ syn match   mcInt32             /-\?\d\+/ contained
 hi def link mcInt32 mcValue
 
 syn keyword mcBool              contained true false
-hi def link mcBool              mcValue
+hi def link mcBool              mcKeyValue
 
 "TODO
 syn match   mcJSONText          contained /.\+/
@@ -292,7 +292,7 @@ syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e en
 
 "This one requires a special name regex
 "Don't touch it just works
-syn match   mcSelectorTpTarget contained /\<\(\d\+\(\s\+[0-9~.-]\+\)\{1,2}\s*$\)\@!\w\{3,16}\>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /\v<(\d+(\s+[0-9~.-]+){1,2}\s*$)\@!\w{3,16}>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn match   mcSelectorTpTarget contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
@@ -322,7 +322,7 @@ syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Coordinate
-" (~[#ientrs] | #) * 3 | (^[#]) * 3
+" (~[#] | #) * 3 | (^[#]) * 3
 " ~|~?-?\d*\.?\d+ *3 OR ^[n][.n] *3
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -432,9 +432,9 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:createNewInstance(type,group,nextgroup)
         if a:nextgroup == ""
-                execute 'syn match mc'.a:type.a:group '/\S\+/ contained contains=mc'.a:type
+                execute 'syn match mc'.a:type.a:group '/\(\\w\|[:\/.]\)\+/ contained contains=mc'.a:type
         else
-                execute 'syn match mc'.a:type.a:group '/\S\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+                execute 'syn match mc'.a:type.a:group '/\(\w\|[:\/.]\)\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         endif
 endfunction
 
@@ -450,10 +450,9 @@ syn keyword mcCommand advancement contained skipwhite nextgroup=mcDoubleSpace,mc
 syn keyword mcAdvanceKeyword                contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAdvance         grant revoke
 call s:mcSelector("Advance","mcAdvanceWhich")
 syn keyword mcAdvanceWhich                  contained                                                           everything
-syn keyword mcAdvanceWhich                  contained skipwhite nextgroup=mcDoubleSpace,mcAdvancementCriteria   only
-        call s:createNewInstance('Advancement','Criteria','mcAdvancementCriteria')
-syn keyword mcAdvancementWhich              contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancementName      from through until
-        call s:createNewInstance('Advancement','Criteria','')
+syn keyword mcAdvanceWhich                  contained skipwhite nextgroup=mcDoubleSpace,mcNsAdvancementViaCriteria   only
+        call s:createNewInstance('NsAdvancement','ViaCriteria','mcAdvancementCriteria')
+syn keyword mcAdvanceWhich              contained skipwhite nextgroup=mcDoulbleSpace,mcAdvancement      from through until
 
 hi def link mcAdvanceWhich          mcKeyword
 hi def link mcAdvanceKeyword        mcKeyword
@@ -872,7 +871,7 @@ hi def link mcListUUIDs         mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Locate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcBuiltinLocatable
+syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocatableStructure
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Loot
@@ -963,7 +962,7 @@ hi def link mcPlaysoundMinVolume mcValue
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcRecipeKeyword recipe
 
 syn keyword mcRecipeKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorRecipe give take
-call s:mcSelector('Recipe','mcCraftableItem,mcGlob')
+call s:mcSelector('Recipe','mcRecipe,mcGlob')
 hi def link mcRecipeKeyword mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -973,7 +972,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBloc
 
 call s:mcSelectorBlock('Replaceitem','mcReplaceitemSlot')
 syn match   mcReplaceitemSlot  contained skipwhite nextgroup=mcDoubleSpace,mcNsItemReplaceitem /armor\.\(chest\|feet\|head\|legs\)\|container.\([1-4]\?\d\|5[0-3]\)\|\(inventory\|enderchest\)\.\(1\?\d\|2[0-6]\)\|horse\.\(armor\|saddle\|chest\|\d\|1[0-5]\)\|hotbar.[0-8]\|villager.[0-7]\|weapon\(\.\(main\|off\)hand\)\?/
-call s:createNewInstance('Item','Replaceitem','mcUInt')
+call s:createNewInstance('NsItem','Replaceitem','mcUInt')
 
 hi def link mcReplaceitemWhere mcKeyword
 hi def link mcReplaceitemSlot  mcKeyword
@@ -1272,26 +1271,6 @@ hi def link mcXpKeyword mcKeyword
 
 " Data Values
 
-for x in ['Advancement', 'Block', 'BossbarId', 'CratableItem', 'Dimension', 'Effect', 'Enchantment', 'Entity', 'Function', 'Item', 'Objective', 'Particle', 'Sound', 'Storage', 'Predicate', 'SoundChannel', 'AdvancementCriteria']
-        execute 'syn match mcNs'.x '/\(\w\+:\)\?\S\+/ contained contains=mcNamespace,mc'.x
-        execute 'syn match mcNamespaced'.x '/\w\+:\S\+/ contained contains=mcNamespace,mc'.x
-        execute 'hi def link mc'.x 'mcValue'
-        execute 'hi def link mcBuiltin'.x 'mcKeyValue'
-        if x =~ 'dvance\|ossbar\|unction\|lock'
-        else
-                execute 'syn match mc'.x '/\w\+/ contained contains=mcBuiltin'.x
-        endif
-endfor
-
-syn match   mcAdvancement                       /\(\w\+[:/]\)*\w\+/             contained contains=mcNamespace,mcBuiltinAdvancement
-syn match   mcBossbarId                         /\(\w[:./-]\)*\w\+/             contained contains=mcNamespace,mcBuiltinBossbarId
-syn match   mcFunction                          /#\?[a-z0-9_-]\+:[a-z0-9./_-]*/ contained contains=mcNamespace
-syn match   mcBlock                             /\(\w\+:\)*\w\+/                contained contains=mcBuiltinBlock nextgroup=mcBlockstate
-syn match   mcAdvancementCriteria               /\(\w\+[.+-]\)*\w\+/            contained contains=mcBuiltinAdvancementCriteria
-
-syn match   mcNamespace                         /\w\+:/                         contained contains=mcBuiltinNamespace
-hi def link mcNamespace                 mcValue
-
 hi def link mcBlockStateBracket         mcBlockStateEq
 hi def link mcBlockStateEq              mcFilterEq
 hi def link mcBlockStateKeyword         mcFilterKeyword
@@ -1310,25 +1289,13 @@ syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_
 syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinBlock,mcBuiltinItemBlock
 " entity
 syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinEntity
-" custom things, this'll be a pain to maintain
-syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCriteriaCustomNamespace
-syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcBuiltinCustomCriteria
-syn match   mcCriteriaCustom contained /animals_bred\|bell_ring\|deaths\|eat_cake_slice\|enchant_item\|fill_cauldron\|fish_caught\|jump\|leave_game\|pot_flower\|sleep_in_bed\|sneak_time\|trigger_trapped_chest\|tune_noteblock\|use_cauldron/
-syn match   mcCriteriaCustom contained /raid_\(trigger\|win\)/
-syn match   mcCriteriaCustom contained /time_since_\(death\|rest\)/
-syn match   mcCriteriaCustom contained /\(talked_to\|traded_with\)_villager/
-syn match   mcCriteriaCustom contained /play_\(noteblock\|one_minute\|record\)/
-syn match   mcCriteriaCustom contained /open_\(barrel\|\(ender_\)chest\)/
-syn match   mcCriteriaCustom contained /\(mob\|player\)_kills/
-syn match   mcCriteriaCustom contained /inspect_\(dropper\|hopper\|dispenser\)/
-syn match   mcCriteriaCustom contained /clean_\(armor\|banner\|shulker_box\)/
-syn match   mcCriteriaCustom contained /damage_\(\(dealt_\)\?\(absorbed\|resisted\)\|blocked_by_shield\|dealt\|taken\)/
-syn match   mcCriteriaCustom contained /\(aviate\|boat\|climb\|crouch\|fall\|fly\|horse\|minecart\|pig\|sprint\|swim\|walk\(_\(on\|under\)_water\)\?\)_one_cm/
-syn match   mcCriteriaCustom contained /interact_with_\(beacon\|blast_furnace\|brewingstand\|campfire\|c\(artography\|rafting\)_table\|furnace\|lectern\|loom\|smoker\)/
+"custom things
+syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCustomCriteria,mcCriteriaCustomNamespace
+syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcCustomCriteria
 hi def link mcCriteriaCustomNamespace mcCriteria
-hi def link mcCriteriaCustom mcCriteria
+"hi def link mcCriteriaCustom mcCriteria
 hi def link mcTeamColor      mcCriteria
-hi def link mcCriteria       mcKeyValue
+hi def link mcCriteria       mcKeyId
 
 " Scoreboard displays
 syn keyword mcScoreDisplay contained belowName list 
@@ -1424,7 +1391,7 @@ hi def link mcBlockStateValueType       mcBlockStateValue
 syn match   mcAdvancementNameFilter             contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[/:]\)\+/        
 syn match   mcAdvancementCriterionNameFilter    contained skipwhite nextgroup=mcFilterEqAdvance                         /\(\w\|[.+-]\)\+/       
 hi def link mcAdvancementNameFilter     mcAdvancementName
-hi def link mcAdvancementCriterionNameFilter    mcAdvanecmentCriterionName
+hi def link mcAdvancementCriterionNameFilter    mcAdvancementCriterionName
 
 hi def link mcFilterKeyValue            mcKeyValue
 hi def link mcFilterKeyword             mcKeyword
@@ -1497,16 +1464,17 @@ syn match   mcFilterYR2         contained /\.\.\(-\?180\(\.0\+\)\?\|-\?1[0-7]\d\
 syn match   mcFilterRangeInf    contained /\.\.\s*\ze\_[,\]]=/
 
 " Lists
-syn region  mcFilterScores                      matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcObjectiveNameFilter
-syn region  mcFilterAdvancements                matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcAdvancementNameFilter
-syn region  mcFilterAdvancementCriterion        matchgroup=mcSelector start=/{/rs=e end=/}/ contained contains=mcAdvancementCriterionNameFilter
+syn region  mcFilterScores                      matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcObjectiveNameFilter
+syn region  mcFilterAdvancements                matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcAdvancementFilter
+call s:createNewInstance('Advancement','Filter','mcFilterEqAdvance')
+syn region  mcFilterAdvancementCriterion        matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcAdvancementCriterion
 
 
 " Links
 hi def link mcFilterComma               mcFilterEq
 hi def link mcFilterSort                mcKeyValue
 hi def link mcFilterKeyword             mcKeyword
-hi def link mcFilterEq                  mcSelector
+hi def link mcFilterEq                  mcOp
 hi def link mcFilterRange               mcFilterValue
 hi def link mcFilterValue               mcValue
 
@@ -1543,17 +1511,24 @@ hi def link mcFilterXR2                 mcFilterRange
 hi def link mcFilterYR2                 mcFilterRange
 hi def link mcFilterRangeInf            mcFilterRange
 
-" Namespace
-syn match mcBuiltinNamespace contained /minecraft:/
+for s:x in ['Advancement', 'Block', 'BossbarId', 'Recipe', 'Dimension', 'Effect', 'Enchantment', 'Entity', 'Function', 'Item', 'Objective', 'Particle', 'Sound', 'Storage', 'Predicate', 'SoundChannel', 'AdvancementCriteria', 'Structure', 'LocatableStructure', 'CustomCriteria']
+        execute 'syn match mcNs'.s:x '/[^ =,\t\r\n]\+/ contained contains=mcNamespace,mc'.s:x
+        execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n]\S\+/ contained contains=mcNamespace,mc'.s:x
+        execute 'hi def link mc'.s:x 'mcId'
+        execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
+        if s:x =~ '\cblock'
+        else
+                execute 'syn match mc'.s:x '/[^ =,\t\r\n]\+/ oneline contained contains=mcBuiltin'.s:x
+        endif
 
-hi def link mcBuiltin                   mcKeyValue
-hi def link mcBuiltinNamespace          mcBuiltin
-hi def link mcBuiltinBlock              mcBuiltin
-hi def link mcBuiltinDimension          mcBuiltin
-hi def link mcBuiltinEffect             mcBuiltin
-hi def link mcBuiltinEnchantment        mcBuiltin
-hi def link mcBuiltinEntity             mcBuiltin
-hi def link mcBuiltinItem               mcBuiltin
+endfor
+
+syn match   mcBlock                             /\(\w\+:\)*\w\+/                contained contains=mcBuiltinBlock nextgroup=mcBlockstate
+
+syn match   mcNamespace                         /\w\+:/                         contained contains=mcBuiltinNamespace
+hi def link mcNamespace                 mcId
+syn match mcBuiltinNamespace contained /minecraft:/
+hi def link mcBuiltinNamespace mcKeyId
 
 function! s:addBuiltin(type,match)
         execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.a:match.'>)`'
@@ -1588,7 +1563,7 @@ for s:file in s:files
                         " Block
                         if s:parts[0] =~ 'b'    | call s:addBuiltin('Block',    s:parts[1]) | endif
                         " Craftable Item
-                        if s:parts[0] =~ '[cr]' | call s:addBuiltin('Craftable',s:parts[1]) | endif
+                        if s:parts[0] =~ '[cr]' | call s:addBuiltin('Recipe',s:parts[1]) | endif
                         " Item
                         if s:parts[0] =~ '[ci]' | call s:addBuiltin('Item',s:parts[1]) | endif
                         " Spawn Egg
@@ -1602,14 +1577,14 @@ for s:file in s:files
                 elseif s:filename == 'Structure'
                         call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
                         if s:line =~ '^\*'
-                                if atLeastVersion('20w21a')
-                                        call s:addBuiltin('Locatable',matchstr(s:line,'^\*\?\zs\S*\>'))
+                                if s:atLeastVersion('20w21a')
+                                        call s:addBuiltin('LocatableStructure',matchstr(s:line,'^\*\?\zs\S*\>'))
                                 else
                                         " it would be very consistent if it weren't for EndCity
                                         if s:line=~ 'endcity'
-                                                call s:addBuiltin('Locatable','EndCity')
+                                                call s:addBuiltin('LocatableStructure','EndCity')
                                         else
-                                                call s:addBuiltin('Locatable',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\<\a', '\u&', 'g'))
+                                                call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\<\a', '\u&', 'g'))
                                         endif
                                 endif
                         endif
@@ -1625,9 +1600,8 @@ if s:combatVersion >= 3
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-" Sound channels
+" NBT Parts
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
-
 syn match   mcNBTIndex          /\s*\d\+\s*/                                                            contained
 syn match   mcNBTComma          /,/                                                                     contained
 syn match   mcNBTColon          /:/                                                                     contained skipwhite nextgroup=@mcNBTValue

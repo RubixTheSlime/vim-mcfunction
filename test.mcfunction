@@ -1,10 +1,18 @@
 particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+/kill @e[type=minecraft:armor_stand,distance=1..3.14,x_rotation=-.2..90.0,sort=nearest]
+tp @e[advancements={adventure/kill_a_mob={rst=true}}]
+advancement grant @s only minecraft:story/lava_bucket
+kill @e[x=1,y=1,z=1]
 summon vex
 summon zombie_pigman
-summon iron_golem
+summon minecraft:iron_golem
+locate EndCity
+locate Village
+locate endcity
 summon tnt
 give @s vex_spawn_egg
 effect give @s haste
+clone 1 2 3 4 5 6 7 8 9
 setblock 1 2 3 blackstone
 setblock 1 2 3 water
 fill 1 2 3 4 5 6 minecraft:water
@@ -58,7 +66,8 @@ gamerule ra
 scoreboard players add @s arst 123
 scoreboard players get @s arst
 scoreboard players operation @s arst += @s ast
-scoreboard objectives add arst minecraft.custom:minecraft.animals_bred "iersnt"
+scoreboard objectives add arst minecraft.custom:animals_bred "iersnt"
+scoreboard objectives add arst minecraft.custom:aviate_one_cm "iersnt"
 scoreboard objectives add arst minecraft.custom:minecraft.aviate_one_cm "airsentei"
 scoreboard objectives add arst minecraft.used:minecraft.apple "airsentei"
 scoreboard objectives setdisplay sidebar arst
@@ -107,8 +116,6 @@ msg s ienyun
 /msg @a esrtn     srnyu
 #iesntien
 #ieharden
-/kill @e[type=minecraft:armor_stand,distance=1..3.14,x_rotation=-.2..90.0,sort=nearest]
-kill @e[x=1,y=1,z=1]
 execute as @e run tp @e
 execute align xz as @a[name=sam] run tp @r
 execute as run at run anchored eyes positioned 1 2 3 rotated as arst run
@@ -127,7 +134,7 @@ kill @a
 setblock 1 2 3 grass_block[snowy=true]
 kill @e[type=arst]
 kill @e[type=minecraft:armor_stand]
-kill @e[type=cow]
+kill @e[type=cod]
 @e
 gamerule doDaylightCycle true
 gamerule randomTickSpeed 29389281098308109
@@ -150,7 +157,6 @@ tp 2 3 4 5 1 1 1 1 1
 tp 12345678-1234-1234-123456789012
 tp @s 1 2 3 facing entity @s eyes
 tp @e[gamemode=spectator,nbt={Health:20.0d}] ^ ^1 ^5 facing 2 ~3 1
-tp @e[advancements={story/killthing={rst=true}}}]
 tp @s 2 4 1 ~.35 -5.35 6
 tp @s @e
 execute if predicate arst run

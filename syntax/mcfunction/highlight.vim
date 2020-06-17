@@ -3,16 +3,18 @@ hi def link mcChatMessage       String
 hi def link mcComment           Comment
 
 hi mcCommand            ctermfg=DarkBlue        cterm=bold
-hi mcOp                 ctermfg=DarkRed
-hi mcSelector             ctermfg=Green
+hi mcOp                 ctermfg=Yellow
+hi mcSelector           ctermfg=DarkRed
 
-hi mcCoordinate         ctermfg=Cyan
-hi mcCoordinate2        ctermfg=Yellow
-hi mcCoordinate3        ctermfg=Green
+hi mcCoordinate         ctermfg=DarkRed
+hi mcCoordinate2        ctermfg=Red cterm=bold
+hi mcCoordinate3        ctermfg=DarkRed
 
-hi mcKeyword                                    cterm=italic
+hi mcKeyword                                    cterm=italic,bold
 hi mcKeyValue           ctermfg=Magenta          cterm=bold
 hi mcValue              ctermfg=Magenta
+hi mcKeyId              ctermfg=LightGreen          cterm=bold
+hi mcId                 ctermfg=Green
 
 hi mcJSONText           ctermfg=Brown
 
