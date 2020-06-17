@@ -464,23 +464,23 @@ hi def link mcAdvanceKeyword        mcKeyword
 syn keyword mcCommand bossbar contained skipwhite nextgroup=mcDoubleSpace,mcBossbarKeyword
 
 " Bossbar add
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdAdd add
-call s:createNewInstance('BossbarId','Add','mcJSONText')
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdAdd add
+call s:createNewInstance('NsBossbarId','Add','mcJSONText')
 
 " Bossbar get
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdGet get
-call s:createNewInstance('BossbarId','Get','mcBossbarGetKeyword')
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdGet get
+call s:createNewInstance('NsBossbarId','Get','mcBossbarGetKeyword')
 syn keyword mcBossbarGetKeyword contained                                                  max players value visible
 
 " Bossbar list
 syn keyword mcBossbarKeyword    contained                                                  list
 
 " Bossbar remove
-syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarId    remove
+syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarId    remove
 
 " Bossbar set
 syn keyword mcBossbarKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdSet set
-call s:createNewInstance('BossbarId','Set','mcBossbarSetKeyword')
+call s:createNewInstance('NsBossbarId','Set','mcBossbarSetKeyword')
 
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor   color
         syn keyword mcBossbarSetColor   contained                                                       blue green pink purple red white yellow
@@ -511,7 +511,7 @@ hi def link mcBossbarIdSet              mcValue
 syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcSelectorClear
 
 call s:mcSelector("Clear","mcNsItemClear")
-call s:createNewInstance('Item','Clear','mcUInt')
+call s:createNewInstance('NsItem','Clear','mcUInt')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clone
@@ -613,8 +613,8 @@ syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffec
 
 " Effect give
 syn keyword mcEffectKeyword give        contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectGive
-call s:mcSelector("EffectGive", "mcEffectGive")
-call s:createNewInstance('Effect','Give','mcEffectSeconds')
+call s:mcSelector("EffectGive", "mcNsEffectGive")
+call s:createNewInstance('NsEffect','Give','mcEffectSeconds')
 syn match   mcEffectSeconds /\d\+/      contained skipwhite nextgroup=mcDoubleSpace,mcEffectAmp
 syn match   mcEffectAmp     /\d\+/      contained skipwhite nextgroup=mcDoubleSpace,mcBool
 
@@ -632,9 +632,9 @@ hi def link mcEffectAmp     mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEnchant
 
-call s:mcSelector("Enchant", "mcEnchantmentEnchant")
+call s:mcSelector("Enchant", "mcNsEnchantmentEnchant")
 
-call s:createNewInstance('Enchantment','Enchant','mcEnchantLevel')
+call s:createNewInstance('NsEnchantment','Enchant','mcEnchantLevel')
 syn match   mcEnchantLevel  /[1-5]/ contained
 hi def link mcEnchantLevel  mcValue
 
@@ -661,8 +661,8 @@ syn keyword mcExecuteFacingEntityKeyword contained skipwhite nextgroup=mcDoubleS
 call s:mcSelector("ExecuteFacing", "mcExecuteAnchoredValue")
 
 " Execute in
-syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcDimensionExecute                          in
-call s:createNewInstance("Dimension","ExecuteIn","mcExecuteKeyword")
+syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcNsDimensionExecute                          in
+call s:createNewInstance("NsDimension","ExecuteIn","mcExecuteKeyword")
 
 " Execute positioned
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecute,mcExecutePosAs          positioned
@@ -688,12 +688,13 @@ syn keyword mcExecuteStoreType          contained skipwhite nextgroup=mcDoubleSp
 syn match   mcExecuteStoreScale         contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   /-\?\d*\.\?\d\+/
 
 " bossbar
-syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarIdExecuteStore             bossbar
-call s:createNewInstance('BossbarId','ExecuteStore','mcExecuteStoreBossbarFeild')
+syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdExecuteStore             bossbar
+call s:createNewInstance('NsBossbarId','ExecuteStore','mcExecuteStoreBossbarFeild')
 syn keyword mcExecuteStoreBossbarFeild  contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   max value
 
 " score
 syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteStoreScore           score
+" no namespace
 call s:mcSelector("ExecuteStoreScore", "mcObjectiveExecuteStore")
 call s:createNewInstance("Objective","ExecuteStore","mcExecuteKeyword")
 
@@ -736,7 +737,7 @@ syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSp
 
 " predicate
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcNsPredicateExecuteCond              predicate
-call s:createNewInstance('Predicate','ExecuteCond','mcExecuteKeyword')
+call s:createNewInstance('NsPredicate','ExecuteCond','mcExecuteKeyword')
 
 " Links
 hi def link mcExecuteAsKeyword                  mcExecuteKeyword
@@ -925,9 +926,9 @@ syn match   mcChatMessage       /.*/    contained
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Particle
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcParticleParticle particle
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticleParticle particle
 
-call s:createNewInstance('Particle','Particle','mcCoordinateParticle')
+call s:createNewInstance('NsParticle','Particle','mcCoordinateParticle')
 call s:mcCoordinate('Particle','mcCoordinateParticleDelta','')
 call s:mcCoordinate('ParticleDelta','mcParticleSpeed','2')
 syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcParticleCount /\(\d*\.\)\?\d\+/ 
@@ -941,9 +942,9 @@ hi def link mcParticleMode  mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Playsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSoundPlay playsound
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsSoundPlay playsound
 
-call s:createNewInstance('Sound','Play','mcSoundChannelPlay')
+call s:createNewInstance('NsSound','Play','mcSoundChannelPlay')
 call s:createNewInstance('SoundChannel','Play','mcSelectorPlaysound')
 call s:mcSelector('Playsound','mcCoordinatePlaysound')
 call s:mcCoordinate('Playsound','mcPlaysoundVolume','')
@@ -983,8 +984,8 @@ hi def link mcReplaceitemSlot  mcKeyword
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcScheduleKeyword schedule
 
 syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunction            clear
-syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunctionSchedule    function
-call s:createNewInstance('Function','Schedule','mcScheduleTime')
+syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcNamespacedFunctionSchedule    function
+call s:createNewInstance('NamespacedFunction','Schedule','mcScheduleTime')
 syn match   mcScheduleTime    contained skipwhite nextgroup=mcDoubleSpace,mcScheduleMode        /\d\+[dst]\?/
 syn keyword mcScheduleMode    contained append replace
 
@@ -1065,7 +1066,7 @@ call s:mcSelector('SpectateTarget','mcPlayer')
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorStopsound stopsound
 
 call s:mcSelector('StopSound','mcSoundChannelStopSound,mcStopsoundGlob')
-call s:createNewInstance('SoundChannel','StopSound','mcSound')
+call s:createNewInstance('SoundChannel','StopSound','mcNsSound')
 syn match mcStopsoundGlob /\*/ contained skipwhite nextgroup=mcSound
 hi def link mcStopsoundGlob mcOp
 
@@ -1208,6 +1209,7 @@ hi def link mcTpFacing mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTrigger trigger
 
+" no namespace
 call s:createNewInstance('Objective','Trigger','mcTriggerMode')
 syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcUInt add set
 
@@ -1465,8 +1467,8 @@ syn match   mcFilterRangeInf    contained /\.\.\s*\ze\_[,\]]=/
 
 " Lists
 syn region  mcFilterScores                      matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcObjectiveNameFilter
-syn region  mcFilterAdvancements                matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcAdvancementFilter
-call s:createNewInstance('Advancement','Filter','mcFilterEqAdvance')
+syn region  mcFilterAdvancements                matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcNsAdvancementFilter
+call s:createNewInstance('NsAdvancement','Filter','mcFilterEqAdvance')
 syn region  mcFilterAdvancementCriterion        matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcAdvancementCriterion
 
 
@@ -1584,7 +1586,7 @@ for s:file in s:files
                                         if s:line=~ 'endcity'
                                                 call s:addBuiltin('LocatableStructure','EndCity')
                                         else
-                                                call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\<\a', '\u&', 'g'))
+                                                call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
                                         endif
                                 endif
                         endif

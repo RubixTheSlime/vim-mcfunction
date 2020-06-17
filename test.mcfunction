@@ -1,4 +1,4 @@
-particle minecraft:serntie 1 2 3 4 5 6 1 2 force @s
+particle minecraft:poof 1 2 3 4 5 6 1 2 force @s
 /kill @e[type=minecraft:armor_stand,distance=1..3.14,x_rotation=-.2..90.0,sort=nearest]
 tp @e[advancements={adventure/kill_a_mob={rst=true}}]
 advancement grant @s only minecraft:story/lava_bucket
@@ -8,6 +8,8 @@ summon zombie_pigman
 summon minecraft:iron_golem
 locate EndCity
 locate Village
+locate Desert_Pyramid
+locate village
 locate endcity
 summon tnt
 give @s vex_spawn_egg
