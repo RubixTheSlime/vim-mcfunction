@@ -1,7 +1,7 @@
 !1.13
 b (attatched_)?(melon|pumpkin)_stem
 b (cave|void)_air
-b (dead_)?(tube|brain|fire|horn|bubble)_coral_wall_fan
+b (tube|brain|fire|horn|bubble)_coral_wall_fan
 b (nether|end)_portal
 b (red|pink|magenta|purple|blue|cyan|(light_)?(blue|gray)|green|lime|yellow|orange|brown|black|white)_wall_banner
 b (wither_)?skeleton_wall_skull
@@ -18,7 +18,7 @@ b redstone_wire
 b restone_wall_torch
 b tall_seagrass
 b tripwire
-b wall_sign
+b wall_sign !18w43a
 b wall_torch
 b water
 b wheat
@@ -73,7 +73,7 @@ bc redstone_(torch|lamp)
 bc repeater|comparator
 bc sea_lantern
 bc shulker_box
-bc sign
+bc sign 18w43a
 bc smooth_(quartz|((red_)?sand)?stone)
 bc snow(_block)?
 bc stone(_slab|_pressure_plate|_button)?
@@ -86,7 +86,7 @@ bi (brown|red)_mushroom(_block)?
 bi (carved_)?pumpkin
 bi (chain_|repeating_)?command_block
 bi (chipped|damaged)_anvil
-bi (dead_)?(tube|brain|fire|horn|bubble)_coral(_block|_fan)?
+bi (tube|brain|fire|horn|bubble)_coral(_block|_fan)?
 bi (iron|gold|coal|diamond|lapis|redstone|emerald|nether_quartz)_ore
 bi (mossy_)?cobblestone
 bi (red_)?sand
@@ -162,7 +162,8 @@ c paper
 c popped_chorus_fruit
 c pumpkin_pie
 c redstone
-c rose_red|cactus_green|lapis_lazuli|dandelion_yellow|bone_meal
+c rose_red|cactus_green|dandelion_yellow !18w43a
+c lapis_lazuli|bone_meal
 c shears
 c shield
 c slime_ball
@@ -284,3 +285,39 @@ m witch
 m wolf
 m zombie(_villager)?
 m zombie_pigman !20w09a
+BI planks|wool|carpets
+BI (wooden_)?(button|door|slab|stair)s
+BI ((dark_)?oak_|spruce_|birch_|jungle_|acacia_)?logs
+BI saplings|stone_bricks|banners|wooden_pressure_plates|rails|sand
+BI coral(_plants)?
+B wall_coral|impermeable
+BI leaves
+B flower_pots|anvil|enderman_holdable|boats|fishes
+
+!18w31a
+B underwater_bonemeals
+
+!18w32a
+bi dead_(tube|brain|fire|horn|bubble)_coral(_block|_fan)?
+b dead_(tube|brain|fire|horn|bubble)_coral_wall_fan
+
+!18w43a
+b ((dark_)?oak|spruce|birch|jungle|acacia)_wall_sign
+bc (((mossy_|end_)?stone_|(red_)?nether_)?brick|(andes|dior|gran)ite|(red_)?sandstone|prismarine)_wall
+bc ((dark_)?oak|spruce|birch|jungle|acacia)_sign
+bc ((polished_)?(andes|gran|dior)ite|smooth_((red_)?sandstone|quartz)|mossy_cobblestone|(red_nether|end|mossy)_stone_brick)_(stairs|slab)
+bc smooth_stone_slab
+bc stone_stairs
+bi bamboo
+bi cornflower|wither_rose|lily_of_the_valley|loom
+c (mojang|creeper|skull|flower)_banner_pattern
+c (red|green|yellow|black|white|brown|blue)_dye
+c crossbow
+c suspicious_stew
+m illager_beast
+m panda
+m pillager
+B bamboo_plantable_on|(standing_|wall_)?signs|small_flowers|walls
+I music_discs|small_flowers|signs
+B dirtlike !19w41a
+E skeletons
