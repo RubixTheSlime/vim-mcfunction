@@ -1,11 +1,19 @@
 particle minecraft:poof 1 2 3 4 5 6 1 2 force @s
+col ~ ~
+forceload add 1 2 3 4 
+ent @s
+coord 1 2 ~3.324
+coord ^ ^3 ^
 loot replace entity @e[type=armor_stand] armor.chest 1 loot arst
+clear @a
+setblock 1 2 3 dirt
 give @a[name=Rubix] apple
 block n minecraft:dirt
 block N dirt
 block n #minecraft:slabs
 block N #slabs
 /kill @e[type=minecraft:armor_stand,distance=1..3.14,x_rotation=-.2..90.0,sort=nearest]
+kill @s[    ]
 nbt tag {reistn}
 nbt path rastneie
 setblock 1 1 1 dead_fire_coral
@@ -22,6 +30,8 @@ locate Desert_Pyramid
 locate village
 locate endcity
 summon tnt
+data get block 1 2 3 
+data get entity @s[     ] eainrstie
 playsound entity.enderman.scream
 give @s vex_spawn_egg
 effect give @s haste
@@ -32,7 +42,6 @@ fill 1 2 3 4 5 6 minecraft:water
 execute if block 1 2 3 light_blue_concrete_powder run
 setblock 1 2 3 campfire
 data get block 1 2 3 arst
-forceload add 1 2 3 4 
 tp @s 1 2 3 4 5
 tp @s 1 2 3 facing 3 4 5
 worldborder set 123

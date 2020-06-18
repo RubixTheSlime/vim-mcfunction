@@ -117,6 +117,9 @@ elseif g:mcversion =~ '|\<c\%[ombat]'
         let s:combatVersion=matchstr(g:mcversion,'\<c\%[ombat]\s*\zs\d\+')
 endif
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Miscellaneous Values
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn match   mcUInt              /\d\+/  contained
 syn match   mcLineEnd           /\s*$/  contained
 syn match   mcGlob              /\*/    contained
@@ -145,102 +148,11 @@ hi def link mcOptionalSlash mcCommand
 syn cluster mcCommand add=mcCommand
 
 " Illegal Whitespace
-syn match mcComment /^#.*/
 syn match mcBadWhitespace /\t/
 
 syn sync minlines=1
-" Vim syntax file
-" Language: Minecraft 1.14 Command
-" Maintainer: Lyle Lowry
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Entity
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcSelector(group, nextgroup)
-      execute 'hi def link mcSelector'.a:group 'mcSelector'
-      execute 'syn match   mcSelector'.a:group 'contained /\w\{3,16}\>-\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn match   mcSelector'.a:group 'contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn match   mcSelector'.a:group 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn region  mcSelector'.a:group 'contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn cluster mcFilter add='.a:group
-endfunction
-
-syn match   mcSelector contained /\w\{3,16}\>-\@1!/
-syn match   mcSelector contained /@[eaprs]\>\[\@1!/
-syn match   mcSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
-syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
-
-"This one requires a special name regex
-"Don't touch it just works
-syn match   mcSelectorTpTarget contained /\v<(\d+(\s+[0-9~.-]+){1,2}\s*$)\@!\w{3,16}>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn match   mcSelectorTpTarget contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-hi def link mcSelectorTpTarget mcSelector
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Player
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcPlayer(group, nextgroup)
-      execute 'hi def link mcPlayer'.a:group 'mcPlayer'
-      execute 'syn match   mcPlayer'.a:group 'contained /\w\{3,16}\>-\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn match   mcPlayer'.a:group 'contained /@[aprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn match   mcPlayer'.a:group 'contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn region  mcPlayer'.a:group 'contained matchgroup=mcPlayer start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-      execute 'syn cluster mcFilter add='.a:group
-endfunction
-
-syn match   mcPlayer contained /\w\{3,16}\>-\@1!/
-syn match   mcPlayer contained /@[eaprs]\>\[\@1!/
-syn match   mcPlayer contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
-syn region  mcPlayer contained matchgroup=mcPlayer start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
-
-hi def link mcPlayer mcSelector
-
-" for filters
-syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Coordinate
-" (~[#] | #) * 3 | (^[#]) * 3
-" ~|~?-?\d*\.?\d+ *3 OR ^[n][.n] *3
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-syn match mcCoordinate  contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
-syn match mcCoordinate2 contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
-syn match mcCoordinate3 contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\?\)\{3} *$\|\(\^-\?\d*\.\?\d* \?\)\{3}/  contains=mcDoubleSpace
-
-function! s:mcCoordinate(group,nextgroup,serial)
-        execute 'syn match mcCoordinate'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1!\_[ ]\)\{3}\|\(\^-\?\d*\.\?\d* \?\)\{3}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        execute 'hi def link mcCoordinate'.a:group 'mcCoordinate'.a:serial
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Column
-" Same as Coordinate, but 2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn match mcColumn     contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
-syn match mcColumn2    contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/     contains=mcDoubleSpace skipwhite
-function! s:mcColumn(group,nextgroup,serial)
-        execute 'syn match mcColumn'.a:group 'contained /\(\(\~\|\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1![ \n]\)\{2\}\|\(\^-\?\d*\.\?\d* \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        execute 'hi def link mcColumn'.a:group 'mcColumn'.a:serial
-endfunction
-hi def link mcColumn                    mcCoordinate
-hi def link mcColumn2                   mcCoordinate2
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Rotation
-" Same as Column, but no caret allowed
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn match mcRotation   contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/
-syn match mcRotation2  contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/
-function! s:mcRotation(group,nextgroup,serial)
-        execute 'syn match mcRotation'.a:group 'contained /\(\(\~\?-\?\d*\.\?\d\+\)[0-9.-]\@1! \?\)\{2\}/ contains=mcDoubleSpace skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        execute 'hi def link mcRotation'.a:group 'mcRotation'.a:serial
-endfunction
-hi def link mcRotation                  mcCoordinate
-hi def link mcRotation2                 mcCoordinate2
-
+syn match mcComment /^#.*/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Entity Block
@@ -250,8 +162,8 @@ hi def link mcRotation2                 mcCoordinate2
 function! s:mcSelectorBlock(group,nextgroup)
         execute 'syn keyword mcSelectorBlock'.a:group 'entity contained skipwhite nextgroup=mcDoubleSpace,mcSelector'.a:group
         execute 'syn keyword mcSelectorBlock'.a:group 'block contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate'.a:group
-        call s:mcSelector(a:group,a:nextgroup)
-        call s:mcCoordinate(a:group,a:nextgroup,'')
+        call s:addInstance('Selector',a:group,a:nextgroup)
+        call s:addInstance('Coordinate',a:group,a:nextgroup)
         execute 'hi def link mcSelectorBlock'.a:group 'mcKeyword'
 endfunction
 
@@ -263,8 +175,8 @@ endfunction
 function! s:mcEBS(group,nextgroup)
         execute 'syn keyword mcEBS'.a:group 'entity contained skipwhite nextgroup=mcDoubleSpace,mcSelector'.a:group
         execute 'syn keyword mcEBS'.a:group 'block contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate'.a:group
-        call s:mcSelector(a:group,a:nextgroup)
-        call s:mcCoordinate(a:group,a:nextgroup,'')
+        call s:addInstance('Selector',a:group,a:nextgroup)
+        call s:addInstance('Coordinate',a:group,a:nextgroup)
         if s:atLeastVersion('19w38a')
                 execute 'syn keyword mcEBS'.a:group 'storage contained skipwhite nextgroup=mcDoubleSpace,mcStorage'.a:group
                 call s:addInstance('Storage',a:group,a:nextgroup)
@@ -273,60 +185,48 @@ function! s:mcEBS(group,nextgroup)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NBT Path
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcNBTPath(group,nextgroup)
-        execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
-        execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
-        execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
-        execute 'syn cluster mcNBT'.a:group               'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTTag'.a:group
-        execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
-        execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
-        execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-endfunction
-call s:mcNBTPath("","")
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NBT Tag
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcNBTTag(group,nextgroup)
-        execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
-        execute 'syn cluster mcNBT add=mcNBTTag'.a:group
-        execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
-endfunction
-syn region  mcNBTTag            matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline          contained contains=mcNBTTagKey
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Block
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:mcNsBlock(group,nextgroup)
-        execute 'syn match mcNsBlock'.a:group '/\(\w\+:\)*\w\+\(\[[^]]*\]\)\?/ contained contains=mcNsBlock nextgroup=mcBadWhiteSpaceBlock,mcNBTTagBlock'.a:group
-        call s:mcNBTTag('Block'.a:group,a:nextgroup)
-        execute 'syn match mcNBTTagBlock'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Taggable thing
-" block, item, or entity
+" for blocks, items, and entities
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addTaggableInstance(type,group,nextgroup)
-        execute 'syn match mcTaggable'.a:type.a:group '/[^ =,\t\r\n]\+/ contained contains=@mcTaggable'.a:type
+        execute 'syn match mcTaggable'.a:type.a:group '/[^ =,\]\t\r\n]\+/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup 'contains=@mcTaggable'.a:type
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Other (namespaceable) data types
+" Add Instance
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addInstance(type,group,nextgroup)
-        if a:nextgroup == ""
-                execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\n]\+/ contained contains=mc'.a:type
+        if a:type=~ 'Selector'
+                execute 'syn match mc'.a:type.a:group 'contained /\v\S+(\[[^\]]*\])?\ze\_[ ]/   contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        elseif a:type=~ 'Coordinate'
+                execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        elseif a:type=~ 'Column|Rotation'
+                execute 'syn match mc'.a:type.a:group 'contained /\S\+\s\+\S\+/                 contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        elseif a:type=~ 'NBTPath'
+                execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
+                execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
+                execute 'syn cluster mcNBT'.a:group               'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTTag'.a:group
+                execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
+                execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
+                execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        elseif a:type=~ 'NBTTag'
+                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
+                execute 'syn cluster mcNBT add=mcNBTTag'.a:group
+                execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
+        elseif a:nextgroup == ""
+                execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
         else
-                execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\n]\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+                execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         endif
 endfunction
+
+call s:addInstance('NBTPath',"","")
+call s:addInstance('NBTTag','','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " COMMANDS
@@ -338,7 +238,7 @@ endfunction
 syn keyword mcCommand advancement contained skipwhite nextgroup=mcDoubleSpace,mcAdvanceKeyword
 
 syn keyword mcAdvanceKeyword                contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAdvance         grant revoke
-call s:mcSelector("Advance","mcAdvanceWhich")
+call s:addInstance('Selector',"Advance","mcAdvanceWhich")
 syn keyword mcAdvanceWhich                  contained                                                           everything
 syn keyword mcAdvanceWhich                  contained skipwhite nextgroup=mcDoubleSpace,mcNsAdvancementViaCriteria   only
         call s:addInstance('NsAdvancement','ViaCriteria','mcAdvancementCriteria')
@@ -398,19 +298,19 @@ hi def link mcBossbarIdSet              mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clear
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcSelectorClear
+syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorClear
 
-call s:mcSelector("Clear","mcNsTItemClear")
+call s:addInstance('PlayerSelector',"Clear","mcNsTItemClear")
 call s:addInstance('NsTItem','Clear','mcUInt')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clone
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand clone contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateCloneFrom
+syn keyword mcCommand clone contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateClone
 
-call s:mcCoordinate("CloneFrom","mcCoordinateCloneTo","")
-call s:mcCoordinate("CloneTo","mcCoordinateCloneDest","2")
-call s:mcCoordinate("CloneDest","mcCloneMask","3")
+call s:addInstance('Coordinate',  "Clone","mcCoordinate2Clone")
+call s:addInstance('Coordinate2', "Clone","mcCoordinate3Clone")
+call s:addInstance('Coordinate3', "Clone","mcCloneMask")
 
 syn keyword mcCloneMask         masked replace          contained skipwhite nextgroup=mcDoubleSpace,mcCloneMode
 syn keyword mcCloneMask         filtered                contained skipwhite nextgroup=mcDoubleSpace,mcNsTBlockClone
@@ -429,7 +329,7 @@ syn keyword mcCommand data contained skipwhite nextgroup=mcDoubleSpace,mcDataKey
 " Data get
 syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataGet    get
 call s:mcEBS('DataGet','@mcNBTPathDataGet')
-call s:mcNBTPath("DataGet","mcDataGetScale")
+call s:addInstance('NBTPath',"DataGet","mcDataGetScale")
 syn match   mcDataGetScale      contained                                                       /-\?\d*\.\?\d\+/
 
 " Data merge
@@ -441,7 +341,7 @@ if s:atLeastVersion('18w43a')
 
 syn keyword mcDataKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataModify    modify
 call s:mcEBS('DataModify','@mcNBTPathDataModify')
-call s:mcNBTPath("DataModify","mcDataModifyHow")
+call s:addInstance('NBTPath',"DataModify","mcDataModifyHow")
 
 syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcDataModifySource  append merge prepend set
         syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,@mcNBTValue         value
@@ -506,14 +406,14 @@ syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffec
 
 " Effect give
 syn keyword mcEffectKeyword give        contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectGive
-call s:mcSelector("EffectGive", "mcNsEffectGive")
+call s:addInstance('Selector', "EffectGive", "mcNsEffectGive")
 call s:addInstance('NsEffect','Give','mcEffectSeconds')
 syn match   mcEffectSeconds /\d\+/      contained skipwhite nextgroup=mcDoubleSpace,mcEffectAmp
 syn match   mcEffectAmp     /\d\+/      contained skipwhite nextgroup=mcDoubleSpace,mcBool
 
 " Effect clear
 syn keyword mcEffectKeyword clear       contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectClear
-call s:mcSelector("EffectClear", "mcEffect")
+call s:addInstance('Selector', "EffectClear", "mcEffect")
 
 " Links
 hi def link mcEffectKeyword mcKeyword
@@ -525,7 +425,7 @@ hi def link mcEffectAmp     mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEnchant
 
-call s:mcSelector("Enchant", "mcNsEnchantmentEnchant")
+call s:addInstance('Selector',"Enchant", "mcNsEnchantmentEnchant")
 
 call s:addInstance('NsEnchantment','Enchant','mcEnchantLevel')
 syn match   mcEnchantLevel  /[1-5]/ contained
@@ -546,12 +446,12 @@ syn keyword mcExecuteAnchoredValue      contained skipwhite nextgroup=mcDoubleSp
 
 " Execute as/at
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecute                             at as
-call s:mcSelector("Execute", "mcExecuteKeyword")
+call s:addInstance('Selector',"Execute", "mcExecuteKeyword")
 
 " Execute facing
 syn keyword mcExecuteKeyword             contained skipwhite nextgroup=mcDoubleSpace,mcExecuteFacingEntityKeyword,mcCoordinate facing
 syn keyword mcExecuteFacingEntityKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteFacing                     entity
-call s:mcSelector("ExecuteFacing", "mcExecuteAnchoredValue")
+call s:addInstance('Selector', "ExecuteFacing", "mcExecuteAnchoredValue")
 
 " Execute in
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcNsDimensionExecute                          in
@@ -560,11 +460,11 @@ call s:addInstance("NsDimension","ExecuteIn","mcExecuteKeyword")
 " Execute positioned
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecute,mcExecutePosAs          positioned
 syn keyword mcExecutePosAs              contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecute                             as
-call s:mcCoordinate("Execute","mcExecuteKeyword","")
+call s:addInstance('Coordinte',"Execute","mcExecuteKeyword")
 
 " Execute rotated
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcRotationExecute,mcExecuteAsKeyword        rotated
-call s:mcRotation("Execute","mcExecuteKeyword","")
+call s:addInstance('Rotation',"Execute","mcExecuteKeyword")
 
 " Execute run
 syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcCommand                                   run
@@ -576,7 +476,7 @@ syn keyword mcExecuteStoreWhat          contained skipwhite nextgroup=mcDoubleSp
 
 " block/entity
 call s:mcEBS('ExecuteStore','@mcNBTPathExecuteStore')
-call s:mcNBTPath("ExecuteStore","mcExecuteStoreType")
+call s:addInstance('NBTPath',"ExecuteStore","mcExecuteStoreType")
 syn keyword mcExecuteStoreType          contained skipwhite nextgroup=mcDoubleSpace,mcExecuteStoreScale                 byte short int long float double
 syn match   mcExecuteStoreScale         contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                   /-\?\d*\.\?\d\+/
 
@@ -587,7 +487,7 @@ syn keyword mcExecuteStoreBossbarFeild  contained skipwhite nextgroup=mcDoubleSp
 
 " score
 syn keyword mcExecuteStoreWhere         contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteStoreScore           score
-call s:mcSelector("ExecuteStoreScore", "mcObjectiveExecuteStore")
+call s:addInstance('Selector',"ExecuteStoreScore", "mcObjectiveExecuteStore")
 call s:addInstance("Objective","ExecuteStore","mcExecuteKeyword")
 
 
@@ -598,33 +498,33 @@ syn keyword mcExecuteKeyword            contained skipwhite nextgroup=mcDoubleSp
 
 " block
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondBlock        block
-call s:mcCoordinate("ExecuteCondBlock","mcNsTBlockExecute","")
+call s:addInstance('Coordinate',"ExecuteCondBlock","mcNsTBlockExecute")
 call s:addInstance("NsTBlock","Execute","mcExecuteKeyword")
 
 " blocks
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondStart        blocks
-call s:mcCoordinate("ExecuteCondStart","mcCoordinateExecuteCondEnd","")
-call s:mcCoordinate("ExecuteCondEnd","mcCoordinateExecuteCondDest","2")
-call s:mcCoordinate("ExecuteCondDest","mcExecuteCondBlocksMask","3")
+call s:addInstance('Coordinate',"ExecuteCondStart","mcCoordinateExecuteCondEnd")
+call s:addInstance('Coordinate2',"ExecuteCondEnd","mcCoordinateExecuteCondDest")
+call s:addInstance('Coordinate3',"ExecuteCondDest","mcExecuteCondBlocksMask")
 syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                    all masked
 
 " data
 if s:atLeastVersion('18w43a')
         syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcEBSExecuteCondData        data
         call s:mcEBS('ExecuteCondData','@mcNBTPathExecute')
-        call s:mcNBTPath("Execute","mcExecuteKeyword")
+        call s:addInstance('NBTPath', "Execute","mcExecuteKeyword")
 endif
 
 " entity
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteCond                 entity
-call s:mcSelector("ExecuteCond", "mcExecuteKeyword")
+call s:addInstance('Selector', "ExecuteCond", "mcExecuteKeyword")
 
 " score
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteCondScoreTarget      score
-call s:mcSelector("ExecuteCondScoreTarget","mcObjectiveExecuteCondScoreTarget")
+call s:addInstance('Selector', "ExecuteCondScoreTarget","mcObjectiveExecuteCondScoreTarget")
 call s:addInstance('Objective','ExecuteCondScoreTarget','mcExecuteCondScoreOp,mcExecuteCondScoreMatch')
 syn match   mcExecuteCondScoreOp        contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteCondScoreSource      /[<>=]\@=[<>]\?=\?/
-        call s:mcSelector("ExecuteCondScoreSource","mcObjectiveExecuteCondScoreSource")
+        call s:addInstance('Selector', "ExecuteCondScoreSource","mcObjectiveExecuteCondScoreSource")
         call s:addInstance('Objective','ExecuteCondScoreSource','mcExecuteKeyword')
 syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteIR1,mcExecuteIR2           matches
         syn match   mcExecuteIR1                /-\?\d\+/               contained skipwhite nextgroup=mcDoubleSpace,mcExecuteRangeInf,mcExecuteIR2,mcExecuteKeyword
@@ -666,10 +566,10 @@ hi def link mcExecuteCondScoreOp                  mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Fill
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand fill contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateFillFrom
+syn keyword mcCommand fill contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateFill
 
-call s:mcCoordinate("FillFrom","mcCoordinateFillTo","")
-call s:mcCoordinate("FillTo","mcNsBlockFill","2")
+call s:addInstance('Coordinate', "Fill","mcCoordinate2Fill")
+call s:addInstance('Coordinate2', "Fill","mcNsBlockFill")
 call s:addInstance('NsBlock',"Fill","mcFillMode")
 syn keyword mcFillMode contained                                                        destroy hollow keep outline
 syn keyword mcFillMode contained skipwhite nextgroup=mcDoubleSpace,mcNsTBlockFillReplace   replace
@@ -685,7 +585,7 @@ syn keyword mcCommand forceload contained skipwhite nextgroup=mcDoubleSpace,mcFo
 
 " Forceload add
 syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart                       add
-call s:mcColumn("ForceloadStart","mcColumn2","")
+call s:addInstance('Column',"ForceloadStart","mcColumn2")
 
 " Forceload remove
 syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumnForceloadStart,mcForceloadRemKeyword remove
@@ -722,11 +622,11 @@ syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGam
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Give
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerGive
+syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorGive
 
-call s:mcPlayer("Give", "mcNsTItemGive")
+call s:addInstance('PlayerSelector',"Give", "mcNsTItemGive")
 call s:addInstance('NsTItem','Give','mcNBTTagGive')
-call s:mcNBTTag("Give","mcUInt")
+call s:addInstance('NBTTag',"Give","mcUInt")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Help
@@ -777,9 +677,9 @@ if s:atLeastVersion('18w43a')
 
 " Target
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot                            spawn insert
-        call s:mcCoordinate("Loot","mcLootSourceKeyword","")
+        call s:addInstance('Coordinate', "Loot","mcLootSourceKeyword")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorLoot                        give
-        call s:mcSelector("Loot", "mcLootSourceKeyword")
+        call s:addInstance('Selector', "Loot", "mcLootSourceKeyword")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockLootReplace            replace
         call s:mcSelectorBlock('LootReplace','mcSlotLoot')
         call s:addInstance('Slot','Loot','mcLootCount,mcLootSourceKeyword')
@@ -793,7 +693,7 @@ syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mc
         syn match   mcLootTable                 contained contains=mcNamespace                                                          /\(\w\|:\)\+/
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelector                                    kill
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine                        mine
-        call s:mcCoordinate("LootMine","mcNsItem,mcLootHand","")
+        call s:addInstance('Coordinate', "LootMine","mcNsItem,mcLootHand")
 syn keyword mcLootHand                          contained                                                                               mainhand offhand
 
 " Links
@@ -815,7 +715,7 @@ endif
 syn keyword mcCommand msg w tell teammsg tm me  contained skipwhite nextgroup=mcDoubleSpace,mcSelectorMsg
 syn keyword mcCommand say                       contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage
 
-call s:mcSelector("Msg", "mcChatMessage")
+call s:addInstance('Selector', "Msg", "mcChatMessage")
 
 syn match   mcChatMessage       /.*/    contained
 
@@ -825,8 +725,8 @@ syn match   mcChatMessage       /.*/    contained
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticleParticle particle
 
 call s:addInstance('NsParticle','Particle','mcCoordinateParticle')
-call s:mcCoordinate('Particle','mcCoordinateParticleDelta','')
-call s:mcCoordinate('ParticleDelta','mcParticleSpeed','2')
+call s:addInstance('Coordinate', 'Particle','mcCoordinate2Particle')
+call s:addInstance('Coordinate2', 'ParticleDelta','mcParticleSpeed')
 syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcParticleCount /\(\d*\.\)\?\d\+/
 syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
@@ -842,8 +742,8 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsSoundPlay 
 
 call s:addInstance('NsSound','Play','mcSoundChannelPlay')
 call s:addInstance('SoundChannel','Play','mcSelectorPlaysound')
-call s:mcSelector('Playsound','mcCoordinatePlaysound')
-call s:mcCoordinate('Playsound','mcPlaysoundVolume','')
+call s:addInstance('Selector', 'Playsound','mcCoordinatePlaysound')
+call s:addInstance('Coordinate', 'Playsound','mcPlaysoundVolume')
 
 syn match   mcPlaysoundVolume    contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundPitch     /\(\d*\.\)\?\d\+/
 syn match   mcPlaysoundPitch     contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundMinVolume /0*1\?\.\d\+\|0*2\(\.0*\)\?\ze\_[ ]/
@@ -859,7 +759,7 @@ hi def link mcPlaysoundMinVolume mcValue
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcRecipeKeyword recipe
 
 syn keyword mcRecipeKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorRecipe give take
-call s:mcSelector('Recipe','mcRecipe,mcGlob')
+call s:addInstance('Selector', 'Recipe','mcRecipe,mcGlob')
 hi def link mcRecipeKeyword mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -900,13 +800,13 @@ syn keyword mcCommand scoreboard contained skipwhite nextgroup=mcDoubleSpace,mcS
 " players
 syn keyword mcScoreboardKeyword contained skipwhite nextgroup=mcDoubleSpace,mcScoreboardPlayers         players
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelectorScoreboardSet       add remove set
-        call s:mcSelector('ScoreboardSet','mcObjectiveScoreboardSet')
+        call s:addInstance('Selector', 'ScoreboardSet','mcObjectiveScoreboardSet')
         call s:addInstance('Objective','ScoreboardSet','mcInt32')
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelectorScoreboardGet       enable reset get
-        call s:mcSelector('ScoreboardGet','mcObjective')
+        call s:addInstance('Selector', 'ScoreboardGet','mcObjective')
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelector                    list
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelectorScoreboardOp        operation
-        call s:mcSelector('ScoreboardOp','mcObjectiveScoreboardOpTarget')
+        call s:addInstance('Selector', 'ScoreboardOp','mcObjectiveScoreboardOpTarget')
         call s:addInstance('Objective','ScoreboardOpTarget','mcScoreboardOp')
         syn match mcScoreboardOp contained skipwhite nextgroup=mcDoubleSpace,mcSelectorScoreboardGet      /[%*/+-]\?=\|><\?\|</
 
@@ -943,7 +843,7 @@ hi def link mcScoreboardOp              mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcColumnSpread spreadplayers
 
-call s:mcColumn('Spread','mcSpreadPlayersDistance','')
+call s:addInstance('Column','Spread','mcSpreadPlayersDistance')
 syn match   mcSpreadPlayersDistance contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRange    /\(\d*\.\)\?\d\+/
 syn match   mcSpreadPlayersRange    contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRespect  /\(\d*\.\)\?\d\+/
 syn keyword mcSpreadPlayersRespect  contained skipwhite nextgroup=mcDoubleSpace,mcSelector                true false
@@ -953,18 +853,18 @@ hi def link mcSpreadPlayersRange    mcValue
 hi def link mcSpreadPlayersRespect  mcBool
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Spreadplayers
+" Spectate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorSpectateTarget spectate
 
-call s:mcSelector('SpectateTarget','mcPlayer')
+call s:addInstance('Selector', 'SpectateTarget','mcPlayerSelector')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Stopsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorStopsound stopsound
 
-call s:mcSelector('StopSound','mcSoundChannelStopSound,mcStopsoundGlob')
+call s:addInstance('Selector', 'StopSound','mcSoundChannelStopSound,mcStopsoundGlob')
 call s:addInstance('SoundChannel','StopSound','mcNsSound')
 syn match mcStopsoundGlob /\*/ contained skipwhite nextgroup=mcSound
 hi def link mcStopsoundGlob mcOp
@@ -974,7 +874,7 @@ hi def link mcStopsoundGlob mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTag tag
 
-call s:mcSelector('Tag','mcTagKeyword')
+call s:addInstance('Selector', 'Tag','mcTagKeyword')
 syn keyword mcTagKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTag add remove
 syn keyword mcTagKeyword contained                                         list
 syn match mcTag /\w\+/ contained
@@ -1018,7 +918,7 @@ hi def link mcTeam                 mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTellraw tellraw
 
-call s:mcSelector('Tellraw','mcJSONText')
+call s:addInstance('Selector', 'Tellraw','mcJSONText')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Time
@@ -1047,7 +947,7 @@ hi def link mcTimeAdd     mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand setblock contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateSetblock
 
-call s:mcCoordinate("Setblock","mcNsBlockSetblock","")
+call s:addInstance('Coordinate', "Setblock","mcNsBlockSetblock")
 syn keyword mcSetblockMode      contained destroy keep replace
 call s:addInstance('NsBlock',"Setblock","mcSetblockMode")
 
@@ -1057,7 +957,7 @@ hi def link mcSetblockMode      mcKeyword
 " Spawnpoint
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand spawnpoint contained skipwhite nextgroup=mcDoubleSpace,mcSelectorSpawnPos
-call s:mcSelector("SpawnPos","mcCoordinate")
+call s:addInstance('Selector', "SpawnPos","mcCoordinate")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Setworldspawn
@@ -1070,14 +970,14 @@ syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,
 syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcNsEntitySummon
 
 call s:addInstance("NsEntity","Summon","mcCoordinateSummon")
-call s:mcCoordinate("Summon","mcNBTTag","")
+call s:addInstance('Coordinate', "Summon","mcNBTTag")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Title
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand title contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTitle
 
-call s:mcSelector("Title","mcTitleKeyword")
+call s:addInstance('Selector', "Title","mcTitleKeyword")
 
 " Title title (title title title?)
 syn keyword mcTitleKeyword      contained actionbar subtitle title skipwhite nextgroup=mcDoubleSpace,mcJSONText
@@ -1092,10 +992,9 @@ syn match mcTitleTime2          /\d\{1,9\}/ contained skipwhite nextgroup=mcDoub
 syn match mcTitleTime3          /\d\{1,9\}/ contained
 
 hi def link mcTitleKeyword mcKeyWord
-" might as well right?
-hi def link mcTitleTime         mcCoordinate
-hi def link mcTitleTime2        mcCoordinate2
-hi def link mcTitleTime3        mcCoordinate3
+hi def link mcTitleTime    mcValue
+hi def link mcTitleTime2   mcValue
+hi def link mcTitleTime3   mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tp
@@ -1103,7 +1002,7 @@ hi def link mcTitleTime3        mcCoordinate3
 syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate,mcSelectorTpTarget
 
 " Entity is defined in the entity area
-call s:mcCoordinate("Tp","mcTpFacing,mcRotation2","")
+call s:addInstance('Coordinate', "Tp","mcTpFacing,mcRotation2")
 syn keyword mcTpFacing contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate2 facing
 hi def link mcTpFacing mcKeyword
 
@@ -1162,10 +1061,10 @@ hi def link mcWorldborderWarning        mcKeyword
 syn keyword mcCommand xp experience contained skipwhite nextgroup=mcDoubleSpace,mcXpKeyword
 
 syn keyword mcXpKeyword query           contained skipwhite nextgroup=mcDoubleSpace,mcSelectorXpQuery
-        call s:mcSelector("XpQuery", "mcXpUnit")
+        call s:addInstance('Selector', "XpQuery", "mcXpUnit")
 
 syn keyword mcXpKeyword add set         contained skipwhite nextgroup=mcDoubleSpace,mcSelectorXpSet
-        call s:mcSelector("XpSet", "mcXpAmount")
+        call s:addInstance('Selector', "XpSet", "mcXpAmount")
         syn match   mcXpAmount  /-\?\d\+/       contained skipwhite nextgroup=mcDoubleSpace,mcXpUnit
 
 syn keyword mcXpUnit    points levels   contained
@@ -1477,6 +1376,48 @@ if s:combatVersion >= 3
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
+" Selectors and Coordinates
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Selector
+syn match   mcSelector contained /\w\{3,16}\>-\@1!/
+syn match   mcSelector contained /@[eaprs]\>\[\@1!/
+syn match   mcSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
+syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
+
+"This one requires a special name regex
+"Don't touch it just works
+syn match   mcSelectorTpTarget contained /\v<(\d+(\s+[0-9~.-]+){1,2}\s*$)\@!\w{3,16}>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+hi def link mcSelectorTpTarget mcSelector
+
+" Player Selector
+syn match   mcPlayerSelector contained /\w\{3,16}\>-\@1!/
+syn match   mcPlayerSelector contained /@[aprs]\>\[\@1!/
+syn match   mcPlayerSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
+syn region  mcPlayerSelector contained matchgroup=mcPlayerSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
+hi def link mcPlayerSelector mcSelector
+syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
+
+" Coordinate
+syn match mcCoordinate  contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){3}|( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
+syn match mcCoordinate2 contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){3}|( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
+syn match mcCoordinate3 contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){3}|( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
+
+" Column
+syn match mcColumn     contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}|( *\^-?\d*\.?\d*){2}/     contains=mcDoubleSpace
+syn match mcColumn2    contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}|( *\^-?\d*\.?\d*){2}/     contains=mcDoubleSpace
+hi def link mcColumn                    mcCoordinate
+hi def link mcColumn2                   mcCoordinate2
+
+" Rotation
+syn match mcRotation   contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}/ contains=mcDoubleSpace
+syn match mcRotation2  contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}/ contains=mcDoubleSpace
+hi def link mcRotation                  mcCoordinate
+hi def link mcRotation2                 mcCoordinate2
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NBT Parts
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " TODO maybe add pre 18w43a stuff
@@ -1518,4 +1459,8 @@ if s:debug
         syn keyword mcCommand contained skipwhite nextgroup=mcdbBlockKw,mcNsTBlock block
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcTBlock N
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNamespacedTBlock n
+
+        syn keyword mcCommand contained skipwhite nextgroup=mcCoordinate coord
+        syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
+        syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
 endif
