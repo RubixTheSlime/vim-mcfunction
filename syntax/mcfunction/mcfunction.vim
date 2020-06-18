@@ -9,193 +9,72 @@ hi def link mcAnySpace mcBadWhitespace
 let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/'
 
 " MC Version identifier
-function! s:toNumericVersion(version)
-        let l:version = a:version
-        if l:version !~ '\d\dw\d\d\w'
-                let l:version =  s:toSnapshot(l:version)
-        endif
-        let l:year=matchstr(l:version,'^\d\+\zew')
-        let l:week=matchstr(l:version,'w\zs\d\+')
-        let l:day=tr(matchstr(l:version,'\a$'),'xyzabcdefg','0123456789')
-        return l:year*10000 + l:week*100 + l:day
-endfunction
-function! s:atLeastVersion(version)
-        return s:toNumericVersion(a:version) <= g:numericVersion
-endfunction
-function! s:isPrerelease(name,major,pre)
-        return a:name =~ a:major.'[^.0-9]\{-}\cp\%[re-]\%[release].\{-}'.a:pre
-endfunction
-function! s:toSnapshot(name)
-        "TODO optimize
-        "week numbers are whatever week `ncal -w` says PLUS ONE
+function! s:toNumericVersion(name)
         if a:name =~ '\<c\%[ombat]'
                 let l:num = matchstr(a:name,'\d\+$')
                 if l:num == 1
-                        return '19w26z'
+                        return s:toNumericVersion('19w26z')
                 elseif l:num == 2
-                        return '19w33a'
+                        return s:toNumericVersion('19w33a')
                 elseif l:num == 3
-                        return '19w44a'
+                        return s:toNumericVersion('19w44a')
                 elseif l:num == 4
-                        return '19w48c'
+                        return s:toNumericVersion('19w48c')
                 elseif l:num == 5
-                        return '19w03c'
+                        return s:toNumericVersion('19w03c')
                 endif
-        elseif a:name =~ '1.13'
-                if s:isPrerelease(a:name,'1.13',1)
-                        return '18w23a'
-                elseif s:isPrerelease(a:name,'1.13',2)
-                        return '18w24a'
-                elseif s:isPrerelease(a:name,'1.13',3)
-                        return '18w25a'
-                elseif s:isPrerelease(a:name,'1.13',4)
-                        return '18w26a'
-                elseif s:isPrerelease(a:name,'1.13',5)
-                        return '18w26b'
-                elseif s:isPrerelease(a:name,'1.13',6)
-                        return '18w27a'
-                elseif s:isPrerelease(a:name,'1.13',7)
-                        return '18w28a'
-                elseif s:isPrerelease(a:name,'1.13',8)
-                        return '18w28b'
-                elseif s:isPrerelease(a:name,'1.13',9)
-                        return '18w29a'
-                elseif s:isPrerelease(a:name,'1.13',10)
-                        return '18w29b'
-                elseif a:name == '1.13'
-                        return '18w29c'
-
-                        " 1.13.1
-                elseif s:isPrerelease(a:name,'1.13.1',1)
-                        return '18w33b'
-                elseif s:isPrerelease(a:name,'1.13.1',2)
-                        return '18w34a'
-                elseif a:name == '1.13.1'
-                        return '18w34b'
-
-                        "1.13.2
-                elseif s:isPrerelease(a:name,'1.13.2',1)
-                        return '18w42a'
-                elseif s:isPrerelease(a:name,'1.13.2',2)
-                        return '18w42b'
-                elseif a:name == '1.13.2'
-                        return '18w43z'
-                endif
-
-        elseif a:name =~ '1.14'
-                if s:isPrerelease(a:name,'1.14',1)
-                        return '19w15a'
-                elseif s:isPrerelease(a:name,'1.14',2)
-                        return '19w15b'
-                elseif s:isPrerelease(a:name,'1.14',3)
-                        return '19w16a'
-                elseif s:isPrerelease(a:name,'1.14',4)
-                        return '19w16b'
-                elseif s:isPrerelease(a:name,'1.14',5)
-                        return '19w16c'
-                elseif a:name == '1.14'
-                        return '19w17a'
-
-                        "1.14.1
-                elseif s:isPrerelease(a:name,'1.14.1',1)
-                        return '19w19a'
-                elseif s:isPrerelease(a:name,'1.14.1',2)
-                        return '19w19b'
-                elseif a:name == '1.14.1'
-                        return '19w20a'
-
-                        "1.14.2
-                elseif s:isPrerelease(a:name,'1.14.2',1)
-                        return '19w20b'
-                elseif s:isPrerelease(a:name,'1.14.2',2)
-                        return '19w20c'
-                elseif s:isPrerelease(a:name,'1.14.2',3)
-                        return '19w21a'
-                elseif s:isPrerelease(a:name,'1.14.2',4)
-                        return '19w21b'
-                elseif a:name == '1.14.2'
-                        return '19w22a'
-
-                        "1.14.3
-                elseif s:isPrerelease(a:name,'1.14.3',1)
-                        return '19w23a'
-                elseif s:isPrerelease(a:name,'1.14.3',2)
-                        return '19w23b'
-                elseif s:isPrerelease(a:name,'1.14.3',3)
-                        return '19w24a'
-                elseif s:isPrerelease(a:name,'1.14.3',4)
-                        return '19w25a'
-                elseif a:name == '1.14.3'
-                        return '19w26a'
-
-                        "1.14.4
-                elseif s:isPrerelease(a:name,'1.14.4',1)
-                        return '19w27a'
-                elseif s:isPrerelease(a:name,'1.14.4',2)
-                        return '19w27b'
-                elseif s:isPrerelease(a:name,'1.14.4',3)
-                        return '19w28a'
-                elseif s:isPrerelease(a:name,'1.14.4',4)
-                        return '19w28b'
-                elseif s:isPrerelease(a:name,'1.14.4',5)
-                        return '19w28c'
-                elseif s:isPrerelease(a:name,'1.14.4',6)
-                        return '19w29a'
-                elseif s:isPrerelease(a:name,'1.14.4',7)
-                        return '19w29b'
-                elseif a:name == '1.14.4'
-                        return '19w30a'
-                endif
-        elseif a:name =~ '1.15'
-                if s:isPrerelease(a:name,'1.15',1)
-                        return '19w47a'
-                elseif s:isPrerelease(a:name,'1.15',2)
-                        return '19w48a'
-                elseif s:isPrerelease(a:name,'1.15',3)
-                        return '19w48b'
-                elseif s:isPrerelease(a:name,'1.15',4)
-                        return '19w49a'
-                elseif s:isPrerelease(a:name,'1.15',5)
-                        return '19w49b'
-                elseif s:isPrerelease(a:name,'1.15',6)
-                        return '19w49c'
-                elseif s:isPrerelease(a:name,'1.15',7)
-                        return '19w50a'
-                elseif a:name == '1.15'
-                        return '19w50b'
-
-                        "1.15.1
-                elseif s:isPrerelease(a:name,'1.15.1',1)
-                        return '19w50c'
-                elseif a:name == '1.15.1'
-                        return '19w51a'
-
-                        "1.15.2
-                elseif s:isPrerelease(a:name,'1.15.2',1)
-                        return '20w03a'
-                elseif s:isPrerelease(a:name,'1.15.2',2)
-                        return '20w03b'
-                elseif a:name == '1.15.2'
-                        return '20w04a'
-
-                endif
-        elseif a:name =~ '1.16'
-                if s:isPrerelease(a:name,'1.16',1)
-                        return '20w23a'
-                elseif s:isPrerelease(a:name,'1.16',2)
-                        return '20w23b'
-                elseif s:isPrerelease(a:name,'1.16',3)
-                        return '20w24a'
-                elseif s:isPrerelease(a:name,'1.16',4)
-                        return '20w24b'
-                elseif s:isPrerelease(a:name,'1.16',5)
-                        return '20w24c'
-                elseif s:isPrerelease(a:name,'1.16',6)
-                        return '20w25b'
-                else
-                        return '99w99e'
+        elseif a:name =~ '\d\dw\d\d\w'
+                let l:year=matchstr(a:name,'^\d\+\zew')
+                let l:week=matchstr(a:name,'w\zs\d\+')
+                let l:day=tr(matchstr(a:name,'\a$'),'xyzabcdefg','0123456789')
+                return l:year*10000 + l:week*100 + l:day
+        else
+                let l:result=0
+                if a:name =~ '1.13.1'
+                        return s:addOffset('18w33a',a:name)
+                elseif a:name =~ '1.13.2'
+                        return s:addOffset('18w42a',a:name)
+                elseif a:name =~ '1.13'
+                        return s:addOffset('18w23a',a:name)
+                elseif a:name =~ '1.14.1'
+                        return s:addOffset('19w19a',a:name)
+                elseif a:name =~ '1.14.2'
+                        return s:addOffset('19w20a',a:name)
+                elseif a:name =~ '1.14.3'
+                        return s:addOffset('19w23a',a:name)
+                elseif a:name =~ '1.14.4'
+                        return s:addOffset('19w27a',a:name)
+                elseif a:name =~ '1.14'
+                        return s:addOffset('19w15a',a:name)
+                elseif a:name =~ '1.15.1'
+                        return s:addOffset('19w50a',a:name)
+                elseif a:name =~ '1.15.2'
+                        return s:addOffset('20w03a',a:name)
+                elseif a:name =~ '1.15'
+                        return s:addOffset('19w47a',a:name)
+                elseif a:name =~ '1.16'
+                        return s:addOffset('20w23a',a:name)
                 endif
         endif
+endfunction
+
+function! s:addOffset(snapshot,name)
+        let l:result=s:toNumericVersion(a:snapshot)
+        " take the week the first prerelease occurs converted to a string,
+        " add 10+n for prereleases, 99 for release.
+
+        " and hope and pray mojang doesn't start two prerelease sequences in one week.
+        if a:name =~ 'p'
+                " prerelease 
+                return l:result + 10 + matchstr(a:name,'\d\+$')
+        else
+                " release
+                return l:result + 99
+        endif
+endfunction
+
+function! s:atLeastVersion(version)
+        return s:toNumericVersion(a:version) <= g:numericVersion
 endfunction
 
 " Determine minecraft version
