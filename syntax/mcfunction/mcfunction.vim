@@ -1523,10 +1523,10 @@ hi def link mcBuiltinNamespace mcKeyId
 " Builtins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addBuiltin(type,match)
-        execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.a:match.'>)`'
+        execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
 endfunction
 function! s:addBuiltinTag(type,match)
-        execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.a:match.'>)`'
+        execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
 endfunction
 function! s:addGamerule(name, values)
         if a:values != ''

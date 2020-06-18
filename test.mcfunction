@@ -20,6 +20,7 @@ locate Desert_Pyramid
 locate village
 locate endcity
 summon tnt
+playsound entity.enderman.scream
 give @s vex_spawn_egg
 effect give @s haste
 clone 1 2 3 4 5 6 7 8 9 filtered dirt
