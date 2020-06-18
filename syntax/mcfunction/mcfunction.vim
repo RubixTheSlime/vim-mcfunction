@@ -13,15 +13,15 @@ function! s:toNumericVersion(name)
         if a:name =~ '\<c\%[ombat]'
                 let l:num = matchstr(a:name,'\d\+$')
                 if l:num == 1
-                        return s:toNumericVersion('19w26z')
+                        return s:toNumericVersion('1.14.3p4')
                 elseif l:num == 2
-                        return s:toNumericVersion('19w33a')
+                        return s:toNumericVersion('1.14.4')
                 elseif l:num == 3
-                        return s:toNumericVersion('19w44a')
+                        return s:toNumericVersion('1.14.4')
                 elseif l:num == 4
-                        return s:toNumericVersion('19w48c')
+                        return s:toNumericVersion('1.15p3')
                 elseif l:num == 5
-                        return s:toNumericVersion('19w03c')
+                        return s:toNumericVersion('1.15.2p2')
                 endif
         elseif a:name =~ '\d\dw\d\d\w'
                 let l:year=matchstr(a:name,'^\d\+\zew')
@@ -64,7 +64,7 @@ function! s:addOffset(snapshot,name)
         " add 10+n for prereleases, 99 for release.
 
         " and hope and pray mojang doesn't start two prerelease sequences in one week.
-        if a:name =~ 'p'
+        if a:name =~ '\cp'
                 " prerelease 
                 return l:result + 10 + matchstr(a:name,'\d\+$')
         else
@@ -1515,8 +1515,7 @@ if s:debug
         syn keyword mcNBTKW   contained skipwhite nextgroup=@mcNBTPath path
         hi def link mcNBTKW mcKeyword
 
-        syn keyword mcCommand contained skipwhite nextgroup=mcdbBlockKw block
-        syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNsTBlock nN
+        syn keyword mcCommand contained skipwhite nextgroup=mcdbBlockKw,mcNsTBlock block
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcTBlock N
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNamespacedTBlock n
 endif
