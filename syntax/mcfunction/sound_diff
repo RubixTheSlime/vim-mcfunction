@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+
+filename1=`cat ~/.minecraft/assets/indexes/$1.json | node -pe 'JSON.parse(require("fs").readFileSync("/dev/stdin").toString()).objects["minecraft/sounds.json"].hash' | sed 's/^../&\/&/'`
+filename2=`cat ~/.minecraft/assets/indexes/$2.json | node -pe 'JSON.parse(require("fs").readFileSync("/dev/stdin").toString()).objects["minecraft/sounds.json"].hash' | sed 's/^../&\/&/'`
+
+file1=`tempfile`
+file2=`tempfile`
+grep '^  "' ~/.minecraft/assets/objects/$filename1 |sed -e 's/^  "//' -e 's/".*$//'> $file1
+grep '^  "' ~/.minecraft/assets/objects/$filename2 |sed -e 's/^  "//' -e 's/".*$//'> $file2
+
+
+diff $file1 $file2
