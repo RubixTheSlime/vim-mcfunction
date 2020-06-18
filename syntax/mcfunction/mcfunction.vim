@@ -3,6 +3,9 @@ if exists("b:current_syntax")
 endif
 let b:current_syntax = "mcfunction"
 let s:debug = 1
+if !exists('g:mcEnableMP')
+        let g:mcEnableMP = 0
+endif
 
 syn match mcAnySpace contained / /
 hi def link mcAnySpace mcBadWhitespace
@@ -229,7 +232,7 @@ call s:addInstance('NBTPath',"","")
 call s:addInstance('NBTTag','','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" COMMANDS
+" SP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -645,6 +648,12 @@ if s:atLeastVersion('18w43a')
         syn keyword mcHelpCommand contained schedule
 endif
 hi def link mcHelpCommand mcKeyValue
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Kick
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand kill contained skipwhite nextgroup=mcDoubleSpace,mcSelectorKick
+call s:addInstance('Selector','Kick','mcChatMessage')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Kill
@@ -1072,6 +1081,12 @@ syn keyword mcXpUnit    points levels   contained
 hi def link mcXpAmount  mcValue
 hi def link mcXpUnit    mcKeyword
 hi def link mcXpKeyword mcKeyword
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" MP COMMANDS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Scoreboard Criteria
