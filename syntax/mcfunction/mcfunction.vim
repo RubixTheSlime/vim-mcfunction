@@ -1085,8 +1085,22 @@ hi def link mcXpKeyword mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
+if g:mcEnableMP
+        syn keyword mcCommand   contained                                                               save-on save-off stop
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSaveKW                    save-all 
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcBanlistKW                 banlist 
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelectorKick              ban
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelectorKick,mcIPBan      ban-ip
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelector,mcIP             pardon-ip
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelector                  pardon op
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      setidletimeout publish
+        syn match   mcIPBan     contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage               /\v%(%([0-1]?\d{1,2}|2%([0-4]\d|5[0-5]))\.){4}/
+        syn match   mcIP        contained skipwhite nextgroup=mcDoubleSpace                             /\v%(%([0-1]?\d{1,2}|2%([0-4]\d|5[0-5]))\.){4}/
+        syn keyword mcSaveKW    contained flush
+        syn keyword mcBanlistKW contained ips players
+        hi def link mcSaveKW    mcKeyword
+        hi def link mcBanlistKW mcKeyword
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Scoreboard Criteria
