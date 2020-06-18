@@ -781,9 +781,9 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorLoot                        give
         call s:mcSelector("Loot", "mcLootSourceKeyword")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockLootReplace            replace
-        call s:mcSelectorBlock('LootReplace','mcNsItemSlotLoot')
-        syn keyword mcNsItemSlotLoot              contained skipwhite nextgroup=mcDoubleSpace,mcLootCount,mcLootSourceKeyword     slot
-                syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/
+        call s:mcSelectorBlock('LootReplace','mcSlotLoot')
+        call s:addInstance('Slot','Loot','mcLootCount,mcLootSourceKeyword')
+        syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/
 
 " Source
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
@@ -867,8 +867,8 @@ hi def link mcRecipeKeyword mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockReplaceitem replaceitem
 
-call s:mcSelectorBlock('Replaceitem','mcReplaceitemSlot')
-syn match   mcReplaceitemSlot  contained skipwhite nextgroup=mcDoubleSpace,mcNsItemReplaceitem /armor\.\(chest\|feet\|head\|legs\)\|container.\([1-4]\?\d\|5[0-3]\)\|\(inventory\|enderchest\)\.\(1\?\d\|2[0-6]\)\|horse\.\(armor\|saddle\|chest\|\d\|1[0-5]\)\|hotbar.[0-8]\|villager.[0-7]\|weapon\(\.\(main\|off\)hand\)\?/
+call s:mcSelectorBlock('Replaceitem','mcSlotReplaceitem')
+call s:addInstance('Slot','Replaceitem','mcNsItemReplaceitem')
 call s:addInstance('NsItem','Replaceitem','mcUInt')
 
 hi def link mcReplaceitemWhere mcKeyword
@@ -1353,15 +1353,15 @@ endfor
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
-        execute 'syn match mcNs'.s:x '/[^ =,\t\r\n]\+/ contained contains=mcNamespace,mc'.s:x
-        execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n]\+/ contained contains=mcNamespace,mc'.s:x
+for s:x in split('Advancement AdvancementCriteria Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
+        execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
+        execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'hi def link mc'.s:x 'mcId'
         execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
         if s:x =~ '\cblock'
                 syn match mcBlock /\w\+/ contained contains=mcBuiltinBlock nextgroup=mcBlockstate
         else
-                execute 'syn match mc'.s:x '/[^ =,\t\r\n]\+/ oneline contained contains=mcBuiltin'.s:x
+                execute 'syn match mc'.s:x '/[^ =,\t\r\n\]]\+/ oneline contained contains=mcBuiltin'.s:x
         endif
 endfor
 

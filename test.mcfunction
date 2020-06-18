@@ -1,4 +1,6 @@
 particle minecraft:poof 1 2 3 4 5 6 1 2 force @s
+loot replace entity @e[type=armor_stand] armor.chest 1 loot arst
+give @a[name=Rubix] apple
 block n minecraft:dirt
 block N dirt
 block n #minecraft:slabs
