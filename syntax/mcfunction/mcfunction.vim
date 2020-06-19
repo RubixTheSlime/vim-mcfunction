@@ -324,6 +324,14 @@ syn keyword mcCloneMode         force move normal       contained
 hi def link mcCloneMode         mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Debug
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:atLeastVersion('1.14.4p1')
+        syn keyword mcCommand debug contained skipwhite nextgroup=mcDoubleSpace,mcDebugKeyword
+        syn keywrod mcDebugKeyword contained report
+endif 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand data contained skipwhite nextgroup=mcDoubleSpace,mcDataKeyword
@@ -1091,7 +1099,9 @@ hi def link mcXpKeyword mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if g:mcEnableMP
+if g:mcEnableMP && s:atLeastVersion('1.14.4p4')
+        " function-permission-level wasn't available until 1.14.4p4, so
+        " functions couldn't use any of these commands
         syn keyword mcCommand   contained                                                               save-on save-off stop
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSaveKW                    save-all 
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcBanlistKW                 banlist 
