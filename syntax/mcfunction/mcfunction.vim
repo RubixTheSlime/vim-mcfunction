@@ -13,7 +13,7 @@ let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/'
 
 " MC Version identifier
 function! s:toNumericVersion(name)
-        if a:name =~ '\<c\%[ombat]'
+        if a:name =~ '\c\<c\%[ombat]'
                 let l:num = matchstr(a:name,'\d\+$')
                 if l:num == 1
                         return s:toNumericVersion('1.14.3p4')
@@ -26,10 +26,10 @@ function! s:toNumericVersion(name)
                 elseif l:num == 5
                         return s:toNumericVersion('1.15.2p2')
                 endif
-        elseif a:name =~ '\d\dw\d\d\w'
-                let l:year=matchstr(a:name,'^\d\+\zew')
-                let l:week=matchstr(a:name,'w\zs\d\+')
-                let l:day=tr(matchstr(a:name,'\a$'),'xyzabcdefg','0123456789')
+        elseif a:name =~ '\c\d\dw\d\d\w'
+                let l:year=matchstr(a:name,'^\c\d\+\zew')
+                let l:week=matchstr(a:name,'\cw\zs\d\+')
+                let l:day=tr(substitute(matchstr(a:name,'\a$'),'^','\L',''), 'zabcdefghi', '0123456789')
                 return l:year*10000 + l:week*100 + l:day
         else
                 let l:result=0
@@ -328,7 +328,7 @@ hi def link mcCloneMode         mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('1.14.4p1')
         syn keyword mcCommand debug contained skipwhite nextgroup=mcDoubleSpace,mcDebugKeyword
-        syn keywrod mcDebugKeyword contained report
+        syn keyword mcDebugKeyword contained report
 endif 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
