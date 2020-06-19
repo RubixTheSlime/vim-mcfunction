@@ -370,3 +370,30 @@ bc cut_(red_)?sandstone_slab
 
 !19w13b
 E raiders
+
+!19w34a
+bi bee_nest
+bc bee_hive
+bi honey(_bottle|comb)
+m bee
+B bee(_growables|hives)|crops|
+BI (tall_)?flowers
+
+!19w36a
+E beehive_inhabitors
+
+!19w41a
+bc honey(comb)?_block
+
+!19w42a
+I lectern_books
+
+!19w44a
+B shulker_boxes
+r honey_bottle
+
+!19w45a
+E arrows
+
+!1.15p2
+B portals

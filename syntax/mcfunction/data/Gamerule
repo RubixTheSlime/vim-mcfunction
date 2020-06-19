@@ -36,6 +36,9 @@ drowningDamage
 fallDamage
 fireDamage
 
+!1.15.2p1
+do(Patrol|Trader)Spawning
+
 !1.16p1
 forgiveDeadPlayers
 universalAnger

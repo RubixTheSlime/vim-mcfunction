@@ -802,17 +802,20 @@ hi def link mcReplaceitemSlot  mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('18w43a')
 
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcScheduleKeyword schedule
+        syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcScheduleKeyword schedule
 
-syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunction            clear
-syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcNamespacedFunctionSchedule    function
-call s:addInstance('NamespacedFunction','Schedule','mcScheduleTime')
-syn match   mcScheduleTime    contained skipwhite nextgroup=mcDoubleSpace,mcScheduleMode        /\d\+[dst]\?/
-syn keyword mcScheduleMode    contained append replace
+        syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcNamespacedFunctionSchedule    function
+        call s:addInstance('NamespacedFunction','Schedule','mcScheduleTime')
+        syn match   mcScheduleTime    contained skipwhite nextgroup=mcDoubleSpace,mcScheduleMode        /\d\+[dst]\?/
 
-hi def link mcScheduleKeyword mcKeyword
-hi def link mcScheduleMode    mcKeyword
-hi def link mcScheduleTime    mcValue
+        if s:atLeastVersion('19w38a')
+                syn keyword mcScheduleKeyword contained skipwhite nextgroup=mcDoubleSpace,mcFunction            clear
+                syn keyword mcScheduleMode    contained append replace
+                hi def link mcScheduleMode    mcKeyword
+        endif
+
+        hi def link mcScheduleKeyword mcKeyword
+        hi def link mcScheduleTime    mcValue
 
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -878,9 +881,10 @@ hi def link mcSpreadPlayersRespect  mcBool
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spectate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorSpectateTarget spectate
-
-call s:addInstance('Selector', 'SpectateTarget','mcPlayerSelector')
+if s:atLeastVersion('19w41a')
+        syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorSpectateTarget spectate
+        call s:addInstance('Selector', 'SpectateTarget','mcPlayerSelector')
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Stopsound
@@ -1154,7 +1158,7 @@ syn region  mcBlockState                matchgroup=mcBlockStateBracket start=/\[
 
 " keywords
 " TODO limit unsigned ints
-syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI          age bites delay distance eggs hatch layers level moisture note pickles power rotation stage honey_level
+syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI          age bites delay distance eggs hatch layers level moisture note pickles power rotation stage
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqBool        attached bottom conditional disarmed down drag enabled extended eye hanging has_book has_bottle_0 has_bottle_1 has_bottle_2 has_record in_wall inverted lit locked note occupied open persistent powered short signal_fire snowy triggered unstable up waterlogged
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAttachment  attachment
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqAxis        axis
@@ -1169,6 +1173,9 @@ syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockSta
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqPart        part
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqShape       shape
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqType        type
+if s:atLeastVersion('19w34a')
+        syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI  honey_level
+endif
 
 " values
 syn match   mcBlockStateValueUI         contained skipwhite     /\d\+/

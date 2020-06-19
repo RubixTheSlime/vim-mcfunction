@@ -40,6 +40,9 @@ bell_ring
 interact_with_(cartagraphy_table|stonecutter|loom)
 raid_(win|trigger)
 
+!1.15p2
+interact_with(anvil|grindstone)
+
 !20w09a
 target_hit
 
