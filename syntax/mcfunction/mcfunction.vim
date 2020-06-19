@@ -234,7 +234,6 @@ call s:addInstance('NBTTag','','')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Advancement
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -250,6 +249,17 @@ syn keyword mcAdvanceWhich              contained skipwhite nextgroup=mcDoulbleS
 hi def link mcAdvanceWhich          mcKeyword
 hi def link mcAdvanceKeyword        mcKeyword
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Attribute
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:atLeastVersion('20w17a')
+syn keyword mcCommand advancement contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAttribute
+call s:addInstance('Selector','Attribute','mcAttrAttribute')
+call s:addInstance('NsAttr','Attribute','mcAttributeKeyword')
+
+hi def link mcAttributeKeyword  mcKeyword
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Bossbar
@@ -1317,7 +1327,7 @@ endfor
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
+for s:x in split('Advancement AdvancementCriteria Attribute Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'hi def link mc'.s:x 'mcId'
@@ -1386,6 +1396,7 @@ for s:file in s:files
         let s:filename = fnamemodify(s:file,':t:r')
         let s:lines = readfile(s:file)
         for s:line in s:lines
+                let s:line = substitute(s:line,'".*','','')
                 if s:line =~ '^\s*\("\|$\)'
                         "just whitespace/comment, skip
                 elseif s:line =~ '^!'
@@ -1438,6 +1449,7 @@ endfor
 " literally the only difference in the entire experimental snapshots so far
 if s:combatVersion >= 3
         addBuiltin('Enchantment','chopping')
+        addBuiltin('Attribute','attack_reach')
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
