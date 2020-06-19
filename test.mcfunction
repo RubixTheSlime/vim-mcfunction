@@ -13,7 +13,7 @@ block N dirt
 block n #minecraft:slabs
 block N #slabs
 /kill @e[type=minecraft:armor_stand,distance=1..3.14,x_rotation=-.2..90.0,sort=nearest]
-kill @s[    ]
+kill @s[  ]
 nbt tag {reistn}
 nbt path rastneie
 setblock 1 1 1 dead_fire_coral

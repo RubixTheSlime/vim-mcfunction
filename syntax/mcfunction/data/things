@@ -314,10 +314,59 @@ c (mojang|creeper|skull|flower)_banner_pattern
 c (red|green|yellow|black|white|brown|blue)_dye
 c crossbow
 c suspicious_stew
-m illager_beast
+m illager_beast !19w05a
 m panda
 m pillager
 B bamboo_plantable_on|(standing_|wall_)?signs|small_flowers|walls
-I music_discs|small_flowers|signs
+I music_discs|small_flowers|signs|walls
 B dirtlike !19w41a
 E skeletons
+
+!18w44a
+bc barrel|bell|blast_furnace|smoker
+bc (cartography|fletching|smithing)_table
+bc grindstone|lectern
+m cat
+BI beds
+
+!18w45a
+bc scaffolding
+
+!18w46a
+bc lantern
+bi jigsaw
+
+!18w49a
+bi sweet_berry_bush
+i sweet_berries
+
+!19w02a
+bc campfire
+
+!19w03a
+bc composter
+
+!19w05a
+m wandering_trader
+m trader_llama
+m ravager
+B (dragon|wither)_immune
+
+!19w07a
+m fox
+
+!19w08a
+i leather_horse_armor
+
+!19w09a
+I arrows
+
+!19w11a
+i globe_banner_pattern
+B points_of_interest|((meeting|job)_site|(armor|butch|cartograph|farm|fletch|leatherwork)er|(tool|weapon)smith|cleric|fisherman|librarian|mason|shepherd)_poi !1.14p1
+
+!19w12a
+bc cut_(red_)?sandstone_slab
+
+!19w13b
+E raiders

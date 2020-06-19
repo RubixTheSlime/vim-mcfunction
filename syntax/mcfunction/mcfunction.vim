@@ -684,6 +684,9 @@ if s:atLeastVersion('18w43a')
                 syn keyword mcCommand drop contained skipwhite nextgroup=mcDoubleSpace,mcLootTargetKeyword
         endif
 
+        if !s:atLeastVersion('18w44a')
+                " TODO add /drop award
+        endif
 " Target
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot                            spawn insert
         call s:addInstance('Coordinate', "Loot","mcLootSourceKeyword")
@@ -721,8 +724,11 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Msg
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand msg w tell teammsg tm me  contained skipwhite nextgroup=mcDoubleSpace,mcSelectorMsg
+syn keyword mcCommand msg w tell me  contained skipwhite nextgroup=mcDoubleSpace,mcSelectorMsg
 syn keyword mcCommand say                       contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage
+if s:atLeastVersion('19w02a')
+        syn keyword mcCommand teammsg tm contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage
+endif
 
 call s:addInstance('Selector', "Msg", "mcChatMessage")
 
@@ -733,9 +739,9 @@ syn match   mcChatMessage       /.*/    contained
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticleParticle particle
 
-call s:addInstance('NsParticle','Particle','mcCoordinateParticle')
+call s:addInstance('NsParticle', 'Particle','mcCoordinateParticle')
 call s:addInstance('Coordinate', 'Particle','mcCoordinate2Particle')
-call s:addInstance('Coordinate2', 'ParticleDelta','mcParticleSpeed')
+call s:addInstance('Coordinate2', 'Particle','mcParticleSpeed')
 syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcParticleCount /\(\d*\.\)\?\d\+/
 syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
@@ -1165,7 +1171,10 @@ syn keyword mcBlockStateValueFace       contained skipwhite     ceiling floor wa
 syn keyword mcBlockStateValueFacing     contained skipwhite     up down north east south west
 syn keyword mcBlockStateValueHalf       contained skipwhite     lower upper bottom top
 syn keyword mcBlockStateValueHinge      contained skipwhite     left right
-syn keyword mcBlockStateValueInstrument contained skipwhite     basedrum bass bell chime flute guitar harp hat snare xylophone
+syn keyword mcBlockStateValueInstrument contained skipwhite     basedrum bass bell chime flute guitar harp hat pling snare xylophone
+if s:atLeastVersion('19w09a')
+        syn keyword mcBlockStateValueInstrument contained skipwhite     iron_xylophone cow_bell didgeridoo bit banjo
+endif
 syn keyword mcBlockStateValueLeaves     contained skipwhite     large none small
 syn keyword mcBlockStateValueMode       contained skipwhite     compare subtract corner data load save
 syn keyword mcBlockStateValuePart       contained skipwhite     foot head
@@ -1458,7 +1467,9 @@ syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/
 syn keyword mcNBTBool           true false                                                              contained
 syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>/                                        contained
 syn match   mcNBTString         /\(\d*\h\)\@=\w*/                                                       contained
-syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"/ skip=/\\"/       oneline contained
+if s:atLeastVersion('19w08a')
+        syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"/ skip=/\\"/       oneline contained
+endif
 syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'/ skip=/\\'/       oneline contained
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}/                   oneline contained contains=mcNBTTagKey,mcNBTComma
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]/      oneline contained contains=@mcNBTValue,mcNBTComma
