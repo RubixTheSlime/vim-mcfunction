@@ -683,6 +683,13 @@ hi def link mcListUUIDs         mcKeyword
 syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocatableStructure
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Locatebiome
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:atLeastVersion('20w06a')
+syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcBiome
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Loot
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('18w43a')
@@ -1183,7 +1190,10 @@ syn match   mcBlockStateValueShape      contained skipwhite     /ascending_\(nor
 syn keyword mcBlockStateValueBool       contained skipwhite     true false
 syn keyword mcBlockStateValueAttachment contained skipwhite     ceiling double_wall floor single_wall
 syn keyword mcBlockStateValueAxis       contained skipwhite     x y z
-syn keyword mcBlockStateValueCardinal   contained skipwhite     true false none syde up
+syn keyword mcBlockStateValueCardinal   contained skipwhite     true false none side up
+if s:atLeastVersion('20w06a')
+syn keyword mcBlockStateValueCardinal   contained skipwhite     tall low
+endif
 syn keyword mcBlockStateValueFace       contained skipwhite     ceiling floor wall
 syn keyword mcBlockStateValueFacing     contained skipwhite     up down north east south west
 syn keyword mcBlockStateValueHalf       contained skipwhite     lower upper bottom top
