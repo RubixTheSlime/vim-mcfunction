@@ -479,3 +479,12 @@ I creeper_drop_music_discs
 !20w17a
 bi soul_(torch|lantern)
 B (stone_)?pressure_plates
+
+!20w19a
+B preven_mob_standing_inside
+
+!20w20a
+I piglin_loved
+
+!20w22a
+C fench_gates|unstable_bottom_center

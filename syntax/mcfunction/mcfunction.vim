@@ -745,15 +745,15 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockLootReplace            replace
         call s:mcSelectorBlock('LootReplace','mcSlotLoot')
         call s:addInstance('Slot','Loot','mcLootCount,mcLootSourceKeyword')
-        syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/
+        syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\)/ "0-64
 
 " Source
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
         syn match   mcLootTableFish             contained skipwhite nextgroup=mcDoubleSpace,mcLootFishingLocation contains=mcNamespace  /\(\w\|:\)\+/
-        syn match   mcLootFishingLocation       contained skipwhite nextgroup=mcDoubleSpace,mcNsItem,mcLootHand                           /\w\+/
+        syn match   mcLootFishingLocation       contained skipwhite nextgroup=mcDoubleSpace,mcNsItem,mcLootHand                         /\w\+/
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTable                                 loot
         syn match   mcLootTable                 contained contains=mcNamespace                                                          /\(\w\|:\)\+/
-syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelector                                    kill
+syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelector                                  kill
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine                        mine
         call s:addInstance('Coordinate', "LootMine","mcNsItem,mcLootHand")
 syn keyword mcLootHand                          contained                                                                               mainhand offhand
@@ -796,8 +796,8 @@ syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcPartic
 syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
 
-hi def link mcParticleSpeed mcValue
-hi def link mcParticleCount mcValue
+hi def link mcParticleSpeed mcUFloatValue
+hi def link mcParticleCount mcUIntValue
 hi def link mcParticleMode  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -814,9 +814,9 @@ syn match   mcPlaysoundVolume    contained skipwhite nextgroup=mcDoubleSpace,mcP
 syn match   mcPlaysoundPitch     contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundMinVolume /0*1\?\.\d\+\|0*2\(\.0*\)\?\ze\_[ ]/
 syn match   mcPlaysoundMinVolume contained                                                        /0*\.\d\+\|0*1\(\.0*\)\?\ze\_[ ]/
 
-hi def link mcPlaysoundVolume    mcValue
-hi def link mcPlaysoundPitch     mcValue
-hi def link mcPlaysoundMinVolume mcValue
+hi def link mcPlaysoundVolume    mcUFloatValue
+hi def link mcPlaysoundPitch     mcUFloatValue
+hi def link mcPlaysoundMinVolume mcUFloatValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Recipe
@@ -911,14 +911,16 @@ hi def link mcScoreboardOp              mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcColumnSpread spreadplayers
 
-call s:addInstance('Column','Spread','mcSpreadPlayersDistance')
-syn match   mcSpreadPlayersDistance contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRange    /\(\d*\.\)\?\d\+/
-syn match   mcSpreadPlayersRange    contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRespect  /\(\d*\.\)\?\d\+/
-syn keyword mcSpreadPlayersRespect  contained skipwhite nextgroup=mcDoubleSpace,mcSelector                true false
+call s:addInstance('Column','Spread','mcUFloatSpreadDistance')
+call s:addInstance('UFloat','SpreadDistance','mcUFloatSpreadRange')
+call s:addInstance('UFloat','SpreadRange','mcBoolSpreadRespect,mcSpreadUnder')
+call s:addInstance('Bool','SpreadRespect','mcPlayerSelector')
 
-hi def link mcSpreadPlayersDistance mcValue
-hi def link mcSpreadPlayersRange    mcValue
-hi def link mcSpreadPlayersRespect  mcBool
+if s:atLeastVersion('20w21a')
+        syn keyword mcSpreadUnder        contained skipwhite nextgroup=mcDoubleSpace,mcUIntSpreadHeight           under
+        call s:addInstance('UInt','SpreadHeight','mcSpreadRespect')
+        hi def link mcSpreadUnder        mcKeyword
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spectate

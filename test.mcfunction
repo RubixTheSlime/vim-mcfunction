@@ -1,4 +1,5 @@
 particle minecraft:poof 1 2 3 4 5 6 1 2 force @s
+spreadplayers 1 2 213.324 12321.1 under 123 true @s
 attribute @s generic.max_health get 12
 attribute @s generic.max_health base get 123
 attribute @s generic.max_health base set 123
