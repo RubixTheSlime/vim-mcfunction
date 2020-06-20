@@ -1,4 +1,10 @@
 particle minecraft:poof 1 2 3 4 5 6 1 2 force @s
+attribute @s generic.max_health get 12
+attribute @s generic.max_health base get 123
+attribute @s generic.max_health base set 123
+attribute @s generic.max_health modifier add 1-2-3-4-5 arst 12.3 add
+attribute @s generic.max_health modifier remove 1-2-3-4-5
+attribute @s generic.max_health modifier value get 1-2-3-4-5 123
 col ~ ~
 forceload add 1 2 3 4 
 ent @s

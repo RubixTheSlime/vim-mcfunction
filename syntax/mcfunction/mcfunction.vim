@@ -127,9 +127,11 @@ syn match   mcUInt              /\d\+/  contained
 syn match   mcLineEnd           /\s*$/  contained
 syn match   mcGlob              /\*/    contained
 syn match   mcUFloat            /\(\d*\.\)\?\d\+/ contained
+syn match   mcFloat             /-\?\(\d*\.\)\?\d\+/ contained
 hi def link mcGlob              mcOp
 hi def link mcUInt              mcValue
 hi def link mcUFloat            mcValue
+hi def link mcFloat            mcValue
 "TODO
 syn match   mcInt32             /-\?\d\+/ contained
 hi def link mcInt32 mcValue
@@ -254,11 +256,34 @@ hi def link mcAdvanceKeyword        mcKeyword
 " Attribute
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('20w17a')
-syn keyword mcCommand advancement contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAttribute
-call s:addInstance('Selector','Attribute','mcAttrAttribute')
-call s:addInstance('NsAttr','Attribute','mcAttributeKeyword')
+syn keyword mcCommand attribute contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAttr
+call s:addInstance('Selector','Attr','mcNsAttributeAttr')
+call s:addInstance('NsAttribute','Attr','mcAttrKeyword')
+syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mcDoubleSpace,mcFloat             get
 
-hi def link mcAttributeKeyword  mcKeyword
+syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mcDoubleSpace,mcAttrBaseKeyword   base
+        syn keyword mcAttrBaseKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcFloat             get set
+
+syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mcDoubleSpace,mcAttrModKeyword    modifier
+        syn keyword mcAttrModKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcAttrModGet        value
+                syn keyword mcAttrModGet        contained skipwhite nextgroup=mcDoubleSpace,mcUUIDAttrModScale  get
+                call s:addInstance('UUID','AttrModScale','mcFloat')
+        syn keyword mcAttrModKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcUUID              remove
+        syn keyword mcAttrModKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcUUIDAttrModAdd    add
+                call s:addInstance('UUID','AttrModAdd','mcAttrModAddName')
+                syn match   mcAttrModAddName    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   /'\([^\\']\|\\[\\']\)*'/
+                syn match   mcAttrModAddName    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   /"\([^\\"]\|\\[\\"]\)*"/
+                syn match   mcAttrModAddName    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   /[a-zA-Z0-9_.+-]\+/
+                call s:addInstance('Float','AttrModAdd','mcAttrModAddMode')
+                syn keyword mcAttrModAddMode    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   add multiply multiply_base
+
+hi def link mcAttrKeyword               mcKeyword
+hi def link mcAttrBaseKeyword            mcKeyword
+hi def link mcAttrModGet                mcKeyword
+hi def link mcAttrModKeyword            mcKeyword
+hi def link mcAttrModAddMode            mcKeyword
+
+hi def link mcAttrModAddName            mcValue
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1327,13 +1352,15 @@ endfor
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Attribute Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
+for s:x in split('Advancement AdvancementCriteria Attribute Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'hi def link mc'.s:x 'mcId'
         execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
         if s:x =~ '\cblock'
-                syn match mcBlock /\w\+/ contained contains=mcBuiltinBlock nextgroup=mcBlockstate
+                execute 'syn match mc'.s:x '/\w\+/ contained contains=mcBuiltin'.s:x 'nextgroup=mcBlockstate'
+        elseif s:x =~ '\cuuid'
+                execute 'syn match mc'.s:x '/\v\x{1,8}-(\x{1,4}-){3}\x{1,12}/ contained contains=mcBuiltin'.s:x
         else
                 execute 'syn match mc'.s:x '/[^ =,\t\r\n\]]\+/ oneline contained contains=mcBuiltin'.s:x
         endif
@@ -1458,14 +1485,14 @@ endif
 " Selector
 syn match   mcSelector contained /\w\{3,16}\>-\@1!/
 syn match   mcSelector contained /@[eaprs]\>\[\@1!/
-syn match   mcSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
+syn match   mcSelector contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/
 syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 
 "This one requires a special name regex
 "Don't touch it just works
 syn match   mcSelectorTpTarget contained /\v<(\d+(\s+[0-9~.-]+){1,2}\s*$)\@!\w{3,16}>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn match   mcSelectorTpTarget contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 hi def link mcSelectorTpTarget mcSelector
 
@@ -1473,6 +1500,7 @@ hi def link mcSelectorTpTarget mcSelector
 syn match   mcPlayerSelector contained /\w\{3,16}\>-\@1!/
 syn match   mcPlayerSelector contained /@[aprs]\>\[\@1!/
 syn match   mcPlayerSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
+syn match   mcPlayerSelector contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/
 syn region  mcPlayerSelector contained matchgroup=mcPlayerSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 hi def link mcPlayerSelector mcSelector
 syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
