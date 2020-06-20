@@ -308,7 +308,8 @@ bc ((dark_)?oak|spruce|birch|jungle|acacia)_sign
 bc ((polished_)?(andes|gran|dior)ite|smooth_((red_)?sandstone|quartz)|mossy_cobblestone|(red_nether|end|mossy)_stone_brick)_(stairs|slab)
 bc smooth_stone_slab
 bc stone_stairs
-bi bamboo
+b bamboo(_sapling)?
+i bamboo
 bi cornflower|wither_rose|lily_of_the_valley|loom
 c (mojang|creeper|skull|flower)_banner_pattern
 c (red|green|yellow|black|white|brown|blue)_dye
@@ -397,3 +398,93 @@ E arrows
 
 !1.15p2
 B portals
+
+!20w06a
+bi ancient_debris|basalt
+bc netherite_block
+bi (crimson|warped)_(fungus|nylium|planks|roots|stem|sign)
+b (crimson|warped)_wall_sign
+bi stripped_(crimson|warped)_stem
+bi shroomlight|
+bi soul_(fire|soil)
+bi soul_fire_(lantern|torch) !20w17a
+bc warped_wart_block
+bi weeping_vines
+b weeping_vines_plant
+c netherite_(boots|chestplate|leggings|helmet|ingot|(pick)?axe|hoe|sword|shovel|scrap)
+m hoglin
+bi nether_sprouts
+B fire|nylium
+BI (crimson|warped)_stems
+
+!20w07a
+m piglin
+B beacon_base_blocks|wall_post_override|wither_summon_base_blocks
+I beacon_payment_items
+
+!20w09a
+bi crying_obsidian|target
+r (warped|crimson)_sign
+B climbable
+E impact_projectiles
+b potted_(warped|crimson)_(fungus|roots)
+" The sad one :(
+m zombified pilgin
+
+!20w10a
+bi (crimson|warped)_hyphae
+B (pi|ho)glin_repellents
+
+!20w11a
+bi nether_gold_ore|twisting_vines
+b twisting_vines_plant
+BI gold_ores
+I piglin_repellents
+B soul_speed_blocks
+
+!20w12a
+bc polished_basalt
+bc respawn_anchor
+B soul_fire_base_blocks
+
+!20w13a
+bc lodestone
+c warped_fungus_on_a_stick
+m strider
+BI logs_that_burn
+BI non_flammable_wood
+B strider_warm_blocks
+
+!20w14a
+m zoglin
+
+!20w15a
+bi (gilded_)?blackstone
+bc (blackstone|polished_blackstone(_brick)?)_(slab|stairs|wall)
+bc polished_blackstone(_bricks|_button|_pressure_plate)?
+bc chiseled_polished_blackstone
+bc cracked_polished_blackstone(_bricks)?
+bc ((chiseled|cracked)_nether|quartz)_bricks
+bc soul_campfire
+i piglin_banner_pattern
+B campfires|guarded_by_piglins
+I (furnace|stone_tool)_materials
+I soul_fire_base_blocks
+
+!20w16a
+bc chains
+i music_disc_pigstep
+I creeper_drop_music_discs
+
+!20w17a
+bi soul_(torch|lantern)
+B (stone_)?pressure_plates
+
+!20w19a
+B preven_mob_standing_inside
+
+!20w20a
+I piglin_loved
+
+!20w22a
+C fench_gates|unstable_bottom_center
