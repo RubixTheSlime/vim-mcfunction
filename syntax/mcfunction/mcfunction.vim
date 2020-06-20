@@ -127,9 +127,11 @@ syn match   mcUInt              /\d\+/  contained
 syn match   mcLineEnd           /\s*$/  contained
 syn match   mcGlob              /\*/    contained
 syn match   mcUFloat            /\(\d*\.\)\?\d\+/ contained
+syn match   mcFloat             /-\?\(\d*\.\)\?\d\+/ contained
 hi def link mcGlob              mcOp
 hi def link mcUInt              mcValue
 hi def link mcUFloat            mcValue
+hi def link mcFloat            mcValue
 "TODO
 syn match   mcInt32             /-\?\d\+/ contained
 hi def link mcInt32 mcValue
@@ -234,7 +236,6 @@ call s:addInstance('NBTTag','','')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Advancement
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -250,6 +251,40 @@ syn keyword mcAdvanceWhich              contained skipwhite nextgroup=mcDoulbleS
 hi def link mcAdvanceWhich          mcKeyword
 hi def link mcAdvanceKeyword        mcKeyword
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Attribute
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:atLeastVersion('20w17a')
+syn keyword mcCommand attribute contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAttr
+call s:addInstance('Selector','Attr','mcNsAttributeAttr')
+call s:addInstance('NsAttribute','Attr','mcAttrKeyword')
+syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mcDoubleSpace,mcFloat             get
+
+syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mcDoubleSpace,mcAttrBaseKeyword   base
+        syn keyword mcAttrBaseKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcFloat             get set
+
+syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mcDoubleSpace,mcAttrModKeyword    modifier
+        syn keyword mcAttrModKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcAttrModGet        value
+                syn keyword mcAttrModGet        contained skipwhite nextgroup=mcDoubleSpace,mcUUIDAttrModScale  get
+                call s:addInstance('UUID','AttrModScale','mcFloat')
+        syn keyword mcAttrModKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcUUID              remove
+        syn keyword mcAttrModKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcUUIDAttrModAdd    add
+                call s:addInstance('UUID','AttrModAdd','mcAttrModAddName')
+                syn match   mcAttrModAddName    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   /'\([^\\']\|\\[\\']\)*'/
+                syn match   mcAttrModAddName    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   /"\([^\\"]\|\\[\\"]\)*"/
+                syn match   mcAttrModAddName    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   /[a-zA-Z0-9_.+-]\+/
+                call s:addInstance('Float','AttrModAdd','mcAttrModAddMode')
+                syn keyword mcAttrModAddMode    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   add multiply multiply_base
+
+hi def link mcAttrKeyword               mcKeyword
+hi def link mcAttrBaseKeyword            mcKeyword
+hi def link mcAttrModGet                mcKeyword
+hi def link mcAttrModKeyword            mcKeyword
+hi def link mcAttrModAddMode            mcKeyword
+
+hi def link mcAttrModAddName            mcValue
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Bossbar
@@ -683,6 +718,13 @@ hi def link mcListUUIDs         mcKeyword
 syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocatableStructure
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Locatebiome
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:atLeastVersion('20w06a')
+syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcBiome
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Loot
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('18w43a')
@@ -703,15 +745,15 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockLootReplace            replace
         call s:mcSelectorBlock('LootReplace','mcSlotLoot')
         call s:addInstance('Slot','Loot','mcLootCount,mcLootSourceKeyword')
-        syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\|[1-9]\)/
+        syn match   mcLootCount         contained skipwhite nextgroup=mcDoubleSpace,mcLootSourceKeyword                 /0*\(6[0-4]\|[1-5]\?\d\)/ "0-64
 
 " Source
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
         syn match   mcLootTableFish             contained skipwhite nextgroup=mcDoubleSpace,mcLootFishingLocation contains=mcNamespace  /\(\w\|:\)\+/
-        syn match   mcLootFishingLocation       contained skipwhite nextgroup=mcDoubleSpace,mcNsItem,mcLootHand                           /\w\+/
+        syn match   mcLootFishingLocation       contained skipwhite nextgroup=mcDoubleSpace,mcNsItem,mcLootHand                         /\w\+/
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTable                                 loot
         syn match   mcLootTable                 contained contains=mcNamespace                                                          /\(\w\|:\)\+/
-syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelector                                    kill
+syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelector                                  kill
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine                        mine
         call s:addInstance('Coordinate', "LootMine","mcNsItem,mcLootHand")
 syn keyword mcLootHand                          contained                                                                               mainhand offhand
@@ -754,8 +796,8 @@ syn match   mcParticleSpeed contained skipwhite nextgroup=mcDoubleSpace,mcPartic
 syn match   mcParticleCount contained skipwhite nextgroup=mcDoubleSpace,mcParticleMode  /\d\+/
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
 
-hi def link mcParticleSpeed mcValue
-hi def link mcParticleCount mcValue
+hi def link mcParticleSpeed mcUFloatValue
+hi def link mcParticleCount mcUIntValue
 hi def link mcParticleMode  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -772,9 +814,9 @@ syn match   mcPlaysoundVolume    contained skipwhite nextgroup=mcDoubleSpace,mcP
 syn match   mcPlaysoundPitch     contained skipwhite nextgroup=mcDoubleSpace,mcPlaysoundMinVolume /0*1\?\.\d\+\|0*2\(\.0*\)\?\ze\_[ ]/
 syn match   mcPlaysoundMinVolume contained                                                        /0*\.\d\+\|0*1\(\.0*\)\?\ze\_[ ]/
 
-hi def link mcPlaysoundVolume    mcValue
-hi def link mcPlaysoundPitch     mcValue
-hi def link mcPlaysoundMinVolume mcValue
+hi def link mcPlaysoundVolume    mcUFloatValue
+hi def link mcPlaysoundPitch     mcUFloatValue
+hi def link mcPlaysoundMinVolume mcUFloatValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Recipe
@@ -869,14 +911,16 @@ hi def link mcScoreboardOp              mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcColumnSpread spreadplayers
 
-call s:addInstance('Column','Spread','mcSpreadPlayersDistance')
-syn match   mcSpreadPlayersDistance contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRange    /\(\d*\.\)\?\d\+/
-syn match   mcSpreadPlayersRange    contained skipwhite nextgroup=mcDoubleSpace,mcSpreadplayersRespect  /\(\d*\.\)\?\d\+/
-syn keyword mcSpreadPlayersRespect  contained skipwhite nextgroup=mcDoubleSpace,mcSelector                true false
+call s:addInstance('Column','Spread','mcUFloatSpreadDistance')
+call s:addInstance('UFloat','SpreadDistance','mcUFloatSpreadRange')
+call s:addInstance('UFloat','SpreadRange','mcBoolSpreadRespect,mcSpreadUnder')
+call s:addInstance('Bool','SpreadRespect','mcPlayerSelector')
 
-hi def link mcSpreadPlayersDistance mcValue
-hi def link mcSpreadPlayersRange    mcValue
-hi def link mcSpreadPlayersRespect  mcBool
+if s:atLeastVersion('20w21a')
+        syn keyword mcSpreadUnder        contained skipwhite nextgroup=mcDoubleSpace,mcUIntSpreadHeight           under
+        call s:addInstance('UInt','SpreadHeight','mcSpreadRespect')
+        hi def link mcSpreadUnder        mcKeyword
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spectate
@@ -1183,7 +1227,10 @@ syn match   mcBlockStateValueShape      contained skipwhite     /ascending_\(nor
 syn keyword mcBlockStateValueBool       contained skipwhite     true false
 syn keyword mcBlockStateValueAttachment contained skipwhite     ceiling double_wall floor single_wall
 syn keyword mcBlockStateValueAxis       contained skipwhite     x y z
-syn keyword mcBlockStateValueCardinal   contained skipwhite     true false none syde up
+syn keyword mcBlockStateValueCardinal   contained skipwhite     true false none side up
+if s:atLeastVersion('20w06a')
+syn keyword mcBlockStateValueCardinal   contained skipwhite     tall low
+endif
 syn keyword mcBlockStateValueFace       contained skipwhite     ceiling floor wall
 syn keyword mcBlockStateValueFacing     contained skipwhite     up down north east south west
 syn keyword mcBlockStateValueHalf       contained skipwhite     lower upper bottom top
@@ -1307,13 +1354,15 @@ endfor
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure',' ')
+for s:x in split('Advancement AdvancementCriteria Attribute Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'hi def link mc'.s:x 'mcId'
         execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
         if s:x =~ '\cblock'
-                syn match mcBlock /\w\+/ contained contains=mcBuiltinBlock nextgroup=mcBlockstate
+                execute 'syn match mc'.s:x '/\w\+/ contained contains=mcBuiltin'.s:x 'nextgroup=mcBlockstate'
+        elseif s:x =~ '\cuuid'
+                execute 'syn match mc'.s:x '/\v\x{1,8}-(\x{1,4}-){3}\x{1,12}/ contained contains=mcBuiltin'.s:x
         else
                 execute 'syn match mc'.s:x '/[^ =,\t\r\n\]]\+/ oneline contained contains=mcBuiltin'.s:x
         endif
@@ -1376,6 +1425,7 @@ for s:file in s:files
         let s:filename = fnamemodify(s:file,':t:r')
         let s:lines = readfile(s:file)
         for s:line in s:lines
+                let s:line = substitute(s:line,'".*','','')
                 if s:line =~ '^\s*\("\|$\)'
                         "just whitespace/comment, skip
                 elseif s:line =~ '^!'
@@ -1428,6 +1478,7 @@ endfor
 " literally the only difference in the entire experimental snapshots so far
 if s:combatVersion >= 3
         addBuiltin('Enchantment','chopping')
+        addBuiltin('Attribute','attack_reach')
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1436,14 +1487,14 @@ endif
 " Selector
 syn match   mcSelector contained /\w\{3,16}\>-\@1!/
 syn match   mcSelector contained /@[eaprs]\>\[\@1!/
-syn match   mcSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
+syn match   mcSelector contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/
 syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 
 "This one requires a special name regex
 "Don't touch it just works
 syn match   mcSelectorTpTarget contained /\v<(\d+(\s+[0-9~.-]+){1,2}\s*$)\@!\w{3,16}>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn match   mcSelectorTpTarget contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 hi def link mcSelectorTpTarget mcSelector
 
@@ -1451,6 +1502,7 @@ hi def link mcSelectorTpTarget mcSelector
 syn match   mcPlayerSelector contained /\w\{3,16}\>-\@1!/
 syn match   mcPlayerSelector contained /@[aprs]\>\[\@1!/
 syn match   mcPlayerSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
+syn match   mcPlayerSelector contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/
 syn region  mcPlayerSelector contained matchgroup=mcPlayerSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 hi def link mcPlayerSelector mcSelector
 syn match   mcPlayerName contained /\w\{3,16}\>-\@!/

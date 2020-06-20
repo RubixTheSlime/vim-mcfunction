@@ -61,10 +61,18 @@ sneeze
 !19w02a
 campfire_cosy_smoke
 campfire_signal_smoke
-!19w34a
 
+!19w34a
 (dripping|landing|falling)_honey
 falling_nectar
+
+!20w06a
+ash
+(crimson|warped)_spore
+soul_fire_flame
+
+!20w09a
+(dripp|fall|land)ing_obsidian_tear
 
 !20w11a
 soul
