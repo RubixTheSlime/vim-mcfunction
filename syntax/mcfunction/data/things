@@ -406,7 +406,8 @@ bi (crimson|warped)_(fungus|nylium|planks|roots|stem|sign)
 b (crimson|warped)_wall_sign
 bi stripped_(crimson|warped)_stem
 bi shroomlight|
-bi soul_(fire(_lantern|_torch)?|soil)
+bi soul_(fire|soil)
+bi soul_fire_(lantern|torch) !20w17a
 bc warped_wart_block
 bi weeping_vines
 b weeping_vines_plant
@@ -474,3 +475,7 @@ I soul_fire_base_blocks
 bc chains
 i music_disc_pigstep
 I creeper_drop_music_discs
+
+!20w17a
+bi soul_(torch|lantern)
+B (stone_)?pressure_plates
