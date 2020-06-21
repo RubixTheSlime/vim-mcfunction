@@ -140,9 +140,8 @@ syn keyword mcBool              contained true false
 hi def link mcBool              mcKeyValue
 
 "TODO
-syn match   mcJSONText          contained /.\+/ contains=@mcjson
-"hi def link mcJSONText          mcString
-syn include @mcjson syntax/json.vim
+syn match   mcJSONText          contained /.\+/
+hi def link mcJSONText          mcString
 
 " Can't have multiple spaces
 syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState
