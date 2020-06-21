@@ -1,8 +1,22 @@
 if exists("b:current_syntax")
         finish
 endif
-let b:current_syntax = "mcfunction"
 let s:debug = 1
+
+if (!exists('g:mcEnableJSON') || g:mcEnableJSON == 1)
+        syn match   mcJSONText          contained /.\+/ contains=@mcjson
+        syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
+        hi def link mcjsonNumber        jsonNumber
+        syn include @mcJSON syntax/json.vim
+        syn cluster mcJSON add=mcjsonNumber,jsonString
+
+        " Proof that at some point we should be able to add our own 'special' keywords
+        "syn keyword mcjsonKeyword contained containedin=jsonKeyword color
+        "hi def link mcjsonKeyword mcKeyword
+
+        let b:current_syntax='mcfunction'
+endif
+
 if !exists('g:mcEnableMP')
         let g:mcEnableMP = 0
 endif
@@ -34,29 +48,29 @@ function! s:toNumericVersion(name)
         else
                 let l:result=0
                 if a:name =~ '1.13.1'
-                        return s:addOffset('18w33a',a:name)
+                        return s:addOffset('18w33',a:name)
                 elseif a:name =~ '1.13.2'
-                        return s:addOffset('18w42a',a:name)
+                        return s:addOffset('18w42',a:name)
                 elseif a:name =~ '1.13'
-                        return s:addOffset('18w23a',a:name)
+                        return s:addOffset('18w23',a:name)
                 elseif a:name =~ '1.14.1'
-                        return s:addOffset('19w19a',a:name)
+                        return s:addOffset('19w19',a:name)
                 elseif a:name =~ '1.14.2'
-                        return s:addOffset('19w20a',a:name)
+                        return s:addOffset('19w20',a:name)
                 elseif a:name =~ '1.14.3'
-                        return s:addOffset('19w23a',a:name)
+                        return s:addOffset('19w23',a:name)
                 elseif a:name =~ '1.14.4'
-                        return s:addOffset('19w27a',a:name)
+                        return s:addOffset('19w27',a:name)
                 elseif a:name =~ '1.14'
-                        return s:addOffset('19w15a',a:name)
+                        return s:addOffset('19w15',a:name)
                 elseif a:name =~ '1.15.1'
-                        return s:addOffset('19w50a',a:name)
+                        return s:addOffset('19w50',a:name)
                 elseif a:name =~ '1.15.2'
-                        return s:addOffset('20w03a',a:name)
+                        return s:addOffset('20w03',a:name)
                 elseif a:name =~ '1.15'
-                        return s:addOffset('19w47a',a:name)
+                        return s:addOffset('19w47',a:name)
                 elseif a:name =~ '1.16'
-                        return s:addOffset('20w23a',a:name)
+                        return s:addOffset('20w23',a:name)
                 endif
         endif
 endfunction
@@ -64,12 +78,15 @@ endfunction
 function! s:addOffset(snapshot,name)
         let l:result=s:toNumericVersion(a:snapshot)
         " take the week the first prerelease occurs converted to a string,
-        " add 10+n for prereleases, 99 for release.
+        " add 30+n for prereleases, 60+n for release candidates, 99 for release.
 
         " and hope and pray mojang doesn't start two prerelease sequences in one week.
         if a:name =~ '\cp'
                 " prerelease 
-                return l:result + 10 + matchstr(a:name,'\d\+$')
+                return l:result + 30 + matchstr(a:name,'\d\+$')
+        elseif a:name =~ '\cc'
+                " release candidate
+                return l:result + 60 + matchstr(a:name,'\d\+$')
         else
                 " release
                 return l:result + 99
@@ -108,6 +125,10 @@ else
                 let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[3])])
                 let s:auto = 1
         endif
+        if g:mcversion=~'\<c\%[andidate]\>'
+                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[4])])
+                let s:auto = 1
+        endif
         if !s:auto
                 let g:numericVersion = s:toNumericVersion(g:mcversion)
         endif
@@ -139,10 +160,6 @@ hi def link mcInt32 mcValue
 syn keyword mcBool              contained true false
 hi def link mcBool              mcKeyValue
 
-"TODO
-syn match   mcJSONText          contained /.\+/
-hi def link mcJSONText          mcString
-
 " Can't have multiple spaces
 syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState
 hi def link mcDoubleSpace mcBadWhitespace
@@ -158,6 +175,7 @@ syn match mcBadWhitespace /\t/
 syn sync minlines=1
 
 syn match mcComment /^#.*/
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Entity Block

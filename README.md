@@ -22,13 +22,14 @@ This plugin has the amazing ability to change to a different Minecraft version o
 Simply run (while in vim) `:let g:mcversion=[version]`, where `[version]` is the version you want, then reload with `:w|e`.
 The options for the version are:
 - `latest`: the latest snapshot that has been released, no matter what kind, including experimental snapshots.
-- The name of a specific snapshot, examples include: `18w43a`, `1.14.3p3`, `1.14.3Pre3`, `1.15.2`, `1.16`, `combat4`
-- Any combination of `release`, `prerelease`, `snapshot`, and `experimental`.
+- The name of a specific snapshot, examples include: `18w43a`, `1.14.3p3`, `1.14.3Pre3`, `1.15.2`, `1.16`, `combat4`, `1.16rc1`
+- Any combination of `release`, `candidate`, `prerelease`, `snapshot`, and `experimental`.
     - Specifying `snapshot` means any snapshot that is of the form `YYwWWn` (eg `18w43b`)
     - `snapshot` and `prerelease` only mean themselves, and do *not* imply any other type.
     - The latest snapshot that is one of the specified types will be chosen.
-    - Example: `release prerelease snapshot` will go with the latest main-track snapshot
+    - Example: `release candidate prerelease snapshot` will go with the latest main-track snapshot
 
+By default, the version is `release`.
 Nothing is case-sensitive, and keywords follow vim's "only need the first part" standard.
 For example, `p`, `Pre`, and `pReReLeAsE` all mean the same thing.
 
