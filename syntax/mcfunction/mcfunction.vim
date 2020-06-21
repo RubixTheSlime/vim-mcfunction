@@ -1,8 +1,22 @@
 if exists("b:current_syntax")
         finish
 endif
-let b:current_syntax = "mcfunction"
 let s:debug = 1
+
+if (!exists('g:mcEnableJSON') || g:mcEnableJSON == 1)
+        syn match   mcJSONText          contained /.\+/ contains=@mcjson
+        syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
+        hi def link mcjsonNumber        jsonNumber
+        syn include @mcJSON syntax/json.vim
+        syn cluster mcJSON add=mcjsonNumber,jsonString
+
+        " Proof that at some point we should be able to add our own 'special' keywords
+        "syn keyword mcjsonKeyword contained containedin=jsonKeyword color
+        "hi def link mcjsonKeyword mcKeyword
+
+        let b:current_syntax='mcfunction'
+endif
+
 if !exists('g:mcEnableMP')
         let g:mcEnableMP = 0
 endif
@@ -139,13 +153,6 @@ hi def link mcInt32 mcValue
 syn keyword mcBool              contained true false
 hi def link mcBool              mcKeyValue
 
-unlet b:current_syntax
-syn match   mcJSONText          contained /.\+/ contains=@mcjson
-syn include @mcjson syntax/json.vim
-syn cluster mcjson add=jsonNumber,jsonString
-"hi def link mcJSONText          mcString
-let b:current_syntax='mcfunction'
-
 " Can't have multiple spaces
 syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState
 hi def link mcDoubleSpace mcBadWhitespace
@@ -161,6 +168,7 @@ syn match mcBadWhitespace /\t/
 syn sync minlines=1
 
 syn match mcComment /^#.*/
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Entity Block

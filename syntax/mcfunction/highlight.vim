@@ -16,8 +16,6 @@ hi mcValue              ctermfg=Magenta
 hi mcKeyId              ctermfg=LightGreen          cterm=bold
 hi mcId                 ctermfg=Green
 
-"hi mcJSONText           ctermfg=Brown
-
 hi mcNBTBracket         ctermfg=DarkGreen
 hi mcNBTPath            ctermfg=DarkCyan
 hi mcNBTPathDot         ctermfg=DarkBlue
