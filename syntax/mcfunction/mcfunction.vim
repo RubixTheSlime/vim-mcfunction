@@ -139,9 +139,12 @@ hi def link mcInt32 mcValue
 syn keyword mcBool              contained true false
 hi def link mcBool              mcKeyValue
 
-"TODO
-syn match   mcJSONText          contained /.\+/
-hi def link mcJSONText          mcString
+unlet b:current_syntax
+syn match   mcJSONText          contained /.\+/ contains=@mcjson
+syn include @mcjson syntax/json.vim
+syn cluster mcjson add=jsonNumber,jsonString
+"hi def link mcJSONText          mcString
+let b:current_syntax='mcfunction'
 
 " Can't have multiple spaces
 syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState
