@@ -1,9 +1,8 @@
 if exists("b:current_syntax")
         finish
 endif
-let s:debug = 1
 
-if (!exists('g:mcEnableJSON') || g:mcEnableJSON == 1)
+if (!exists('g:mcEnableBuiltinJSON') || g:mcEnableBuiltinJSON)
         syn match   mcJSONText          contained /.\+/ contains=@mcjson
         syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
         hi def link mcjsonNumber        jsonNumber
@@ -15,10 +14,6 @@ if (!exists('g:mcEnableJSON') || g:mcEnableJSON == 1)
         "hi def link mcjsonKeyword mcKeyword
 
         let b:current_syntax='mcfunction'
-endif
-
-if !exists('g:mcEnableMP')
-        let g:mcEnableMP = 0
 endif
 
 syn match mcAnySpace contained / /
@@ -1165,7 +1160,7 @@ hi def link mcXpKeyword mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if g:mcEnableMP && s:atLeastVersion('1.14.4p4')
+if (!exists(g:mcEnableMP) || g:mcEnableMP) && s:atLeastVersion('1.14.4p4')
         " function-permission-level wasn't available until 1.14.4p4, so
         " functions couldn't use any of these commands
         syn keyword mcCommand   contained                                                               save-on save-off stop
@@ -1438,60 +1433,62 @@ function! s:addGamerule(name, values)
         endif
 endfunction
 
-let s:files = split(globpath(s:path.'data','*'),'\n')
-for s:file in s:files
-        let s:filename = fnamemodify(s:file,':t:r')
-        let s:lines = readfile(s:file)
-        for s:line in s:lines
-                let s:line = substitute(s:line,'".*','','')
-                if s:line =~ '^\s*\("\|$\)'
-                        "just whitespace/comment, skip
-                elseif s:line =~ '^!'
-                        let g:ver = substitute(s:line,'!','','')
-                        let g:numver = s:toNumericVersion(g:ver)
-                        if s:toNumericVersion(g:ver) > g:numericVersion
-                                break
-                        endif
-                elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-                        " the item is no longer part of the game
-                elseif s:filename =='things'
-                        let s:parts = split(s:line, '\s\+')
-                        " Block
-                        if s:parts[0] =~ 'b'    | call s:addBuiltin(   'Block', s:parts[1]) | endif
-                        if s:parts[0] =~ 'B'    | call s:addBuiltinTag('Block', s:parts[1]) | endif
-                        " Recipe
-                        if s:parts[0] =~ '[cr]' | call s:addBuiltin('Recipe',   s:parts[1]) | endif
-                        " Item
-                        if s:parts[0] =~ '[ci]' | call s:addBuiltin(   'Item',  s:parts[1]) | endif
-                        if s:parts[0] =~ 'I'    | call s:addBuiltinTag('Item',  s:parts[1]) | endif
-                        " Spawn Egg
-                        if s:parts[0] =~ 'm'    | call s:addBuiltin('Item',     s:parts[1].'_spawn_egg') | endif
-                        " Entity
-                        if s:parts[0] =~ '[me]' | call s:addBuiltin(   'Entity',s:parts[1]) | endif
-                        if s:parts[0] =~ 'E'    | call s:addBuiltinTag('Entity',s:parts[1]) | endif
-                elseif s:filename == 'Gamerule'
-                        call s:addGamerule(matchstr(s:line,'^\S\+\>'), matchstr(s:line,'/.\{-}/'))
-                elseif s:filename == 'Criteria'
-                        call s:addBuiltin('CustomCriteria',matchstr(s:line, '^[^!]*'))
-                elseif s:filename == 'Structure'
-                        call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
-                        if s:line =~ '^\*'
-                                if s:atLeastVersion('20w21a')
-                                        call s:addBuiltin('LocatableStructure',matchstr(s:line,'^\*\?\zs\S*\>'))
-                                else
-                                        " it would be very consistent if it weren't for EndCity
-                                        if s:line=~ 'endcity'
-                                                call s:addBuiltin('LocatableStructure','EndCity')
-                                        else
-                                                call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
-                                        endif
-                                endif
-                        endif
-                else
-                        call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
-                endif
-        endfor
-endfor
+if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltins)
+	let s:files = split(globpath(s:path.'data','*'),'\n')
+	for s:file in s:files
+		let s:filename = fnamemodify(s:file,':t:r')
+		let s:lines = readfile(s:file)
+		for s:line in s:lines
+			let s:line = substitute(s:line,'".*','','')
+			if s:line =~ '^\s*\("\|$\)'
+				"just whitespace/comment, skip
+			elseif s:line =~ '^!'
+				let g:ver = substitute(s:line,'!','','')
+				let g:numver = s:toNumericVersion(g:ver)
+				if s:toNumericVersion(g:ver) > g:numericVersion
+					break
+				endif
+			elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+				" the item is no longer part of the game
+			elseif s:filename =='things'
+				let s:parts = split(s:line, '\s\+')
+				" Block
+				if s:parts[0] =~ 'b'    | call s:addBuiltin(   'Block', s:parts[1]) | endif
+				if s:parts[0] =~ 'B'    | call s:addBuiltinTag('Block', s:parts[1]) | endif
+				" Recipe
+				if s:parts[0] =~ '[cr]' | call s:addBuiltin('Recipe',   s:parts[1]) | endif
+				" Item
+				if s:parts[0] =~ '[ci]' | call s:addBuiltin(   'Item',  s:parts[1]) | endif
+				if s:parts[0] =~ 'I'    | call s:addBuiltinTag('Item',  s:parts[1]) | endif
+				" Spawn Egg
+				if s:parts[0] =~ 'm'    | call s:addBuiltin('Item',     s:parts[1].'_spawn_egg') | endif
+				" Entity
+				if s:parts[0] =~ '[me]' | call s:addBuiltin(   'Entity',s:parts[1]) | endif
+				if s:parts[0] =~ 'E'    | call s:addBuiltinTag('Entity',s:parts[1]) | endif
+			elseif s:filename == 'Gamerule'
+				call s:addGamerule(matchstr(s:line,'^\S\+\>'), matchstr(s:line,'/.\{-}/'))
+			elseif s:filename == 'Criteria'
+				call s:addBuiltin('CustomCriteria',matchstr(s:line, '^[^!]*'))
+			elseif s:filename == 'Structure'
+				call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
+				if s:line =~ '^\*'
+					if s:atLeastVersion('20w21a')
+						call s:addBuiltin('LocatableStructure',matchstr(s:line,'^\*\?\zs\S*\>'))
+					else
+						" it would be very consistent if it weren't for EndCity
+						if s:line=~ 'endcity'
+							call s:addBuiltin('LocatableStructure','EndCity')
+						else
+							call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
+						endif
+					endif
+				endif
+			else
+				call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
+			endif
+		endfor
+	endfor
+endif
 
 " literally the only difference in the entire experimental snapshots so far
 if s:combatVersion >= 3
@@ -1577,7 +1574,7 @@ hi def link mcNBTString         mcNBTValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Debugging
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if s:debug
+if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcNBTKW    nbt
         syn keyword mcNBTKW   contained skipwhite nextgroup=mcNBTTag   tag
         syn keyword mcNBTKW   contained skipwhite nextgroup=@mcNBTPath path
