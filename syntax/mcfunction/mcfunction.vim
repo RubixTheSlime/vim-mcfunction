@@ -1561,11 +1561,11 @@ syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e en
 
 "These require a special name regex. Don't touch just works
 execute 'syn match  mcSelectorTpTarget contained /\v<%(\S+%(\s+[0-9~.-]+){1,2}\s*$)@!'. s:nameSym .'{'. s:nameMin .','. s:nameMax .'}\ze\_[ ]/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation'
-syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn match   mcSelectorTpTarget contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation
+syn match   mcSelectorTpTarget contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation
+syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation
 hi def link mcSelectorTpTarget mcSelector
-execute 'syn match  mcSelectorTpLocation contained /\v<'. s:nameSym .'{'. s:nameMin .','. s:nameMax .'}\ze\s*$/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation'
+execute 'syn match  mcSelectorTpLocation contained /\<'. s:nameSym .'\{'. s:nameMin .','. s:nameMax .'}\s*$/'
 syn match   mcSelectorTpLocation contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn match   mcSelectorTpLocation contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn region  mcSelectorTpLocation contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
