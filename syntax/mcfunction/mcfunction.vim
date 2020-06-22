@@ -215,7 +215,8 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addInstance(type,group,nextgroup)
         if a:type=~ 'Selector'
-                execute 'syn match mc'.a:type.a:group 'contained /\v\S+(\[[^\]]*\])?\ze\_[ ]/   contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+                execute 'syn match  mc'.a:type.a:group 'contained /\v[^ []+\ze\_[ ]/                contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+                execute 'syn region mc'.a:type.a:group 'contained start=/\S\+\[/rs=s end=/]\@<=\ze\_[ ]/ contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
                 execute 'syn cluster mcSelectorFilter add=mc'.a:type.a:group
         elseif a:type=~ 'Coordinate'
                 execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
@@ -1089,12 +1090,17 @@ hi def link mcTitleTime3   mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate,mcSelectorTpTarget
-
-" Entity is defined in the entity area
+syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateTpSpecial,mcSelectorTpTarget
+" Selector is defined in the selector area
 call s:addInstance('Coordinate', "Tp","mcTpFacing,mcRotation2")
-syn keyword mcTpFacing contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate2 facing
-hi def link mcTpFacing mcKeyword
+syn keyword mcTpFacing          contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate2,mcTpFacingEntity facing
+syn keyword mcTpFacingEntity    contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTpFacing             entity
+call s:addInstance('Selector', 'TpFacing', 'mcTpFacingAnchor')
+syn keyword mcTpFacingAnchor    contained                                                                  eyes feet
+
+hi def link mcTpFacing          mcKeyword
+hi def link mcTpFacingAnchor    mcKeyword
+hi def link mcTpFacingEntity    mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trigger
@@ -1538,33 +1544,47 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " Selectors and Coordinates
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:nameMin='3'
+let s:nameMax='16'
+let s:nameSym='\w'
+if (exists('g:mcIllegalNames') && g:mcIllegalNames !~ '\v<n%[one]>')
+        if g:mcIllegalNames =~ '\v<(a%[ll]|sh%[ort])>'  | let s:nameMin='1'     | endif
+        if g:mcIllegalNames =~ '\v<(a%[ll]|l%[ong])>'   | let s:nameMax=''      | endif
+        if g:mcIllegalNames =~ '\v<(a%[ll]|sy%[mbol])>' | let s:nameSym='\S'    | endif
+endif
+
 " Selector
-syn match   mcSelector contained /\w\{3,16}\>-\@1!/
+execute 'syn match   mcSelector contained /'.s:nameSym.'\{'.s:nameMin.','.s:nameMax.'}-\@1!/'
 syn match   mcSelector contained /@[eaprs]\>\[\@1!/
-syn match   mcSelector contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/
+syn match   mcSelector contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/
 syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 
-"This one requires a special name regex
-"Don't touch it just works
-syn match   mcSelectorTpTarget contained /\v<(\d+(\s+[0-9~.-]+){1,2}\s*$)\@!\w{3,16}>-\@!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+"These require a special name regex. Don't touch just works
+execute 'syn match  mcSelectorTpTarget contained /\v<%(\S+%(\s+[0-9~.-]+){1,2}\s*$)@!'. s:nameSym .'{'. s:nameMin .','. s:nameMax .'}\ze\_[ ]/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation'
 syn match   mcSelectorTpTarget contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
-syn match   mcSelectorTpTarget contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpTarget contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
 hi def link mcSelectorTpTarget mcSelector
+execute 'syn match  mcSelectorTpLocation contained /\v<'. s:nameSym .'{'. s:nameMin .','. s:nameMax .'}\ze\s*$/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation'
+syn match   mcSelectorTpLocation contained /@[eaprs]\>\[\@1!/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn match   mcSelectorTpLocation contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+syn region  mcSelectorTpLocation contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelector
+hi def link mcSelectorTpLocation mcSelector
 
 " Player Selector
-syn match   mcPlayerSelector contained /\w\{3,16}\>-\@1!/
+execute 'syn match   mcPlayerSelector contained /'.s:nameSym.'\{'.s:nameMin.','.s:nameMax.'}\>-\@1!/'
 syn match   mcPlayerSelector contained /@[aprs]\>\[\@1!/
-syn match   mcPlayerSelector contained /\x\{8}-\x\{4}-\x\{4}-\x\{12}/
-syn match   mcPlayerSelector contained /\x\{1,8}-\(\x\{1,4}-\)\{3}\x\{1,12}/
+syn match   mcPlayerSelector contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/
 syn region  mcPlayerSelector contained matchgroup=mcPlayerSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 hi def link mcPlayerSelector mcSelector
-syn match   mcPlayerName contained /\w\{3,16}\>-\@!/
+execute 'syn match   mcPlayerName contained /'.s:nameSym.'\{'.s:nameMin.','.s:nameMax.'}\>-\@1!/'
 
-" Coordinate
-syn match mcCoordinate  contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){3}|( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
-syn match mcCoordinate2 contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){3}|( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
-syn match mcCoordinate3 contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){3}|( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
+" Coordinate 
+" Special Tp regex seems to do the opposite of what it should. Don't touch just works
+syn match mcCoordinateTpSpecial  contained /\v%(%([[:digit:]~.-]\+\s*){4})@=%(%( +%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%( *\^-?\d*\.?\d*){3})/  contains=mcDoubleSpace
+syn match mcCoordinate  contained /\v%( *%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
+syn match mcCoordinate2 contained /\v%( *%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
+syn match mcCoordinate3 contained /\v%( *%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%( *\^-?\d*\.?\d*){3}/  contains=mcDoubleSpace
 
 " Column
 syn match mcColumn     contained /\v( *(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}|( *\^-?\d*\.?\d*){2}/     contains=mcDoubleSpace

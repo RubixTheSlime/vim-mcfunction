@@ -4,7 +4,7 @@ hi def link mcComment           Comment
 
 hi mcCommand            ctermfg=DarkBlue        cterm=bold
 hi mcOp                 ctermfg=Yellow
-hi mcSelector           ctermfg=DarkRed
+hi mcSelector           ctermfg=Brown cterm=bold
 
 hi mcCoordinate         ctermfg=DarkRed
 hi mcCoordinate2        ctermfg=Red cterm=bold
