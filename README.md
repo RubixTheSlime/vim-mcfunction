@@ -23,9 +23,9 @@ But most importantly, **BE SURE TO UPDATE THE PLUGIN WITH** `:PlugUpdate` **BEFO
 - `g:mcEnableBuiltinJSON` - Use builtin JSON syntax highlighting. If you get some error about json, or you just want it to load like 5% faster, try putting `let g:mcEnableBuiltinJSON=0` in your .vimrc. Default 1 (Use the json highlighting that comes with vim).
 - `g:mcEnableMP` - Enable multiplayer commands. Don't count on these being perfectly reliable as I have not had any way of testing them. Default 0 (Don't highlight multiplayer commands). You also need to be using 1.14.4-pre4 or higher, and set the [function-permission-level](https://minecraft.gamepedia.com/Server.properties#function-permission-level) to 3 or 4.
 - `g:IllegalNames` - Relax the restrictions on player names to allow for [illegal names](https://minecraft.gamepedia.com/Player#Username). Default `none` (Only allow legal names). Can be `none`, `a`, or any combination of:
-        - `short` - allow names shorter than 3 characters (recommended if your datapack uses CarpetMod)
-        - `long` - allow names longer than 16 characters
-        - `symbol` - allow illegal symbols
+    - `short` - allow names shorter than 3 characters (recommended if your datapack uses CarpetMod)
+    - `long` - allow names longer than 16 characters
+    - `symbol` - allow illegal symbols
 - `g:mcDebugging` - Enable certain commands for debugging porpoises. Default 0 (Don't debug ...dolphins?).
 
 ### Changing Minecraft versions
