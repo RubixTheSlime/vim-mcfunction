@@ -238,8 +238,8 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'syn cluster mcNBT add=mcNBTTag'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Block$'
-                execute 'syn match mc'.a:type.a:group '/[[:alnum:]_:]\+/ contained contains=mcInternal'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:group.',mcNBTTagBlock'.a:group.','.a:nextgroup
-                call s:addInstance('BlockState',a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTagBlock'.a:group)
+                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockStateB'.a:group.',mcNBTTagBlock'.a:group.','.a:nextgroup
+                call s:addInstance('BlockState','B'.a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTagBlock'.a:group)
                 call s:addInstance('NBTTag','Block'.a:group,a:nextgroup)
         elseif a:nextgroup == ""
                 execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
@@ -1404,16 +1404,26 @@ for s:x in split('Advancement AdvancementCriteria Attribute BossbarId CustomCrit
                 execute 'syn match mc'.s:x '/[^ =,\t\r\n\]]\+/ oneline contained contains=mcBuiltin'.s:x
         endif
 endfor
-syn match mcInternalNsBlock /\(\w\+:\)\?\w\+/ contained contains=mcNamespace,mcInternalBlock
-syn match mcInternalNamespaceBlock /\w\+:\w\+/ contained contains=mcNamespace,mcInternalBlock
-syn match mcInternalBlock /\w\+/ contained contains=mcBuiltinBlock
+syn match mcSimpleNsBlock /\(\w\+:\)\?\w\+/ contained contains=mcNamespace,mcSimpleBlock
+syn match mcSimpleNamespaceBlock /\w\+:\w\+/ contained contains=mcNamespace,mcSimpleBlock
+syn match mcSimpleBlock /\w\+/ contained contains=mcBuiltinBlock
+
+syn match mcSimpleNsTagBlock /#\(\w\+:\)\?\w\+/ contained contains=mcNamespace,mcSimpleTagBlock
+syn match mcSimpleNamespaceTagBlock /#\w\+:\w\+/ contained contains=mcNamespace,mcSimpleTagBlock
+syn match mcSimpleTagBlock /#\w\+/ contained contains=mcBuiltinTagBlock
+
+syn match mcSimpleNsTBlock /#\?\(\w\+:\)\?\w\+/ contained contains=mcSimpleNsBlock,mcSimpleNsTagBlock
+syn match mcSimpleNamespaceTBlock /#\?\w\+:\w\+/ contained contains=mcSimpleNamespaceBlock,mcSimpleNamespaceTagBlock
+syn match mcSimpleTBlock /#\?\w\+/ contained contains=mcSimpleBlock,mcSimpleTagBlock
+
 syn match mcBadBlockWhitespace / \ze[[{]/ contained
 hi def link mcBadBlockWhitespace mcBadWhitespace
-hi def link mcInternalBlock mcId
+hi def link mcSimpleBlock mcId
+hi def link mcSimpleTagBlock mcSimpleBlock
 hi def link mcBuiltinBlock mcKeyId
 
 "Tags
-for s:x in split('Block Entity Item',' ')
+for s:x in split('Entity Item',' ')
         "TODO mcTNsThing mcTThing mcTNamespacedThing (tags and atoms are both allowed)
         execute 'syn match mcNsT'.s:x '/#\?\(\w\+:\)\?\w\+/ contained contains=mcNsTag'.s:x.',mcNs'.s:x
         execute 'syn match mcNsTag'.s:x '/#\(\w\+:\)\?\w\+/ contained contains=mcNamespace,mcBuiltinTag'.s:x
@@ -1424,8 +1434,8 @@ for s:x in split('Block Entity Item',' ')
         execute 'hi def link mcNamespacedTag'.s:x 'mcId'
         execute 'hi def link mcBuiltinTag'.s:x 'mcKeyId'
         if s:x =~ '\cblock'
-                syn match mcTagBlock /#\w\+/ contained contains=mcBuiltinTagBlock nextgroup=mcBlockstate
-                syn match mcTBlock /#\?\w\+/ contained contains=mcTagBlock,mcBlock nextgroup=mcBlockstate
+                syn match mcTagBlock /#\w\+/ contained contains=mcTagBlock
+                syn match mcTBlock /#\?\w\+/ contained contains=mcTagBlock,mcBlock
         else
                 execute 'syn match mcTag'.s:x '/#\w\+/ oneline contained contains=mcBuiltinTag'.s:x
                 execute 'syn match mcT'.s:x '/#\?\w\+/ oneline contained contains=mcTag'.s:x.',mc'.s:x
