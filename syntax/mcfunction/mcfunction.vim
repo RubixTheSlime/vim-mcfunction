@@ -43,29 +43,29 @@ function! s:toNumericVersion(name)
         else
                 let l:result=0
                 if a:name =~ '1.13.1'
-                        return s:addOffset('18w33',a:name)
+                        return s:addOffset('18w33z',a:name)
                 elseif a:name =~ '1.13.2'
-                        return s:addOffset('18w42',a:name)
+                        return s:addOffset('18w42z',a:name)
                 elseif a:name =~ '1.13'
-                        return s:addOffset('18w23',a:name)
+                        return s:addOffset('18w23z',a:name)
                 elseif a:name =~ '1.14.1'
-                        return s:addOffset('19w19',a:name)
+                        return s:addOffset('19w19z',a:name)
                 elseif a:name =~ '1.14.2'
-                        return s:addOffset('19w20',a:name)
+                        return s:addOffset('19w20z',a:name)
                 elseif a:name =~ '1.14.3'
-                        return s:addOffset('19w23',a:name)
+                        return s:addOffset('19w23z',a:name)
                 elseif a:name =~ '1.14.4'
-                        return s:addOffset('19w27',a:name)
+                        return s:addOffset('19w27z',a:name)
                 elseif a:name =~ '1.14'
-                        return s:addOffset('19w15',a:name)
+                        return s:addOffset('19w15z',a:name)
                 elseif a:name =~ '1.15.1'
-                        return s:addOffset('19w50',a:name)
+                        return s:addOffset('19w50z',a:name)
                 elseif a:name =~ '1.15.2'
-                        return s:addOffset('20w03',a:name)
+                        return s:addOffset('20w03z',a:name)
                 elseif a:name =~ '1.15'
-                        return s:addOffset('19w47',a:name)
+                        return s:addOffset('19w47z',a:name)
                 elseif a:name =~ '1.16'
-                        return s:addOffset('20w23',a:name)
+                        return s:addOffset('20w23z',a:name)
                 endif
         endif
 endfunction
@@ -156,7 +156,7 @@ syn keyword mcBool              contained true false
 hi def link mcBool              mcKeyValue
 
 " Can't have multiple spaces
-syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState
+syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState,mcBuiltinBlockAndBlockstate,mcBlock,mcNsBlock,mcNamespacedBlock,mcSelector
 hi def link mcDoubleSpace mcBadWhitespace
 
 " Optional Slash
@@ -216,6 +216,7 @@ endfunction
 function! s:addInstance(type,group,nextgroup)
         if a:type=~ 'Selector'
                 execute 'syn match mc'.a:type.a:group 'contained /\v\S+(\[[^\]]*\])?\ze\_[ ]/   contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+                execute 'syn cluster mcSelectorFilter add=mc'.a:type.a:group
         elseif a:type=~ 'Coordinate'
                 execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Column|Rotation'
@@ -236,6 +237,10 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
                 execute 'syn cluster mcNBT add=mcNBTTag'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
+        elseif a:type=~ 'Block$'
+                execute 'syn match mc'.a:type.a:group '/[[:alnum:]_:]\+/ contained contains=mcInternal'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:group.',mcNBTTagBlock'.a:group.','.a:nextgroup
+                call s:addInstance('BlockState',a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTagBlock'.a:group)
+                call s:addInstance('NBTTag','Block'.a:group,a:nextgroup)
         elseif a:nextgroup == ""
                 execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
         else
@@ -245,6 +250,7 @@ endfunction
 
 call s:addInstance('NBTPath',"","")
 call s:addInstance('NBTTag','','')
+call s:addInstance('Block','','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SP COMMANDS
@@ -734,7 +740,7 @@ syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocat
 " Locatebiome
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('20w06a')
-syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcBiome
+syn keyword mcCommand locatebiome contained skipwhite nextgroup=mcDoubleSpace,mcBiome
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1160,7 +1166,7 @@ hi def link mcXpKeyword mcKeyword
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if (!exists(g:mcEnableMP) || g:mcEnableMP) && s:atLeastVersion('1.14.4p4')
+if (!exists('g:mcEnableMP') || g:mcEnableMP) && s:atLeastVersion('1.14.4p4')
         " function-permission-level wasn't available until 1.14.4p4, so
         " functions couldn't use any of these commands
         syn keyword mcCommand   contained                                                               save-on save-off stop
@@ -1182,22 +1188,42 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Scoreboard Criteria
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCriteria contained air armor deathcount dummy food health level trigger xp playerKillCount
-syn match   mcCriteria contained skipwhite nextgroup=mcAnySpace,mcTeamColor /teamkill\.\|killedByTeam./
-syn match   mcTeamColor contained /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
+syn match   mcCriteria          contained contains=mcCriteriaIDNamespace,mcCriteriaID / \@1<=[[:alnum:]_.:]\+/
+syn match   mcCriteria          contained contains=mcCriteriaNormal        /\w\+\ze\_[ ]/
+syn keyword mcCriteriaNormal    contained                                               air armor deathcount dummy food health level trigger xp playerKillCount
+syn match   mcCriteriaNormal    contained skipwhite nextgroup=mcAnySpace,mcTeamColor    /teamkill\.\|killedByTeam\./
+syn match   mcTeamColor         contained                                               /\(light\|dark\)_purple\|\(dark_\)\?\(aqua\|blue\|gray\|green\|red\)\|black\|gold\|white\|yellow/
+
+
+syn match   mcCriteriaIDNamespace       contained skipwhite nextgroup=mcAnySpace,mcCriteriaID contains=mcCriteriaNamespace      / \@1<=\w\+\./
 " item
-syn match   mcCriteria contained /minecraft\.\(broken\|crafted\|dropped\|picked_up\|used\):minecraft\./ skipwhite nextgroup=mcAnySpace,mcItem
+syn match   mcCriteriaID                contained skipwhite nextgroup=mcAnySpace,mcBuiltinItem,mcCriteriaItemNamespace                 /\<\(broken\|crafted\|dropped\|picked_up\|used\):/
+syn match   mcCriteriaItemNamespace     contained skipwhite nextgroup=mcAnySpace,mcBuiltinItem contains=mcCriteriaNamespace            /\w\+\./
 "block
-syn match   mcCriteria contained /minecraft\.mined:minecraft\./ skipwhite nextgroup=mcAnySpace,mcBlock
+syn match   mcCriteriaID                contained skipwhite nextgroup=mcAnySpace,mcBuiltinBlock,mcCriteriaBlockNamespace        /\<mined:/
+syn match   mcCriteriaBlockNamespace    contained skipwhite nextgroup=mcAnySpace,mcBuiltinBlock contains=mcCriteriaNamespace    /\w\+\./
 " entity
-syn match   mcCriteria contained /minecraft\.killed\(_by\)\?:minecraft\./ skipwhite nextgroup=mcAnySpace,mcEntity
+syn match   mcCriteriaID                contained skipwhite nextgroup=mcAnySpace,mcBuiltinEntity,mcCriteriaEntityNamespace             /\<killed\(_by\)\?:/
+syn match   mcCriteriaEntityNamespace   contained skipwhite nextgroup=mcAnySpace,mcBuiltinEntity contains=mcCriteriaNamespace          /\w\+\./
 "custom things
-syn match   mcCriteria contained /minecraft\.custom:/ skipwhite nextgroup=mcAnySpace,mcCustomCriteria,mcCriteriaCustomNamespace
-syn match   mcCriteriaCustomNamespace contained /minecraft\./ skipwhite nextgroup=mcAnySpace,mcCustomCriteria
-hi def link mcCriteriaCustomNamespace mcCriteria
-"hi def link mcCriteriaCustom mcCriteria
-hi def link mcTeamColor      mcCriteria
-hi def link mcCriteria       mcKeyId
+syn match   mcCriteriaID                contained skipwhite nextgroup=mcAnySpace,mcBuiltinCustomCriteria,mcCriteriaCustomNamespace     /\<custom:/
+syn match   mcCriteriaCustomNamespace   contained skipwhite nextgroup=mcAnySpace,mcBuiltinCustomCriteria contains=mcCriteriaNamespace  /\w\+\./
+
+syn match   mcCriteriaNamespace       contained /minecraft\./
+hi def link mcCriteriaNamespace       mcKeyId
+hi def link mcCriteriaItemNamespace   mcCriteria
+hi def link mcCriteriaBlockNamespace   mcCriteria
+hi def link mcCriteriaEntityNamespace   mcCriteria
+hi def link mcCriteriaCustomNamespace   mcCriteria
+
+hi def link mcCriteria          mcId
+hi def link mcCriteriaIDNamespace          mcId
+
+
+hi def link mcCriteriaNormal    mcKeyId
+hi def link mcCriteriaID        mcKeyId
+
+hi def link mcTeamColor         mcCriteriaNormal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Scoreboard Displays
@@ -1367,19 +1393,24 @@ endfor
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Attribute Block BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
+for s:x in split('Advancement AdvancementCriteria Attribute BossbarId CustomCriteria Dimension Effect Enchantment Entity Function Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
-        execute 'syn match mcNamespaced'.s:x '/\w\+:[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
+        execute 'syn match mcNamespaced'.s:x '/[^ =,\t\r\n\]]\+/ contained contains=mcNamespace,mc'.s:x
         execute 'hi def link mc'.s:x 'mcId'
         execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
-        if s:x =~ '\cblock'
-                execute 'syn match mc'.s:x '/\w\+/ contained contains=mcBuiltin'.s:x 'nextgroup=mcBlockstate'
-        elseif s:x =~ '\cuuid'
+        if s:x =~ '\cuuid'
                 execute 'syn match mc'.s:x '/\v\x{1,8}-(\x{1,4}-){3}\x{1,12}/ contained contains=mcBuiltin'.s:x
         else
                 execute 'syn match mc'.s:x '/[^ =,\t\r\n\]]\+/ oneline contained contains=mcBuiltin'.s:x
         endif
 endfor
+syn match mcInternalNsBlock /\(\w\+:\)\?\w\+/ contained contains=mcNamespace,mcInternalBlock
+syn match mcInternalNamespaceBlock /\w\+:\w\+/ contained contains=mcNamespace,mcInternalBlock
+syn match mcInternalBlock /\w\+/ contained contains=mcBuiltinBlock
+syn match mcBadBlockWhitespace / \ze[[{]/ contained
+hi def link mcBadBlockWhitespace mcBadWhitespace
+hi def link mcInternalBlock mcId
+hi def link mcBuiltinBlock mcKeyId
 
 "Tags
 for s:x in split('Block Entity Item',' ')
@@ -1403,8 +1434,6 @@ endfor
 
 hi def link mcTagBlock mcId
 
-syn match mcBadWhiteSpaceBlock / \ze[[{]/ contained
-hi def link mcBadWhiteSpaceBlock mcBadWhitespace
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Namespace
@@ -1433,7 +1462,7 @@ function! s:addGamerule(name, values)
         endif
 endfunction
 
-if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltins)
+if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 	let s:files = split(globpath(s:path.'data','*'),'\n')
 	for s:file in s:files
 		let s:filename = fnamemodify(s:file,':t:r')
@@ -1473,7 +1502,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltins)
 				call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
 				if s:line =~ '^\*'
 					if s:atLeastVersion('20w21a')
-						call s:addBuiltin('LocatableStructure',matchstr(s:line,'^\*\?\zs\S*\>'))
+						call s:addBuiltin('LocatableStructure', matchstr(s:line,'^\*\?\zs\S*\>'))
 					else
 						" it would be very consistent if it weren't for EndCity
 						if s:line=~ 'endcity'
@@ -1583,6 +1612,8 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcdbBlockKw,mcNsTBlock block
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcTBlock N
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNamespacedTBlock n
+        syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNsBlock T
+        syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNsTagBlock t
 
         syn keyword mcCommand contained skipwhite nextgroup=mcCoordinate coord
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent

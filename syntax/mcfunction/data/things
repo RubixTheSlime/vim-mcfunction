@@ -429,7 +429,7 @@ B climbable
 E impact_projectiles
 b potted_(warped|crimson)_(fungus|roots)
 " The sad one :(
-m zombified pilgin
+m zombified_piglin
 
 !20w10a
 bi (crimson|warped)_hyphae

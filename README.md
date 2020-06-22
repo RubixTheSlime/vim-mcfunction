@@ -5,7 +5,7 @@ Vim syntax definitions for mcfunction. More than just highlights keywords, anyth
 
 To install using [vim-plug](https://github.com/junegunn/vim-plug), add
 ```
-call plug#begin()
+call plug#begin(~/.vim/plugged)
 
 Plug rubixninja314/vim-mcfunction
 
@@ -25,16 +25,16 @@ However, if you want to have access to parts of the newer version as soon as the
 
 ### Changing Minecraft versions
 This plugin has the amazing ability to change to a different Minecraft version on-the-fly.
-Simply run (while in vim) `:let g:mcversion=[version]`, where `[version]` is the version you want, then reload with `:w|e`.
+Simply run (while in vim) `:let g:mcversion=[version]`, where `[version]` is the version you want, then reload with `:e` or `:sy on`.
 Alternatively, put `let g:mcversion=[version]` in your .vimrc to set it to that every time.
 The options for the version are:
 - `'latest'`': the latest snapshot that has been released, no matter what kind, including experimental snapshots.
-- The name of a specific snapshot. examples include: `'18w43a'`, `'1.14.3p3'`, `'1.14.3Pre3'`, `'1.15.2'`, `'1.16'`, `'combat4'`, `'1.16rc1'`
+- The name of a specific snapshot. Examples include: `'18w43a'`, `'1.14.3p3'`, `'1.14.3Pre3'`, `'1.15.2'`, `'1.16'`, `'combat4'`, `'1.16rc1'`.
 - Any combination of `'release'`, `'candidate'` (as in release candidate), `'prerelease'`, `'snapshot'`, and `'experimental'`'.
-    - Specifying `'snapshot'` means any snapshot that is of the form `'YYwWWn'` (eg `'18w43b'`')
+    - Specifying `'snapshot'` means any snapshot that is of the form `YYwWWn` (eg `18w43b`').
     - `'snapshot'` and `'prerelease'` only mean themselves, and do *not* imply any other type.
     - The latest snapshot that is one of the specified types will be chosen.
-    - Example: `'release candidate prerelease snapshot'` will go with the latest main-track snapshot (so will `'r c p s'`')
+    - Example: `'release candidate prerelease snapshot'` will go with the latest main-track snapshot (so will `'r c p s'`').
 
 By default, the version is `'release'`.
 Versions are not case-sensitive, and keywords follow vim's "only need the first part" standard.
@@ -43,8 +43,8 @@ For example, `'p'`, `'Pre'`, and `'pReReLeAsE'` all mean the same thing.
 ### Colors
 Vim has a system to set the highlighting for most languages at once. For example, you can set the highlighting for comments and it will apply to any language whether it's C, Python, Assembly, or (with this plugin) mcfunction.
 However, beyond errors, comments, and messages for chat (messages highlight as strings), mcfunction cannot use this feature.
-So if you would like to change the color scheme, you will need to navigate to she plugin's directory and edit `.../vim-mcfunction/syntax/highlight.vim`.
-After you do so, make sure to run `git commit -a` so that your changes will be saved upon update (which happens fairly often; in fact weekly during snapshot season).
+So if you would like to change the color scheme, you will need to navigate to she plugin's directory and edit `./syntax/highlight.vim`.
+After you do so, make sure to run `git commit -a` so that your changes will be saved upon update (which happens fairly often, in fact weekly during snapshot season).
 If you would like to return to the plugin's default highlighting, run `git reset --hard origin/master` (while in the plugin's directory).
 
 ## Final Notes
