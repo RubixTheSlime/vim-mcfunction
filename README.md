@@ -43,7 +43,7 @@ For example, `'p'`, `'Pre'`, and `'pReReLeAsE'` all mean the same thing.
 ### Colors
 Vim has a system to set the highlighting for most languages at once. For example, you can set the highlighting for comments and it will apply to any language whether it's C, Python, Assembly, or (with this plugin) mcfunction.
 However, beyond errors, comments, and messages for chat (messages highlight as strings), mcfunction cannot use this feature.
-So if you would like to change the color scheme, you will need to navigate to she plugin's directory and edit `./syntax/highlight.vim`.
+So if you would like to change the color scheme, you will need to navigate to she plugin's directory and edit `./syntax/mcfunctoin/highlight.vim`.
 After you do so, make sure to run `git commit -a` so that your changes will be saved upon update (which happens fairly often, in fact weekly during snapshot season).
 If you would like to return to the plugin's default highlighting, run `git reset --hard origin/master` (while in the plugin's directory).
 
