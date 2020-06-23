@@ -104,7 +104,7 @@ function! s:getVersionFromHeader()
                         " end of header
                         break
                 endif
-                let l:attempt = matchstr(s:line, '\v\c<%(\dw{2}\d{1,2}\a+|\d+%(\.\d+)*%(-*%(p%[rerelease]|p%[re-release]|%(r%[elease-])?c%[andidate])-*\d+)?|c%[ombat]%[-test]%[-snapshot]-?\d+)>')
+                let l:attempt = matchstr(s:line, '\v\c<%(\d{2}w\d{1,2}\a+|\d+%(\.\d+)*%(-*%(p%[rerelease]|p%[re-release]|%(r%[elease-])?c%[andidate])-*\d+)?|c%[ombat]%[-test]%[-snapshot]-?\d+)>')
                 if l:attempt != ''
                         return l:attempt
                 endif
@@ -296,6 +296,8 @@ function! s:addInstance(type,group,nextgroup)
         elseif a:type=~ 'Item$'
                 execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcNBTTag'.a:type.a:group.','.a:nextgroup
                 call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
+        elseif a:type=~ 'Entity$'
+                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:nextgroup == ""
                 execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
         else
@@ -307,6 +309,7 @@ call s:addInstance('NBTPath',"","")
 call s:addInstance('NBTTag','','')
 call s:addInstance('Block','','')
 call s:addInstance('NsTBlock','','')
+call s:addInstance('NsTEntity','','')
 call s:addInstance('NsBlock','','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -801,9 +804,7 @@ if s:atLeastVersion('18w43a')
                 syn keyword mcCommand drop contained skipwhite nextgroup=mcDoubleSpace,mcLootTargetKeyword
         endif
 
-        if !s:atLeastVersion('18w44a')
-                " TODO add /drop award
-        endif
+        " TODO add /drop award
 " Target
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLoot            spawn insert
         call s:addInstance('Coordinate', "Loot","mcLootSourceKeyword")
@@ -1562,7 +1563,7 @@ syn match   mcSelector contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/
 syn region  mcSelector contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 
 "These require a special name regex. Don't touch just works
-execute 'syn match  mcSelectorTpTarget contained /\v<%(\S+%(\s+[0-9~.-]+){1,2}\s*$)@!'. s:nameSym .'{'. s:nameMin .','. s:nameMax .'}\ze\_[ ]/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation'
+execute 'syn match  mcSelectorTpTarget contained /\v<%(\S+%(\s+[0-9~.-]+){2}\s*$)@!'. s:nameSym .'{'. s:nameMin .','. s:nameMax .'}\ze\_[ ]/ skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation'
 syn match   mcSelectorTpTarget         contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation /@[eaprs]\>\[\@1!/
 syn match   mcSelectorTpTarget         contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/
 syn region  mcSelectorTpTarget contained matchgroup=mcSelector start=/@[eaprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite nextgroup=mcDoubleSpace,mcCoordinateTp,mcSelectorTpLocation
@@ -1580,6 +1581,7 @@ syn match   mcPlayerSelector contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/
 syn region  mcPlayerSelector contained matchgroup=mcPlayerSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 hi def link mcPlayerSelector mcSelector
 execute 'syn match   mcPlayerName contained /'.s:nameSym.'\{'.s:nameMin.','.s:nameMax.'}\>-\@1!/'
+hi def link mcPlayerName mcPlayerSelector
 
 " Coordinate
 " Don't touch just works
