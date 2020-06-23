@@ -1,19 +1,19 @@
-hi def link mcBadWhitespace     Error
+hi def link mcError             Error
 hi def link mcChatMessage       String
 hi def link mcComment           Comment
 
 hi mcCommand            ctermfg=DarkBlue        cterm=bold
 hi mcOp                 ctermfg=Yellow
-hi mcSelector           ctermfg=Brown cterm=bold
+hi mcSelector           ctermfg=Brown           cterm=bold
 
 hi mcCoordinate         ctermfg=DarkRed
-hi mcCoordinate2        ctermfg=Red cterm=bold
+hi mcCoordinate2        ctermfg=Red             cterm=bold
 hi mcCoordinate3        ctermfg=DarkRed
 
 hi mcKeyword                                    cterm=italic,bold
-hi mcKeyValue           ctermfg=Magenta          cterm=bold
+hi mcKeyValue           ctermfg=Magenta         cterm=bold
 hi mcValue              ctermfg=Magenta
-hi mcKeyId              ctermfg=LightGreen          cterm=bold
+hi mcKeyId              ctermfg=LightGreen      cterm=bold
 hi mcId                 ctermfg=Green
 
 hi mcNBTBracket         ctermfg=DarkGreen
