@@ -140,15 +140,15 @@ endif
 " Miscellaneous Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Numbers
-syn match   mcInt       contained /\v<0*%(-?1?\d{,9}|-?2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7]))))))))|-0*2147483648)>/
+syn match   mcInt       contained nextgroup=mcBadDecimal /\v<0*%(-?1?\d{,9}|-?2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7]))))))))|-0*2147483648)>/
 "2147483648
-syn match   mcUInt      contained /\v<0*%(1?\d{,9}|2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7])))))))))>/
+syn match   mcUInt      contained nextgroup=mcBadDecimal /\v<0*%(1?\d{,9}|2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7])))))))))>/
 " 6 digit uint
-syn match   mcUIntE6    contained /\<0*\d\{1,6}\>/
+syn match   mcUIntE6    contained nextgroup=mcBadDecimal /\<0*\d\{1,6}\>/
 " 6 bit uint including 2^6
-syn match   mcUInt6i    contained /\v<0*%(6[0-4]|[1-5]\d)>/
+syn match   mcUInt6i    contained nextgroup=mcBadDecimal /\v<0*%(6[0-4]|[1-5]\d)>/
 " 8 bit uint
-syn match   mcUInt8     contained /\v<0*%([0-1]?\d{,2}|2%([0-4]\d|5[0-5]))>/
+syn match   mcUInt8     contained nextgroup=mcBadDecimal /\v<0*%([0-1]?\d{,2}|2%([0-4]\d|5[0-5]))>/
 syn match   mcUFloat    contained /\(\d*\.\)\?\d\+/
 syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\+/
 
@@ -160,9 +160,10 @@ hi def link mcUFloat    mcFloat
 hi def link mcInt       mcValue
 hi def link mcFloat     mcValue
 
-syn match   mcUIntRange         contained /\d*\.\.\d*/ contains=mcUInt,mcRangeDots
-syn match   mcUFloatRange       contained /[[:digit:].]*\.\.[[:digit:].]*/ contains=mcUFloat,mcRangeDots
-syn match   mcFloatRange        contained /[[:digit:].-]*\.\.[[:digit:].-]*/ contains=mcFloat,mcRangeDots
+syn match   mcUIntRange         contained contains=mcBadDecimal,mcUInt,mcRangeDots   /\d*\%(\.\+\d*\)\?/ 
+syn match   mcIntRange          contained contains=mcBadDecimal,mcInt,mcRangeDots    /-\?\d*\%(\.\+-\?\d*\)\?/ 
+syn match   mcUFloatRange       contained contains=mcUFloat,mcRangeDots /[[:digit:].]*\%(\.\.[[:digit:].]*\)\?/ 
+syn match   mcFloatRange        contained contains=mcFloat,mcRangeDots  /[[:digit:].-]*\%(\.\.[[:digit:].-]*\)\?/ 
 syn match   mcRangeDots         contained /\.\./
 hi def link mcRangeDots         mcValue
 
@@ -180,10 +181,11 @@ hi def link mcDoubleSpace mcBadWhitespace
 syn match mcOptionalSlash /^\/\?/ nextgroup=mcCommand
 hi def link mcOptionalSlash mcCommand
 
-" Illegal Whitespace
 syn match   mcBadWhitespace     /\t/
-syn match   mcBadDecimal        /\./
+syn match   mcBadDecimal        /\.\ze[^.]/ contained
+syn match   mcFourDots          /\.\{4,}/ contained containedin=ALLBUT,mcChatMessage
 hi def link mcBadDecimal        mcError
+hi def link mcFourDots          mcError
 hi def link mcBadWhitespace     mcError
 
 syn sync minlines=1
@@ -605,10 +607,8 @@ call s:addInstance('Objective','ExecuteCondScoreTarget','mcExecuteCondScoreOp,mc
 syn match   mcExecuteCondScoreOp        contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteCondScoreSource                    /[<>=]\@=[<>]\?=\?/
         call s:addInstance('Selector', "ExecuteCondScoreSource","mcObjectiveExecuteCondScoreSource")
         call s:addInstance('Objective','ExecuteCondScoreSource','mcExecuteKeyword')
-syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteIR1,mcExecuteIR2                           matches
-        syn match   mcExecuteIR1        contained skipwhite nextgroup=mcDoubleSpace,mcExecuteRangeInf,mcExecuteIR2,mcExecuteKeyword     /-\?\d\+/
-        syn match   mcExecuteIR2        contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                                    / \@!\.\.-\?\d\+/
-        syn match   mcExecuteRangeInf   contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                                    /\.\.\_[ ]/
+syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSpace,mcIntRangeExecuteScore                           matches
+        call s:addInstance('IntRange','ExecuteScore','mcExecuteKeyword')
 
 " predicate
 if s:atLeastVersion('19w38a')
@@ -899,7 +899,7 @@ syn keyword mcCommand scoreboard contained skipwhite nextgroup=mcDoubleSpace,mcS
 syn keyword mcScoreboardKeyword contained skipwhite nextgroup=mcDoubleSpace,mcScoreboardPlayers         players
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelectorScoreboardSet     add remove set
         call s:addInstance('Selector', 'ScoreboardSet','mcObjectiveScoreboardSet')
-        call s:addInstance('Objective','ScoreboardSet','mcInt32')
+        call s:addInstance('Objective','ScoreboardSet','mcInt')
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelectorScoreboardGet     enable reset get
         call s:addInstance('Selector', 'ScoreboardGet','mcObjective')
 syn keyword mcScoreboardPlayers contained skipwhite nextgroup=mcDoubleSpace,mcSelector                  list
