@@ -816,10 +816,9 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
 
 " Source
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
-        syn match   mcLootTableFish             contained skipwhite nextgroup=mcDoubleSpace,mcLootFishingLocation contains=mcNamespace  /\(\w\|:\)\+/
+        call s:addInstance('LootTable','Fish','mcLootFishingLocation')
         syn match   mcLootFishingLocation       contained skipwhite nextgroup=mcDoubleSpace,mcNsItem,mcLootHand                         /\w\+/
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTable                                 loot
-        syn match   mcLootTable                 contained contains=mcNamespace                                                          /\(\w\|:\)\+/
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelector                                  kill
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateLootMine                        mine
         call s:addInstance('Coordinate', "LootMine","mcNsItem,mcLootHand")
@@ -1401,9 +1400,23 @@ endfor
 hi def link mcFilterEq                  mcOp
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Loot Tables
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn match   mcLootTable contained contains=mcNamespace,mcLootTableCategory /\S\+/
+
+syn match   mcLootTableCategory contained                                       `empty`
+syn match   mcLootTableCategory contained skipwhite nextgroup=mcSimpleBlock     `[: ]\@1<=blocks/`
+syn match   mcLootTableCategory contained skipwhite nextgroup=mcChestLoot       `chests/`
+syn match   mcLootTableCategory contained skipwhite nextgroup=mcSimpleEntity    `entities/`
+syn match   mcLootTableCategory contained skipwhite nextgroup=mcGameplayLoot    `gameplay/`
+
+hi def link mcLootTable mcError
+hi def link mcLootTableCategory mcKeyId
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Attribute BossbarId CustomCriteria Difficulty Dimension Effect Enchantment Function Gamemode Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
+for s:x in split('Advancement AdvancementCriteria Attribute BossbarId ChestLoot CustomCriteria Difficulty Dimension Effect Enchantment Function Gamemode GameplayLoot Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/                      contained contains=mcNamespace,mc'.s:x
         execute 'syn match mcNamespaced'.s:x '/[^ =,\t\r\n\]]\+/              contained contains=mcNamespace,mc'.s:x
         if s:x =~ '\cuuid'
@@ -1644,6 +1657,7 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcCoordinate coord
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
         syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
+        syn keyword mcCommand contained skipwhite nextgroup=mcLootTable lt
 endif
 
 
