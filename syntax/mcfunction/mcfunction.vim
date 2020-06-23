@@ -708,7 +708,6 @@ syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerS
 
 call s:addInstance('PlayerSelector',"Give", "mcNsItemGive")
 call s:addInstance('NsItem','Give','mcUInt')
-call s:addInstance('NBTTag',"Give","mcUInt")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Help
@@ -870,9 +869,6 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBloc
 call s:mcSelectorBlock('Replaceitem','mcSlotReplaceitem')
 call s:addInstance('Slot','Replaceitem','mcNsItemReplaceitem')
 call s:addInstance('NsItem','Replaceitem','mcUInt')
-
-hi def link mcReplaceitemWhere mcKeyword
-hi def link mcReplaceitemSlot  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Schedule
@@ -1379,8 +1375,8 @@ hi def link mcFilterEq                  mcOp
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 for s:x in split('Advancement AdvancementCriteria Attribute BossbarId CustomCriteria Difficulty Dimension Effect Enchantment Function Gamemode Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
-        execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/                   contained contains=mcNamespace,mc'.s:x
-        execute 'syn match mcNamespaced'.s:x '/[^ =,\t\r\n\]]\+/           contained contains=mcNamespace,mc'.s:x
+        execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/                      contained contains=mcNamespace,mc'.s:x
+        execute 'syn match mcNamespaced'.s:x '/[^ =,\t\r\n\]]\+/              contained contains=mcNamespace,mc'.s:x
         if s:x =~ '\cuuid'
                 execute 'syn match mc'.s:x '/\v\x{1,8}-(\x{1,4}-){3}\x{1,12}/ contained contains=mcBuiltin'.s:x
         else
@@ -1390,30 +1386,11 @@ for s:x in split('Advancement AdvancementCriteria Attribute BossbarId CustomCrit
         execute 'hi def link mc'.s:x 'mcId'
         execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
 endfor
-"syn match   mcSimpleNsBlock             contained contains=mcNamespace,mcSimpleBlock    /\(\w\+:\)\?\w\+/
-"syn match   mcSimpleNamespaceBlock      contained contains=mcNamespace,mcSimpleBlock    /\w\+:\w\+/
-"syn match   mcSimpleBlock               contained contains=mcBuiltinBlock               /\w\+/
-"
-"syn match   mcSimpleNsTagBlock          contained contains=mcNamespace,mcSimpleTagBlock /#\(\w\+:\)\?\w\+/
-"syn match   mcSimpleNamespaceTagBlock   contained contains=mcNamespace,mcSimpleTagBlock /#\w\+:\w\+/
-"syn match   mcSimpleTagBlock            contained contains=mcBuiltinTagBlock            /#\w\+/
-"
-"syn match   mcSimpleNsTBlock            contained contains=mcSimpleNsBlock,mcSimpleNsTagBlock                   /#\?\(\w\+:\)\?\w\+/
-"syn match   mcSimpleNamespaceTBlock     contained contains=mcSimpleNamespaceBlock,mcSimpleNamespaceTagBlock     /#\?\w\+:\w\+/
-"syn match   mcSimpleTBlock              contained contains=mcSimpleBlock,mcSimpleTagBlock                       /#\?\w\+/
 
-syn match   mcBadBlockWhitespace        contained / \ze[[{]/
-
-hi def link mcBadBlockWhitespace mcBadWhitespace
-"hi def link mcSimpleTagBlock     mcSimpleBlock
-"hi def link mcSimpleBlock        mcId
-"hi def link mcBuiltinBlock       mcKeyId
-
-"Tags
 for s:x in split('Block Entity Item',' ')
-        execute 'syn match mcSimple'.s:x '/\w\+/                contained contains=mcBuiltin'.s:x
-        execute 'syn match mcSimpleNs'.s:x '/\(\w\+:\)\?\w\+/   contained contains=mcNamespace,mcBuiltin'.s:x
-        execute 'syn match mcSimpleNamespaced'.s:x '/\w\+:\w\+/ contained contains=mcNamespace,mcBuiltin'.s:x
+        execute 'syn match mcSimple'.s:x '/\w\+/                    contained contains=mcBuiltin'.s:x
+        execute 'syn match mcSimpleNs'.s:x '/\(\w\+:\)\?\w\+/       contained contains=mcNamespace,mcBuiltin'.s:x
+        execute 'syn match mcSimpleNamespaced'.s:x '/\w\+:\w\+/     contained contains=mcNamespace,mcBuiltin'.s:x
 
         execute 'syn match mcSimpleTag'.s:x '/#\w\+/                contained contains=mcBuiltinTag'.s:x
         execute 'syn match mcSimpleNsTag'.s:x '/#\(\w\+:\)\?\w\+/   contained contains=mcNamespace,mcBuiltinTag'.s:x
@@ -1429,8 +1406,8 @@ for s:x in split('Block Entity Item',' ')
         execute 'hi def link mcBuiltinTag'.s:x 'mcKeyId'
 endfor
 
-hi def link mcTagBlock mcId
-
+syn match   mcBadBlockWhitespace        contained / \ze[[{]/
+hi def link mcBadBlockWhitespace mcBadWhitespace
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Namespace
@@ -1564,20 +1541,23 @@ execute 'syn match   mcPlayerName contained /'.s:nameSym.'\{'.s:nameMin.','.s:na
 
 " Coordinate
 " Special Tp regex seems to do the opposite of what it should. Don't touch just works
-syn match   mcCoordinateTpSpecial contained contains=mcDoubleSpace /\v%(%([[:digit:]~.-]\+\s*){4})@=%(%(\s+%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%(\s *\^-?\d*\.?\d*){3})/
-syn match   mcCoordinate        contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%(\s*\^-?\d*\.?\d*){3}/
-syn match   mcCoordinate2       contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%(\s*\^-?\d*\.?\d*){3}/
-syn match   mcCoordinate3       contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)){3}|%(\s*\^-?\d*\.?\d*){3}/
+syn match   mcCoordinateTpSpecial contained contains=mcDoubleSpace /\v%(%(\s*[[:digit:]~.-]+>){4})@!%(%(\s+%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s *\^-?\d*\.?\d*>){3})/
+syn match   mcCoordinate        contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+syn match   mcCoordinate2       contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+syn match   mcCoordinate3       contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
 
 " Column
-syn match   mcColumn            contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}|(\s*\^-?\d*\.?\d*){2}/
-syn match   mcColumn2           contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}|(\s*\^-?\d*\.?\d*){2}/
+" Columns must be integers, and there's currently a bug preventing ^ notation
+"syn match   mcColumn            contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}|(\s*\^-?\d+>){2}/
+"syn match   mcColumn2           contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}|(\s*\^-?\d+>){2}/
+syn match   mcColumn            contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}/
+syn match   mcColumn2           contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}/
 hi def link mcColumn            mcCoordinate
 hi def link mcColumn2           mcCoordinate2
 
 " Rotation
-syn match   mcRotation          contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}/
-syn match   mcRotation2         contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)){2}/
+syn match   mcRotation          contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)>){2}/
+syn match   mcRotation2         contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)>){2}/
 hi def link mcRotation          mcCoordinate
 hi def link mcRotation2         mcCoordinate2
 
