@@ -1092,7 +1092,7 @@ hi def link mcTitleKeyword mcKeyWord
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate,mcSelectorTpTarget
+syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateTpSpecial,mcSelectorTpTarget
 
 " Selector is defined in the selector area
 call s:addInstance('Coordinate', "Tp","mcTpFacing,mcRotation2")
@@ -1540,11 +1540,12 @@ hi def link mcPlayerSelector mcSelector
 execute 'syn match   mcPlayerName contained /'.s:nameSym.'\{'.s:nameMin.','.s:nameMax.'}\>-\@1!/'
 
 " Coordinate
-" Special Tp regex seems to do the opposite of what it should. Don't touch just works
-syn match   mcCoordinateTpSpecial contained contains=mcDoubleSpace /\v%(%(\s*[[:digit:]~.-]+>){4})@!%(%(\s+%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s *\^-?\d*\.?\d*>){3})/
-syn match   mcCoordinate        contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
-syn match   mcCoordinate2       contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
-syn match   mcCoordinate3       contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+" Don't touch just works
+syn match   mcCoordinateTpSpecial contained contains=mcDoubleSpace /\v%(\s+%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}%(\s*[[:digit:]~.-])@!|%(\s*\^-?\d*\.?\d*>){3}/
+syn match   mcCoordinate          contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+syn match   mcCoordinate2         contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+syn match   mcCoordinate3         contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+hi def link mcCoordinateTpSpecial mcCoordinate
 
 " Column
 " Columns must be integers, and there's currently a bug preventing ^ notation
