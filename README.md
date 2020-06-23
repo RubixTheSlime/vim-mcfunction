@@ -34,6 +34,7 @@ The options for the version are:
 
 Versions are not case-sensitive, and keywords follow vim's "only need the first part" standard.
 For example, `p`, `Pre`, and `pReReLeAsE` all mean the same thing.
+Lastly, if you put the version in the header, it must be the name of a snapshot, not a keyword such as `latest`.
 
 
 ### Colors

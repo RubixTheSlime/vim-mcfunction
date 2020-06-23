@@ -66,6 +66,10 @@ function! s:toNumericVersion(name)
                         return s:addOffset('19w47z',a:name)
                 elseif a:name =~ '1.16'
                         return s:addOffset('20w23z',a:name)
+                elseif a:name =~ '1.16.1'
+                        return s:addOffset('21w23z',a:name)
+                elseif a:name =~ '1.17'
+                        return s:addOffset('22w23z',a:name)
                 endif
         endif
 endfunction
@@ -303,6 +307,7 @@ call s:addInstance('NBTPath',"","")
 call s:addInstance('NBTTag','','')
 call s:addInstance('Block','','')
 call s:addInstance('NsTBlock','','')
+call s:addInstance('NsBlock','','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SP COMMANDS
@@ -1413,8 +1418,8 @@ endfor
 
 for s:x in split('Block Entity Item',' ')
         execute 'syn match mcSimple'.s:x '/\w\+/                    contained contains=mcBuiltin'.s:x
-        execute 'syn match mcSimpleNs'.s:x '/\(\w\+:\)\?\w\+/       contained contains=mcNamespace,mcBuiltin'.s:x
-        execute 'syn match mcSimpleNamespaced'.s:x '/\w\+:\w\+/     contained contains=mcNamespace,mcBuiltin'.s:x
+        execute 'syn match mcSimpleNs'.s:x '/\(\w\+:\)\?\w\+/       contained contains=mcNamespace,mcSimple'.s:x
+        execute 'syn match mcSimpleNamespaced'.s:x '/\w\+:\w\+/     contained contains=mcNamespace,mcSimple'.s:x
 
         execute 'syn match mcSimpleTag'.s:x '/#\w\+/                contained contains=mcBuiltinTag'.s:x
         execute 'syn match mcSimpleNsTag'.s:x '/#\(\w\+:\)\?\w\+/   contained contains=mcNamespace,mcBuiltinTag'.s:x
