@@ -174,7 +174,7 @@ syn keyword mcBool      contained true false
 hi def link mcBool      mcKeyValue
 
 " Can't have multiple spaces
-syn match mcDoubleSpace / \@<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState,mcBuiltinBlockAndBlockstate,mcBlock,mcNsBlock,mcNamespacedBlock,mcNsTBlock,mcTBlock,mcNamespacedTBlock,mcTagBlock,mcNsTagBlock,mcNamespacedTagBlock,mcSelector
+syn match mcDoubleSpace / \@1<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState,mcBuiltinBlockAndBlockstate,mcBlock,mcNsBlock,mcNamespacedBlock,mcNsTBlock,mcTBlock,mcNamespacedTBlock,mcTagBlock,mcNsTagBlock,mcNamespacedTagBlock,mcSelector
 hi def link mcDoubleSpace mcBadWhitespace
 
 " Optional Slash
@@ -183,7 +183,7 @@ hi def link mcOptionalSlash mcCommand
 
 syn match   mcBadWhitespace     /\t/
 syn match   mcBadDecimal        /\.\ze[^.]/ contained
-syn match   mcFourDots          /\.\{4,}/ contained containedin=ALLBUT,mcChatMessage
+syn match   mcFourDots          /\.\{4,}/   contained containedin=ALLBUT,mcChatMessage
 hi def link mcBadDecimal        mcError
 hi def link mcFourDots          mcError
 hi def link mcBadWhitespace     mcError
@@ -607,7 +607,7 @@ call s:addInstance('Objective','ExecuteCondScoreTarget','mcExecuteCondScoreOp,mc
 syn match   mcExecuteCondScoreOp        contained skipwhite nextgroup=mcDoubleSpace,mcSelectorExecuteCondScoreSource                    /[<>=]\@=[<>]\?=\?/
         call s:addInstance('Selector', "ExecuteCondScoreSource","mcObjectiveExecuteCondScoreSource")
         call s:addInstance('Objective','ExecuteCondScoreSource','mcExecuteKeyword')
-syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSpace,mcIntRangeExecuteScore                           matches
+syn keyword mcExecuteCondScoreMatch     contained skipwhite nextgroup=mcDoubleSpace,mcIntRangeExecuteScore                              matches
         call s:addInstance('IntRange','ExecuteScore','mcExecuteKeyword')
 
 " predicate
@@ -695,6 +695,8 @@ hi def link mcGamemode          mcKeyValue
 " Gamerule
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
+
+hi def link mcGamerule mcKeyId
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Give
@@ -1436,23 +1438,25 @@ hi def link mcBuiltinNamespace  mcKeyId
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Builtins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:addBuiltin(type,match)
-        execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
-endfunction
-function! s:addBuiltinTag(type,match)
-        execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
-endfunction
-function! s:addGamerule(name, values)
-        if a:values != ''
-                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcGameruleValue'.a:name
-                execute 'syn match   mcGameruleValue'.a:name a:values 'contained'
-                execute 'hi def link mcGameruleValue'.a:name 'mcValue'
-        else
-                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcBool'
-        endif
-endfunction
-
 if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
+        function! s:addBuiltin(type,match)
+                execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
+        endfunction
+        function! s:addBuiltinTag(type,match)
+                execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
+        endfunction
+        function! s:addGamerule(name, values)
+                if a:values =~ '\cuint'
+                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcUInt'
+                elseif a:values != ''
+                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcGameruleValue'.a:name
+                        execute 'syn match   mcGameruleValue'.a:name a:values 'contained'
+                        execute 'hi def link mcGameruleValue'.a:name 'mcValue'
+                else
+                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcBool'
+                endif
+        endfunction
+
 	let s:files = split(globpath(s:path.'data','*'),'\n')
 	for s:file in s:files
 		let s:filename = fnamemodify(s:file,':t:r')

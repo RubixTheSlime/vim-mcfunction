@@ -4,26 +4,24 @@ commandBlockOutput
 disableElytraMovementCheck
 doDaylightCycle
 doEntityDrops
+doTileDrops
 doFireTick
-immediateRespawn
 doLimitedCrafting
 doMobLoot
 doMobSpawning
-doPatrolSpawning
-doTileDrops
-doTraderSpawning
 doWeatherCycle
+immediateRespawn
 keepInventory
 logAdminCommands
-maxCommandChainLength   /\<-\?\d\{1,10\}\>/
-maxEntityCramming       /\<-\?\d\{1,10\}\>/
+maxCommandChainLength   /UInt/
+maxEntityCramming       /UInt/
 mobGriefing
 naturalRegeneration
 randomTickSpeed         /\<\([1-3]\?\d\{1,3\}\|409[0-6]\|40[0-8]\d\)\>/
 reducedDebugInfo
 sendCommandFeedback
 showDeathMessages
-spawnRadius             /\<-\?\d\{1,10\}\>/
+spawnRadius             /UInt/
 spectatorsGenerateChunks
 
 !1.14.3p3
@@ -37,7 +35,8 @@ fallDamage
 fireDamage
 
 !1.15.2p1
-do(Patrol|Trader)Spawning
+doPatrolSpawning
+doTraderSpawning
 
 !1.16p1
 forgiveDeadPlayers
