@@ -262,12 +262,12 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'syn cluster mcNBT add=mcNBTTag'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Block$'
-                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:group.',mcNBTTagBlock'.a:group.','.a:nextgroup
-                call s:addInstance('BlockState',a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTagBlock'.a:group)
-                call s:addInstance('NBTTag','Block'.a:group,a:nextgroup)
+                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:type.a:group.',mcNBTTag'.a:type.a:group.','.a:nextgroup
+                call s:addInstance('BlockState',a:type.a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTag'.a:type.a:group)
+                call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
         elseif a:type=~ 'Item$'
-                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcNBTTagItem'.a:group.','.a:nextgroup
-                call s:addInstance('NBTTag','Item'.a:group,a:nextgroup)
+                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcNBTTag'.a:type.a:group.','.a:nextgroup
+                call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
         elseif a:nextgroup == ""
                 execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
         else
@@ -278,6 +278,7 @@ endfunction
 call s:addInstance('NBTPath',"","")
 call s:addInstance('NBTTag','','')
 call s:addInstance('Block','','')
+call s:addInstance('NsTBlock','','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SP COMMANDS
@@ -705,8 +706,8 @@ hi def link mcGamerule mcKeyId
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorGive
 
-call s:addInstance('PlayerSelector',"Give", "mcNsTItemGive")
-call s:addInstance('NsTItem','Give','mcUInt')
+call s:addInstance('PlayerSelector',"Give", "mcNsItemGive")
+call s:addInstance('NsItem','Give','mcUInt')
 call s:addInstance('NBTTag',"Give","mcUInt")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1071,9 +1072,9 @@ syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Summon
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcNsEntitySummon
+syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcSimpleNsEntitySummon
 
-call s:addInstance("NsEntity","Summon","mcCoordinateSummon")
+call s:addInstance("SimpleNsEntity","Summon","mcCoordinateSummon")
 call s:addInstance('Coordinate', "Summon","mcNBTTag")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1377,21 +1378,16 @@ hi def link mcFilterEq                  mcOp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Attribute Block BossbarId CustomCriteria Difficulty Dimension Effect Enchantment Entity Function Gamemode Item Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
-        let s:simple = ''
-        if has_key({'Block':0, 'Item':0, 'Entity':0},s:x)
-                let s:simple = 'Simple'
-        endif
-
-        execute 'syn match mc'.s:simple.'Ns'.s:x '/[^ =,\t\r\n\]]\+/                   contained contains=mcNamespace,mc'.s:simple.s:x
-        execute 'syn match mc'.s:simple.'Namespaced'.s:x '/[^ =,\t\r\n\]]\+/           contained contains=mcNamespace,mc'.s:simple.s:x
+for s:x in split('Advancement AdvancementCriteria Attribute BossbarId CustomCriteria Difficulty Dimension Effect Enchantment Function Gamemode Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
+        execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/                   contained contains=mcNamespace,mc'.s:x
+        execute 'syn match mcNamespaced'.s:x '/[^ =,\t\r\n\]]\+/           contained contains=mcNamespace,mc'.s:x
         if s:x =~ '\cuuid'
-                execute 'syn match mc'.s:simple.s:x '/\v\x{1,8}-(\x{1,4}-){3}\x{1,12}/ contained contains=mcBuiltin'.s:x
+                execute 'syn match mc'.s:x '/\v\x{1,8}-(\x{1,4}-){3}\x{1,12}/ contained contains=mcBuiltin'.s:x
         else
-                execute 'syn match mc'.s:simple.s:x '/[^ =,\t\r\n\]]\+/                contained contains=mcBuiltin'.s:x
+                execute 'syn match mc'.s:x '/[^ =,\t\r\n\]]\+/                contained contains=mcBuiltin'.s:x
         endif
 
-        execute 'hi def link mc'.s:simple.s:x 'mcId'
+        execute 'hi def link mc'.s:x 'mcId'
         execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
 endfor
 "syn match   mcSimpleNsBlock             contained contains=mcNamespace,mcSimpleBlock    /\(\w\+:\)\?\w\+/
@@ -1415,6 +1411,10 @@ hi def link mcBadBlockWhitespace mcBadWhitespace
 
 "Tags
 for s:x in split('Block Entity Item',' ')
+        execute 'syn match mcSimple'.s:x '/\w\+/                contained contains=mcBuiltin'.s:x
+        execute 'syn match mcSimpleNs'.s:x '/\(\w\+:\)\?\w\+/   contained contains=mcNamespace,mcBuiltin'.s:x
+        execute 'syn match mcSimpleNamespaced'.s:x '/\w\+:\w\+/ contained contains=mcNamespace,mcBuiltin'.s:x
+
         execute 'syn match mcSimpleTag'.s:x '/#\w\+/                contained contains=mcBuiltinTag'.s:x
         execute 'syn match mcSimpleNsTag'.s:x '/#\(\w\+:\)\?\w\+/   contained contains=mcNamespace,mcBuiltinTag'.s:x
         execute 'syn match mcSimpleNamespacedTag'.s:x '/#\w\+:\w\+/ contained contains=mcNamespace,mcBuiltinTag'.s:x
@@ -1423,6 +1423,8 @@ for s:x in split('Block Entity Item',' ')
         execute 'syn match mcSimpleNsT'.s:x '/#\?\(\w\+:\)\?\w\+/   contained contains=mcSimpleNsTag'.s:x.',mcSimpleNs'.s:x
         execute 'syn match mcSimpleNamespacedT'.s:x '/#\?\w\+:\w\+/ contained contains=mSimplecNamespacedTag'.s:x.',mcSimpleNamespaced'.s:x
 
+        execute 'hi def link mcSimple'.s:x 'mcId'
+        execute 'hi def link mcBuiltin'.s:x 'mcKeyId'
         execute 'hi def link mcSimpleTag'.s:x 'mcId'
         execute 'hi def link mcBuiltinTag'.s:x 'mcKeyId'
 endfor
@@ -1626,6 +1628,8 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNamespacedTBlock n
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNsBlock T
         syn keyword mcdbBlockKw contained skipwhite nextgroup=mcNsTagBlock t
+        syn keyword mcdbBlockKw contained skipwhite nextgroup=mcSimpleBlock sim
+        hi def link mcdbBlockKw mcKeyword
 
         syn keyword mcCommand contained skipwhite nextgroup=mcCoordinate coord
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
