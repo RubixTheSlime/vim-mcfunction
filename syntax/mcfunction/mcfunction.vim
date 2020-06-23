@@ -89,51 +89,75 @@ function! s:addOffset(snapshot,name)
 endfunction
 
 function! s:atLeastVersion(version)
-        return s:toNumericVersion(a:version) <= g:numericVersion
+        return s:toNumericVersion(a:version) <= s:numericVersion
+endfunction
+function! s:getVersionFromHeader()
+        for s:line in getline(1,'$')
+                if s:line =~ '^\s*$'
+                        " blank, do nothing
+                        continue
+                elseif s:line !~ '^\s*#'
+                        " end of header
+                        break
+                endif
+                let l:attempt = matchstr(s:line, '\v\c<%(\dw{2}\d{1,2}\a+|\d+%(\.\d+)*%(-*%(p%[rerelease]|p%[re-release]|%(r%[elease-])?c%[andidate])-*\d+)?|c%[ombat]%[-test]%[-snapshot]-?\d+)>')
+                if l:attempt != ''
+                        return l:attempt
+                endif
+        endfor
+        return ''
 endfunction
 
 " Determine minecraft version
-if !exists('g:mcversion')
-        let g:mcversion='release'
+if !exists('b:mcversion')
+        let b:mcversion=s:getVersionFromHeader()
+        if b:mcversion == ''
+                if exists('g:mcversion')
+                        let b:mcversion=g:mcversion
+                else
+                        let b:mcversion='release'
+                endif
+        endif
+        let b:determinedMcVersion=1
 endif
-let g:numericVersion=0
+let s:numericVersion=0
 let s:combatVersion=0
 
-if g:mcversion=~'\<l\%[atest]\>'
-        let g:numericVersion = 9999999
+if b:mcversion=~'\<l\%[atest]\>'
+        let s:numericVersion = 9999999
 else
         let s:versions = readfile(s:path.'currentmcversions')
         let s:auto = 0
-        if g:mcversion=~'\<r\%[elease]\>'
-                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[0])])
+        if b:mcversion=~'\<r\%[elease]\>'
+                let s:numericVersion= max([s:numericVersion,s:toNumericVersion(s:versions[0])])
                 let s:auto = 1
         endif
-        if g:mcversion=~'\<p\%[rerelease]\>'
-                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[1])])
+        if b:mcversion=~'\<p\%[rerelease]\>'
+                let s:numericVersion= max([s:numericVersion,s:toNumericVersion(s:versions[1])])
                 let s:auto = 1
         endif
-        if g:mcversion=~'\<s\%[napshot]\>'
-                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[2])])
+        if b:mcversion=~'\<s\%[napshot]\>'
+                let s:numericVersion= max([s:numericVersion,s:toNumericVersion(s:versions[2])])
                 let s:auto = 1
         endif
-        if g:mcversion=~'\<e\%[xperimental]\>'
-                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[3])])
+        if b:mcversion=~'\<e\%[xperimental]\>'
+                let s:numericVersion= max([s:numericVersion,s:toNumericVersion(s:versions[3])])
                 let s:auto = 1
         endif
-        if g:mcversion=~'\<c\%[andidate]\>'
-                let g:numericVersion= max([g:numericVersion,s:toNumericVersion(s:versions[4])])
+        if b:mcversion=~'\<c\%[andidate]\>'
+                let s:numericVersion= max([s:numericVersion,s:toNumericVersion(s:versions[4])])
                 let s:auto = 1
         endif
         if !s:auto
-                let g:numericVersion = s:toNumericVersion(g:mcversion)
+                let s:numericVersion = s:toNumericVersion(b:mcversion)
         endif
 endif
 
 " Determine the experimental combat version
-if g:mcversion =~ '\<e\%[xperimental]\>\'
+if b:mcversion =~ '\<e\%[xperimental]\>\'
         let s:combatVersion=9999999
-elseif g:mcversion =~ '|\<c\%[ombat]'
-        let s:combatVersion=matchstr(g:mcversion,'\<c\%[ombat]\s*\zs\d\+')
+elseif b:mcversion =~ '|\<c\%[ombat]'
+        let s:combatVersion=matchstr(b:mcversion,'\<c\%[ombat]\s*\zs\d\+')
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1450,7 +1474,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 			elseif s:line =~ '^!'
 				let g:ver = substitute(s:line,'!','','')
 				let g:numver = s:toNumericVersion(g:ver)
-				if s:toNumericVersion(g:ver) > g:numericVersion
+				if s:toNumericVersion(g:ver) > s:numericVersion
 					break
 				endif
 			elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
@@ -1615,4 +1639,10 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcCoordinate coord
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
         syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
+endif
+
+
+if b:determinedMcVersion
+        unlet b:mcversion
+        unlet b:determinedMcVersion
 endif

@@ -20,8 +20,9 @@ But most importantly, **BE SURE TO UPDATE THE PLUGIN WITH** `:PlugUpdate` **BEFO
 ## Options
 ### Changing Minecraft versions
 This plugin has the amazing ability to change to a different Minecraft version on-the-fly.
-Simply run (while in vim) `:let g:mcversion='[version]'`, where `[version]` is the version you want, then reload with `:e` or `:sy on`.
-Alternatively, put `let g:mcversion='[version]'` in your .vimrc to set it to that every time.
+If you put the version anywhere in the header, the plugin will change to that version the next time the file reloads (using `:e` or `:sy on`).
+You can also put `:let g:mcversion='[version]'` in your .vimrc to set the default version.
+If no version is specified, the most recent release will be used.
 The options for the version are:
 - `latest`: the latest snapshot that has been released, no matter what kind, including experimental snapshots.
 - The name of a specific snapshot. Examples include: `18w43a`, `1.14.3p3`, `1.14.3Pre3`, `1.15.2`, `1.16`, `combat4`, `1.16rc1`.
@@ -31,7 +32,6 @@ The options for the version are:
     - The latest snapshot that is one of the specified types will be chosen.
     - Example: `release candidate prerelease snapshot` will go with the latest main-track snapshot (so will `r c p s`).
 
-By default, the version is `release`.
 Versions are not case-sensitive, and keywords follow vim's "only need the first part" standard.
 For example, `p`, `Pre`, and `pReReLeAsE` all mean the same thing.
 
