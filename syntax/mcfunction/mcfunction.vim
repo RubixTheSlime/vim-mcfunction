@@ -199,21 +199,19 @@ syn match   mcGlob      /\*/    contained
 hi def link mcGlob      mcOp
 
 syn keyword mcBool      contained true false
-hi def link mcBool      mcKeyValue
-
-" Can't have multiple spaces
-syn match mcDoubleSpace / \@1<= \+\| \{2,}/ contained containedin=ALLBUT,@mcNBT,mcChatMessage,@mcSelectorFilter,mcBlockState,mcBuiltinBlockAndBlockstate,mcBlock,mcNsBlock,mcNamespacedBlock,mcNsTBlock,mcTBlock,mcNamespacedTBlock,mcTagBlock,mcNsTagBlock,mcNamespacedTagBlock,mcSelector
-hi def link mcDoubleSpace mcBadWhitespace
+hi def link mcBool      mcKeyword
 
 " Optional Slash
 syn match mcOptionalSlash /^\/\?/ nextgroup=mcCommand
 hi def link mcOptionalSlash mcCommand
 
 " Errors
+syn match mcDoubleSpace / \@1<= \+\| \{2,}/ contained
 syn match   mcBadWhitespace     /\t/
 syn match   mcBadDecimal        /\.\ze[^.]/ contained
 syn match   mcFourDots          /\.\{4,}/   contained containedin=ALLBUT,mcChatMessage
 syn match   mcTheRestIsBad      /\S.*/        contained
+hi def link mcDoubleSpace mcBadWhitespace
 hi def link mcBadDecimal        mcError
 hi def link mcFourDots          mcError
 hi def link mcBadWhitespace     mcError
@@ -281,13 +279,13 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
                 execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
                 execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
-                execute 'syn cluster mcNBT'.a:group               'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTTag'.a:group
+                execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
                 execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
                 execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
                 execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'NBTTag'
-                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcDoubleSpace,mcNBTPad'.a:group
-                execute 'syn cluster mcNBT add=mcNBTTag'.a:group
+                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcNBTPad'.a:group
+                execute 'syn cluster mcNBT add=mcNBTTag'.a:group.',mcNBTPad'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Block$'
                 execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:type.a:group.',mcNBTTag'.a:type.a:group.','.a:nextgroup
@@ -403,9 +401,8 @@ hi def link mcBossbarKeyword            mcKeyword
 hi def link mcBossbarGetKeyword         mcKeyword
 hi def link mcBossbarSetKeyword         mcKeyword
 
-hi def link mcBossbarFeild              mcKeyValue
-hi def link mcBossbarSetColor           mcKeyValue
-hi def link mcBossbarSetStyle           mcKeyValue
+hi def link mcBossbarSetColor           mcKeyword
+hi def link mcBossbarSetStyle           mcKeyword
 
 hi def link mcBossbarIdAdd              mcId
 hi def link mcBossbarIdExecuteStore     mcId
@@ -622,8 +619,8 @@ call s:addInstance("NsTBlock","Execute","mcExecuteKeyword")
 
 " blocks
 syn keyword mcExecuteCond               contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateExecuteCondStart        blocks
-call s:addInstance('Coordinate',"ExecuteCondStart","mcCoordinateExecuteCondEnd")
-call s:addInstance('Coordinate2',"ExecuteCondEnd","mcCoordinateExecuteCondDest")
+call s:addInstance('Coordinate',"ExecuteCondStart","mcCoordinate2ExecuteCondEnd")
+call s:addInstance('Coordinate2',"ExecuteCondEnd","mcCoordinate3ExecuteCondDest")
 call s:addInstance('Coordinate3',"ExecuteCondDest","mcExecuteCondBlocksMask")
 syn keyword mcExecuteCondBlocksMask     contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword                    all masked
 
@@ -668,11 +665,10 @@ hi def link mcExecuteStoreBossbarFeild          mcKeyword
 hi def link mcExecuteStoreWhat                  mcKeyword
 hi def link mcExecuteStoreWhere                 mcKeyword
 
-hi def link mcExecuteAlignValue                 mcKeyValue
-hi def link mcExecuteAnchoredValue              mcKeyValue
-hi def link mcExecuteCondBlocksMask             mcKeyValue
-hi def link mcExecuteInValueRaw                 mcKeyValue
-hi def link mcExecuteStoreType                  mcKeyValue
+hi def link mcExecuteAlignValue                 mcKeyword
+hi def link mcExecuteAnchoredValue              mcKeyword
+hi def link mcExecuteCondBlocksMask             mcKeyword
+hi def link mcExecuteStoreType                  mcKeyword
 
 hi def link mcExecuteIR1                        mcValue
 hi def link mcExecuteIR2                        mcValue
@@ -760,7 +756,7 @@ endif
 if s:atLeastVersion('20w17a')
         syn keyword mcHelpCommand contained attribute
 endif
-hi def link mcHelpCommand mcKeyValue
+hi def link mcHelpCommand mcCommand
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Kick
@@ -1265,7 +1261,7 @@ hi def link mcCriteriaNamespace         mcKeyId
 syn keyword mcScoreDisplay contained belowName list
 syn match   mcScoreDisplay contained /sidebar\ze[^.]/
 syn match   mcScoreDisplay contained /sidebar\.team\./ skipwhite nextgroup=mcAnySpace,mcCriteriaTeam
-hi def link mcScoreDisplay mcKeyValue
+hi def link mcScoreDisplay mcKeyId
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1326,7 +1322,7 @@ endfor
 hi def link mcBlockStateBracket         mcOp
 hi def link mcBlockStateEq              mcOp
 hi def link mcBlockStateKeyword         mcKeyword
-hi def link mcBlockStateValue           mcValue
+hi def link mcBlockStateValue           mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filter
@@ -1391,8 +1387,7 @@ syn region  mcFilterAdvancementCriterion        matchgroup=mcOp start=/{/rs=e en
 
 " Links
 hi def link mcFilterKeyword             mcKeyword
-hi def link mcFilterKeyValue            mcKeyValue
-hi def link mcFilterSort                mcKeyValue
+hi def link mcFilterSort                mcKeyword
 hi def link mcFilterComma               mcFilterEq
 
 for x in split('Gamemode NBT Tag Sort Scores Advances Score Advance Name Team Type Tag F UI UFR XR YR', ' ')
@@ -1581,7 +1576,7 @@ syn match   mcPlayerSelector contained /\v\x{1,8}-%(\x{1,4}-){3}\x{1,12}/
 syn region  mcPlayerSelector contained matchgroup=mcPlayerSelector start=/@[aprs]\[/rs=e end=/]/ contains=mcFilterKeyword,mcFilterComma oneline skipwhite
 hi def link mcPlayerSelector mcSelector
 execute 'syn match   mcPlayerName contained /'.s:nameSym.'\{'.s:nameMin.','.s:nameMax.'}\>-\@1!/'
-hi def link mcPlayerName mcPlayerSelector
+hi def link mcPlayerName mcValue
 
 " Coordinate
 " Don't touch just works
@@ -1626,7 +1621,12 @@ syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'/ s
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}/                   oneline contained contains=mcNBTTagKey,mcNBTComma
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]/      oneline contained contains=@mcNBTValue,mcNBTComma
 syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool
-syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool
+syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool,mcNBTQuote,mcNBTValueQuote,mcNBTBracket
+
+syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
+syn match mcNBTDoubleComma containedin=@mcNBT /,\s*,/
+hi def link mcNBTDoubleComma    mcError
+
 hi def link mcNBTBool           mcBool
 hi def link mcNBTTagKey         mcNBTPath
 hi def link mcNBTComma          mcNBTPathDot
@@ -1634,7 +1634,6 @@ hi def link mcNBTColon          mcNBTPathDot
 hi def link mcNBTValueQuote     mcNBTValue
 
 hi def link mcNBTIndex          mcNBTPathDot
-hi def link mcNBTPath           mcKeyValue
 hi def link mcNBTPathDot        mcNBTBracket
 hi def link mcNBTQuote          mcNBTPath
 hi def link mcNBTString         mcNBTValue
