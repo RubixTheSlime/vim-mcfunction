@@ -1,5 +1,8 @@
 # vim-mcfunction
-Vim syntax definitions for mcfunction. More than just highlights keywords, anything that isn't colored will cause an error.
+A powerful syntax highlighter for mcfunction, the format for Minecraft datapack functions, in vim.
+Instead of simply highlighting a few keywords, it aims to tell you exactly how the game will interpret the commands in order to greatly reduce development time.
+
+![vim-mcfuncion sample](https://github.com/rubixninja314/vim-mcfunction/wiki/vim-mcfunction2.png)
 
 ## Installation
 
