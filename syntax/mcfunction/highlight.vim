@@ -15,11 +15,11 @@ hi mcValue              ctermfg=lightblue
 hi mcKeyId              ctermfg=yellow      cterm=bold
 hi mcId                 ctermfg=yellow
 
-hi mcNBTBracket         ctermfg=grey            cterm=underline guisp=green
-hi mcNBTPath            ctermfg=white           cterm=underline guisp=green
-hi mcNBTPathDot         ctermfg=grey            cterm=underline guisp=green
-hi mcNBTValue           ctermfg=lightblue       cterm=underline guisp=green
-hi mcNBTSpace                                   cterm=underline guisp=green
+hi mcNBTBracket         ctermfg=grey            cterm=underline guisp=blue
+hi mcNBTPath            ctermfg=white           cterm=underline guisp=blue
+hi mcNBTPathDot         ctermfg=grey            cterm=underline guisp=blue
+hi mcNBTValue           ctermfg=lightblue       cterm=underline guisp=blue
+hi mcNBTSpace                                   cterm=underline guisp=blue
 
 " Other settings you may want to change:
 " You cannot set items and block differently as there are many that are

@@ -206,11 +206,13 @@ syn match mcOptionalSlash /^\/\?/ nextgroup=mcCommand
 hi def link mcOptionalSlash mcCommand
 
 " Errors
+syn match   mcError     /.*/ contained
 syn match mcDoubleSpace / \@1<= \+\| \{2,}/ contained
 syn match   mcBadWhitespace     /\t/
-syn match   mcBadDecimal        /\.\ze[^.]/ contained
+syn match   mcBadDecimal        /\.\ze\_[^.]/ contained
 syn match   mcFourDots          /\.\{4,}/   contained containedin=ALLBUT,mcChatMessage
-syn match   mcTheRestIsBad      /\S.*/        contained
+syn match   mcTheRestIsBad      /\S.*/      contained
+syn match   mcCommand           `.\zs/` contains=mcError
 hi def link mcDoubleSpace mcBadWhitespace
 hi def link mcBadDecimal        mcError
 hi def link mcFourDots          mcError
@@ -1093,9 +1095,9 @@ syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Summon
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcSimpleNsEntitySummon
+syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcNsEntitySummon
 
-call s:addInstance("SimpleNsEntity","Summon","mcCoordinateSummon")
+call s:addInstance("NsEntity","Summon","mcCoordinateSummon")
 call s:addInstance('Coordinate', "Summon","mcNBTTag")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1580,24 +1582,24 @@ hi def link mcPlayerName mcValue
 
 " Coordinate
 " Don't touch just works
-syn match   mcCoordinateTpSpecial contained contains=mcDoubleSpace /\v%(\s+%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}%(\s*[[:digit:]~.-])@!|%(\s*\^-?\d*\.?\d*>){3}/
-syn match   mcCoordinate          contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
-syn match   mcCoordinate2         contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
-syn match   mcCoordinate3         contained contains=mcDoubleSpace /\v%(\s*%(\~[0-9.-]@1!|\~?-?%(\d*\.)?\d+)>){3}|%(\s*\^-?\d*\.?\d*>){3}/
+syn match   mcCoordinateTpSpecial contained contains=mcDoubleSpace /\v%(\s+\s@1<=%(\~|\~?-?%(\d*\.)?\d+>)){3}%(\s*[[:digit:]~.-])@!|%(\s*\s@1<=\^-?\d*\.?\d*){3}/
+syn match   mcCoordinate          contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?%(\d*\.)?\d+>|\~)){3}|%(\s*\s@1<=\^-?\d*\.?\d*){3}/
+syn match   mcCoordinate2         contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?%(\d*\.)?\d+>|\~)){3}|%(\s*\s@1<=\^-?\d*\.?\d*){3}/
+syn match   mcCoordinate3         contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?%(\d*\.)?\d+>|\~)){3}|%(\s*\s@1<=\^-?\d*\.?\d*){3}/
 hi def link mcCoordinateTpSpecial mcCoordinate
 
 " Column
 " Columns must be integers, and there's currently a bug preventing ^ notation
 "syn match   mcColumn            contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}|(\s*\^-?\d+>){2}/
 "syn match   mcColumn2           contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}|(\s*\^-?\d+>){2}/
-syn match   mcColumn            contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}/
-syn match   mcColumn2           contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?\d+)>){2}/
+syn match   mcColumn            contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?\d+>)|\~){2}/
+syn match   mcColumn2           contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?\d+>)|\~){2}/
 hi def link mcColumn            mcCoordinate
 hi def link mcColumn2           mcCoordinate2
 
 " Rotation
-syn match   mcRotation          contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)>){2}/
-syn match   mcRotation2         contained contains=mcDoubleSpace /\v(\s*(\~[0-9.-]@1!|\~?-?(\d*\.)?\d+)>){2}/
+syn match   mcRotation          contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?(\d*\.)?\d+>|\~)){2}/
+syn match   mcRotation2         contained contains=mcDoubleSpace /\v%(\s*\s@1<=%(\~?-?(\d*\.)?\d+>|\~)){2}/
 hi def link mcRotation          mcCoordinate
 hi def link mcRotation2         mcCoordinate2
 
@@ -1627,7 +1629,7 @@ syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
 syn match mcNBTDoubleComma containedin=@mcNBT /,\s*,/
 hi def link mcNBTDoubleComma    mcError
 
-hi def link mcNBTBool           mcBool
+hi def link mcNBTBool           mcNBTValue
 hi def link mcNBTTagKey         mcNBTPath
 hi def link mcNBTComma          mcNBTPathDot
 hi def link mcNBTColon          mcNBTPathDot
