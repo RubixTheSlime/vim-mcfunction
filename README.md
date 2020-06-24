@@ -18,7 +18,7 @@ However, if you want to have access to parts of the newer version as soon as the
 But most importantly, **BE SURE TO UPDATE THE PLUGIN WITH** `:PlugUpdate` **BEFORE YOU TRY OUT THE LATEST SNAPSHOT.**
 
 This plugin has a handful of settings to tweak how it works, including the ability to change the version of Minecraft that it highlights for.
-You can check out these setting in the [wiki](wiki/Configuration).
+You can check out these setting in the [wiki](github.com/rubixninja314/vim-mcfunction/wiki/Configuration).
 
 ## A note about the color scheme
 The plugin is still in development, and as such the colors etc. are still subject to change.
