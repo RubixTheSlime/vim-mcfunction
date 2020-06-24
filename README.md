@@ -5,9 +5,9 @@ Vim syntax definitions for mcfunction. More than just highlights keywords, anyth
 
 To install using [vim-plug](https://github.com/junegunn/vim-plug), add
 ```
-call plug#begin(~/.vim/plugged)
+call plug#begin('~/.vim/plugged')
 
-Plug rubixninja314/vim-mcfunction
+Plug 'rubixninja314/vim-mcfunction'
 
 call plug#end()
 ```
