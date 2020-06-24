@@ -286,7 +286,7 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
                 execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'NBTTag'
-                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcNBTPad'.a:group
+                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey,mcNBTSpace skipwhite nextgroup=mcNBTPad'.a:group
                 execute 'syn cluster mcNBT add=mcNBTTag'.a:group.',mcNBTPad'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Block$'
@@ -1608,26 +1608,26 @@ hi def link mcRotation2         mcCoordinate2
 " NBT Parts
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " TODO maybe add pre 18w43a stuff
-syn match   mcNBTIndex          /\s*\d\+\s*/                                                            contained
-syn match   mcNBTComma          /,/                                                                     contained
-syn match   mcNBTColon          /:/                                                                     contained skipwhite nextgroup=@mcNBTValue
-syn match   mcNBTTagKey         /\w\+/                                                                  contained skipwhite nextgroup=mcNBTColon
-syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/            oneline contained skipwhite nextgroup=mcNBTColon
-syn keyword mcNBTBool           true false                                                              contained
-syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>/                                        contained
-syn match   mcNBTString         /\(\d*\h\)\@=\w*/                                                       contained
+syn match   mcNBTIndex          /\s*\d\+\s*/                                                               contained
+syn match   mcNBTComma          /,\s*/                                                                     contained nextgroup=mcNBTBadComma
+syn match   mcNBTColon          /:\s*/                                                                     contained nextgroup=@mcNBTValue,mcNBTBadComma
+syn match   mcNBTTagKey         /\w\+\s*/                                                                  contained nextgroup=mcNBTColon,mcNBTBadComma
+syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"\s*/ skip=/\\"/            oneline contained nextgroup=mcNBTColon,mcNBTBadComma
+syn match   mcNBTBool           /true\|false\s*/                                                           contained nextgroup=mcNBTComma
+syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>\s*/                                        contained nextgroup=mcNBTComma
+syn match   mcNBTString         /\(\d*\h\)\@=\w*\s*/                                                       contained nextgroup=mcNBTComma
 if s:atLeastVersion('19w08a')
-        syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"/ skip=/\\"/       oneline contained
+        syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'\s*/ skip=/\\'/       oneline contained skipwhite nextgroup=mcNBTComma
 endif
-syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'/ skip=/\\'/       oneline contained
-syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}/                   oneline contained contains=mcNBTTagKey,mcNBTComma
-syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]/      oneline contained contains=@mcNBTValue,mcNBTComma
+syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"\s*/ skip=/\\"/       oneline contained nextgroup=mcNBTComma
+syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}\s*/                   oneline contained contains=mcNBTTagKey,mcNBTComma nextgroup=mcNBTComma
+syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]\s*/      oneline contained contains=@mcNBTValue,mcNBTComma nextgroup=mcNBTComma
 syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool
-syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool,mcNBTQuote,mcNBTValueQuote,mcNBTBracket
+syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool,mcNBTQuote,mcNBTValueQuote,mcNBTBracket,mcNBTBadComma
 
 syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
-syn match mcNBTDoubleComma containedin=@mcNBT /,\s*,/
-hi def link mcNBTDoubleComma    mcError
+syn match mcNBTBadComma contained /,\s*/ nextgroup=mcNBTBadComma
+hi def link mcNBTBadComma    mcError
 
 hi def link mcNBTBool           mcNBTValue
 hi def link mcNBTTagKey         mcNBTPath
