@@ -17,45 +17,18 @@ Whenever something new is added to the game, it should hopefully not be very lon
 However, if you want to have access to parts of the newer version as soon as they're implemented in this plugin, use `Plug 'rubixninja314/vim-mcfunction', {'branch': 'early_access'}` instead.
 But most importantly, **BE SURE TO UPDATE THE PLUGIN WITH** `:PlugUpdate` **BEFORE YOU TRY OUT THE LATEST SNAPSHOT.**
 
-## Options
-### Changing Minecraft versions
-This plugin has the amazing ability to change to a different Minecraft version on-the-fly.
-If you put the version anywhere in the header, the plugin will change to that version the next time the file reloads (using `:e` or `:sy on`).
-You can also put `:let g:mcversion='[version]'` in your .vimrc to set the default version.
-If no version is specified, the most recent release will be used.
-The options for the version are:
-- `latest`: the latest snapshot that has been released, no matter what kind, including experimental snapshots.
-- The name of a specific snapshot. Examples include: `18w43a`, `1.14.3p3`, `1.14.3Pre3`, `1.15.2`, `1.16`, `combat4`, `1.16rc1`.
-- Any combination of `release`, `candidate` (as in release candidate), `prerelease`, `snapshot`, and `experimental`.
-    - Specifying `snapshot` means any snapshot that is of the form `YYwWWn` (eg `18w43b`).
-    - `snapshot` and `prerelease` only mean themselves, and do *not* imply any other type.
-    - The latest snapshot that is one of the specified types will be chosen.
-    - Example: `release candidate prerelease snapshot` will go with the latest main-track snapshot (so will `r c p s`).
+This plugin has a handful of settings to tweak how it works, including the ability to change the version of Minecraft that it highlights for.
+You can check out these setting in the [wiki](wiki/Configuration).
 
-Versions are not case-sensitive, and keywords follow vim's "only need the first part" standard.
-For example, `p`, `Pre`, and `pReReLeAsE` all mean the same thing.
-Lastly, if you put the version in the header, it must be the name of a snapshot, not a keyword such as `latest`.
-
-
-### Colors
-Vim has a system to set the highlighting for most languages at once. For example, you can set the highlighting for comments and it will apply to any language whether it's C, Python, Assembly, or (with this plugin) mcfunction.
-However, beyond errors, comments, and messages for chat (messages highlight as strings), mcfunction is far too different from other languages to use this feature.
-So if you would like to change the color scheme, you will need to navigate to the plugin's directory and edit `./syntax/mcfunctoin/highlight.vim`.
-After you do so, make sure to run `git commit -a` so that your changes will be saved upon update (which happens fairly often, in fact weekly during snapshot season).
-If you would like to return to the plugin's default highlighting, run `git reset --hard origin/master` (while in the plugin's directory).
-
-### Optimizations
-This plugin makes vim take noticeably longer to start up (thankfully only when loading a .mcfunction file), so some parts may be skipped to speed things up. It's recommended you leave these on unless your computer is really slow.
-- `g:mcEnableBuiltinIDs` - Minecraft has thousands of builtins including blocks, items, entities, sounds, gamerules, advancements, and *many* more. As such, it can take a moment to load a file as the plugin must read thousands of lines (~1330 as of 1.16, more than half of the entire plugin's syntax definitions) to know what builtins to highlight. Default 1 (Highlight builtins).
-- `g:mcEnableBuiltinJSON` - Use the JSON syntax highlighting that comes with vim. If you get some error about json, or you just want it to load like 2% faster, try putting `let g:mcEnableBuiltinJSON=0` in your .vimrc. Default 1 (Use the json highlighting that comes with vim).
-
-### Other options
-- `g:mcEnableMP` - Enable multiplayer commands. Don't count on these being perfectly reliable as I have not had any way of testing them. Default 0 (Don't highlight multiplayer commands). You also need to be using 1.14.4-pre4 or higher, and set the [function-permission-level](https://minecraft.gamepedia.com/Server.properties#function-permission-level) to 3 or 4.
-- `g:IllegalNames` - Relax the restrictions on player names to allow for [illegal names](https://minecraft.gamepedia.com/Player#Username). Default `none` (Only allow legal names). Can be `none`, `all`, or any combination of:
-    - `short` - allow names shorter than 3 characters (recommended if your datapack uses CarpetMod)
-    - `long` - allow names longer than 16 characters
-    - `symbol` - allow illegal symbols
-- `g:mcDebugging` - Enable certain commands for debugging porpoises. Default 0 (Don't debug dolphins).
+## A note about the color scheme
+The plugin is still in development, and as such the colors etc. are still subject to change.
+The plugin has gone much further than I ever thought it would ever be capable of reaching.
+When I first started, the idea that it would be capable of highlighting for any version of Minecraft would have seemed absolutely impossible, but now it's a reality.
+So as much as it hurts to say it, the default color scheme will still change, as more functionality gets added.
+Some of the recent changes have been setting up to eventually implement what I call deep-nesting highlighting, which would allow commands, NBT, and JSON (and maybe even Scarpet) to highlight much more clearly when nested within each other.
+An example of this would be `setblock ~ ~ ~ minecraft:oak_sign{Text1:'{"text":"git gud","clickEvent":{"action":"run_command","value":"give @s netherite_pickaxe{display:{Name:\'\\"Destroyer\\"\'}}"}}'}`, which has JSON inside NBT inside a command inside JSON inside NBT inside a command, all just to place a sign that gives players who click on it a named pickaxe.
+As of right now the majority of the command would highlight as NBT, which is honestly not very useful.
+Deeply-nesting highlighting would make what this command does much more clear.
 
 ## Final Notes / Warnings
 
