@@ -2,24 +2,24 @@ hi def link mcError             Error
 hi def link mcChatMessage       String
 hi def link mcComment           Comment
 
-hi mcCommand            ctermfg=DarkBlue        cterm=bold
-hi mcOp                 ctermfg=Yellow
-hi mcSelector           ctermfg=Brown           cterm=bold
+hi mcCommand            ctermfg=white ctermbg=Darkgrey        cterm=bold
+hi mcOp                 ctermfg=grey
+hi mcSelector           ctermfg=lightgreen           cterm=bold
 
-hi mcCoordinate         ctermfg=DarkRed
-hi mcCoordinate2        ctermfg=Red             cterm=bold
-hi mcCoordinate3        ctermfg=DarkRed
+hi mcCoordinate         ctermfg=green
+hi mcCoordinate2        ctermfg=green             cterm=bold
+hi mcCoordinate3        ctermfg=green
 
-hi mcKeyword                                    cterm=italic,bold
-hi mcKeyValue           ctermfg=Magenta         cterm=bold
-hi mcValue              ctermfg=Magenta
-hi mcKeyId              ctermfg=LightGreen      cterm=bold
-hi mcId                 ctermfg=Green
+hi mcKeyword                                    cterm=bold
+hi mcValue              ctermfg=lightblue
+hi mcKeyId              ctermfg=yellow      cterm=bold
+hi mcId                 ctermfg=yellow
 
-hi mcNBTBracket         ctermfg=DarkGreen
-hi mcNBTPath            ctermfg=DarkCyan
-hi mcNBTPathDot         ctermfg=DarkBlue
-hi mcNBTValue           ctermfg=DarkBlue
+hi mcNBTBracket         ctermfg=grey            cterm=underline guisp=blue
+hi mcNBTPath            ctermfg=white           cterm=underline guisp=blue
+hi mcNBTPathDot         ctermfg=grey            cterm=underline guisp=blue
+hi mcNBTValue           ctermfg=lightblue       cterm=underline guisp=blue
+hi mcNBTSpace                                   cterm=underline guisp=blue
 
 " Other settings you may want to change:
 " You cannot set items and block differently as there are many that are
@@ -45,7 +45,7 @@ hi mcNBTValue           ctermfg=DarkBlue
 " Top level execute keywords
 "execute as @a positioned as @s store entity @s Health byte 1 run kill @s
 "        ^^    ^^^^^^^^^^       ^^^^^                         ^^^
-"hi mcExecuteKeyword
+hi mcExecuteKeyword ctermfg=white cterm=bold,italic
 
 
 " @e[type=zombie]   grass_block[snowy=true]

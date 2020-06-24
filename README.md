@@ -14,7 +14,7 @@ call plug#end()
 to your .vimrc
 
 Whenever something new is added to the game, it should hopefully not be very long before this gets updated.
-However, if you want to have access to parts of the newer version as soon as they're implemented in this plugin, you can switch branches by navigating to the plugin's directory (typically `~/.vim/plugged/vim-mcfunction` or `~/.config/nvim/plugged/vim-mcfuntion`, not sure where on Windows), and run `git checkout early_access`.
+However, if you want to have access to parts of the newer version as soon as they're implemented in this plugin, use `Plug 'rubixninja314/vim-mcfunction', {'branch': 'early_access'}` instead.
 But most importantly, **BE SURE TO UPDATE THE PLUGIN WITH** `:PlugUpdate` **BEFORE YOU TRY OUT THE LATEST SNAPSHOT.**
 
 ## Options
