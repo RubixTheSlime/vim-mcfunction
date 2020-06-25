@@ -1661,6 +1661,13 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
         syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
         syn keyword mcCommand contained skipwhite nextgroup=mcLootTable lt
+
+        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
+        let x = 0
+        while x < 16
+                execute 'syn region  mcTest matchgroup=Error start=/\\\{'.x.'}"/ end=/\\\{'.x.'}"/ skip=/\\\{' . (x+1) . ',}"/ contains=mcTest skipwhite matchgroup=Error'
+                let x=x+1
+        endwhile
 endif
 
 
