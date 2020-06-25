@@ -2,7 +2,7 @@ if exists("b:current_syntax")
         finish
 endif
 
-if (!exists('g:mcEnableBuiltinJSON') || g:mcEnableBuiltinJSON)
+if (!exists('g:mcJSONMethod') || g:mcJSONMethod =~ '\v\c<e%[xternal]>')
         syn match   mcJSONText          contained /.\+/ contains=@mcjson
         syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
         hi def link mcjsonNumber        jsonNumber

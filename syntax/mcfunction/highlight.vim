@@ -21,6 +21,10 @@ hi mcNBTPathDot         ctermfg=grey            cterm=underline guisp=blue
 hi mcNBTValue           ctermfg=lightblue       cterm=underline guisp=blue
 hi mcNBTSpace                                   cterm=underline guisp=blue
 
+if (exists('g:mcJSONMethod') && g:mcJSONMethod =~ '\v\c<%(n%[one]|p%[lugin])>')
+        hi mcJSONText cterm=underline guisp=green
+endif
+
 " Other settings you may want to change:
 " You cannot set items and block differently as there are many that are
 " shared, (eg 'dirt' is both a block and an item). Might come later 
