@@ -356,7 +356,7 @@ syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mc
                 call s:addInstance('Float','AttrModAdd','mcAttrModAddMode')
                 syn keyword mcAttrModAddMode    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   add multiply multiply_base
 
-hi def link mcAttrKeyword               mcKeyword
+hi def link mcAttrKeyword               mcRootKeyword
 hi def link mcAttrBaseKeyword            mcKeyword
 hi def link mcAttrModGet                mcKeyword
 hi def link mcAttrModKeyword            mcKeyword
@@ -399,7 +399,7 @@ syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSp
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBool              visible
 
 " Links
-hi def link mcBossbarKeyword            mcKeyword
+hi def link mcBossbarKeyword            mcRootKeyword
 hi def link mcBossbarGetKeyword         mcKeyword
 hi def link mcBossbarSetKeyword         mcKeyword
 
@@ -442,6 +442,7 @@ hi def link mcCloneMode         mcKeyword
 if s:atLeastVersion('1.14.4p1')
         syn keyword mcCommand debug contained skipwhite nextgroup=mcDoubleSpace,mcDebugKeyword
         syn keyword mcDebugKeyword contained report
+        hi def link mcDebugKeyword mcRootKeyword
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -479,7 +480,7 @@ syn keyword mcDataKeyword               contained skipwhite nextgroup=mcDoubleSp
 call s:mcEBS('DataRemove','@mcNBTPath')
 
 " Links
-hi def link mcDataKeyword       mcKeyword
+hi def link mcDataKeyword       mcRootKeyword
 hi def link mcDataModifyHow     mcKeyword
 hi def link mcDataModifySource  mcKeyword
 
@@ -507,7 +508,7 @@ syn keyword mcDatapackListKeyword       contained                               
 
 hi def link mcDatapackEnableKeyword     mcKeyword
 hi def link mcDatapackListKeyword       mcKeyword
-hi def link mcDatapackKeyword           mcKeyword
+hi def link mcDatapackKeyword           mcRootKeyword
 
 hi def link mcDatapackNameEnable        mcDatapackName
 hi def link mcDatapackNameEnableRel     mcDatapackName
@@ -536,7 +537,7 @@ syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelect
 call s:addInstance('Selector', "EffectClear", "mcEffect")
 
 " Links
-hi def link mcEffectKeyword mcKeyword
+hi def link mcEffectKeyword mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enchant
@@ -656,7 +657,7 @@ endif
 " Links
 hi def link mcExecuteAsKeyword                  mcExecuteKeyword
 
-hi def link mcExecuteKeyword                    mcKeyword
+hi def link mcExecuteKeyword                    mcRootKeyword
 hi def link mcExecuteAs                         mcKeyword
 hi def link mcExecuteCond                       mcKeyword
 hi def link mcExecuteCondData                   mcKeyword
@@ -709,8 +710,8 @@ syn keyword mcForceloadRemKeyword contained                                     
 syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumn                                     query
 
 " Links
-hi def link mcForceloadRemKeyword mcForceloadKeyword
-hi def link mcForceloadKeyword    mcKeyword
+hi def link mcForceloadRemKeyword mcKeyword
+hi def link mcForceloadKeyword    mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Function
@@ -758,7 +759,7 @@ endif
 if s:atLeastVersion('20w17a')
         syn keyword mcHelpCommand contained attribute
 endif
-hi def link mcHelpCommand mcCommand
+hi def link mcHelpCommand mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Kick
@@ -778,7 +779,7 @@ syn keyword mcCommand kill contained skipwhite nextgroup=mcDoubleSpace,mcSelecto
 syn keyword mcCommand list contained skipwhite nextgroup=mcDoubleSpace,mcListUUIDs
 
 syn keyword mcListUUIDs contained uuids
-hi def link mcListUUIDs mcKeyword
+hi def link mcListUUIDs mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Locate
@@ -824,9 +825,9 @@ syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mc
 syn keyword mcLootHand                          contained                                                                               mainhand offhand
 
 " Links
-hi def link mcLootTargetKeyword         mcKeyword
+hi def link mcLootTargetKeyword         mcRootKeyword
 hi def link mcLootReplaceKeyword        mcKeyword
-hi def link mcLootSourceKeyword         mcKeyword
+hi def link mcLootSourceKeyword         mcRootKeyword
 hi def link mcLootHand                  mcKeyword
 
 hi def link mcLootTableFish             mcLootTable
@@ -886,7 +887,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcRecipeKeywor
 
 syn keyword mcRecipeKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorRecipe give take
 call s:addInstance('Selector', 'Recipe', 'mcRecipe,mcGlob')
-hi def link mcRecipeKeyword mcKeyword
+hi def link mcRecipeKeyword mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ReplaceItem
@@ -914,7 +915,7 @@ if s:atLeastVersion('18w43a')
                 hi def link mcScheduleMode    mcKeyword
         endif
 
-        hi def link mcScheduleKeyword mcKeyword
+        hi def link mcScheduleKeyword mcRootKeyword
         hi def link mcScheduleTime    mcValue
 
 endif
@@ -959,7 +960,7 @@ syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace,m
 " Links
 hi def link mcScoreboardObjectives      mcKeyword
 hi def link mcScoreboardPlayers         mcKeyword
-hi def link mcScoreboardKeyword         mcKeyword
+hi def link mcScoreboardKeyword         mcRootKeyword
 hi def link mcScoreboardModifyWhat      mcKeyword
 hi def link mcScoreboardModifyRender    mcKeyword
 hi def link mcScoreboardOp              mcOp
@@ -1007,7 +1008,7 @@ syn keyword mcTagKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTag add r
 syn keyword mcTagKeyword contained                                         list
 syn match   mcTag        contained /\w\+/
 
-hi def link mcTagKeyword mcKeyword
+hi def link mcTagKeyword mcRootKeyword
 hi def link mcTag mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1035,7 +1036,7 @@ syn keyword mcTeamModifyVisibility contained                                    
 
 
 syn match   mcTeam contained /\w\+/
-hi def link mcTeamKeyword          mcKeyword
+hi def link mcTeamKeyword          mcRootKeyword
 hi def link mcTeamModifyHow        mcKeyword
 hi def link mcTeamModifyCollision  mcKeyword
 hi def link mcTeamModifyVisibility mcKeyword
@@ -1064,7 +1065,7 @@ endif
 syn keyword mcTimeKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcTimeAdd,mcTimeSet set
         syn keyword mcTimeSet   contained skipwhite                                             day night midnight noon
 
-hi def link mcTimeKeyword mcKeyword
+hi def link mcTimeKeyword mcRootKeyword
 hi def link mcTimeQuery   mcKeyword
 hi def link mcTimeSet     mcKeyword
 
@@ -1114,7 +1115,7 @@ call s:addInstance('UInt','TitleTime', 'mcUIntTitleTime2')
 call s:addInstance('UInt','TitleTime2','mcUIntTitleTime3')
 call s:addInstance('UInt','TitleTime3','')
 
-hi def link mcTitleKeyword mcKeyWord
+hi def link mcTitleKeyword mcRootKeyWord
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tp
@@ -1140,7 +1141,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTri
 call s:addInstance('Objective','Trigger','mcTriggerMode')
 syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcUInt add set
 
-hi def link mcTriggerMode mcKeyword
+hi def link mcTriggerMode mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trivial Commands
@@ -1173,7 +1174,7 @@ syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleS
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderWarning        warning
         syn keyword mcWorldborderWarning contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      time distance
 
-hi def link mcWorldborderKeyword        mcKeyword
+hi def link mcWorldborderKeyword        mcRootKeyword
 hi def link mcWorldborderDamage         mcKeyword
 hi def link mcWorldborderWarning        mcKeyword
 
@@ -1192,7 +1193,7 @@ call s:addInstance('UInt','XpAmount','mcXpUnit')
 syn keyword mcXpUnit    contained                                                       points levels
 
 hi def link mcXpUnit    mcKeyword
-hi def link mcXpKeyword mcKeyword
+hi def link mcXpKeyword mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MP COMMANDS
@@ -1214,8 +1215,8 @@ if (!exists('g:mcEnableMP') || g:mcEnableMP) && s:atLeastVersion('1.14.4p4')
         syn keyword mcBanlistKW contained ips players
 
         hi def link mcIP        mcValue
-        hi def link mcSaveKW    mcKeyword
-        hi def link mcBanlistKW mcKeyword
+        hi def link mcSaveKW    mcRootKeyword
+        hi def link mcBanlistKW mcRootKeyword
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1631,12 +1632,13 @@ hi def link mcNBTBadComma    mcError
 
 hi def link mcNBTBool           mcNBTValue
 hi def link mcNBTTagKey         mcNBTPath
-hi def link mcNBTComma          mcNBTPathDot
-hi def link mcNBTColon          mcNBTPathDot
+hi def link mcNBTComma          mcNBTOp
+hi def link mcNBTColon          mcNBTOp
+hi def link mcNBTPathDot        mcNBTOp
+hi def link mcNBTBracket        mcNBTOp
 hi def link mcNBTValueQuote     mcNBTValue
 
-hi def link mcNBTIndex          mcNBTPathDot
-hi def link mcNBTPathDot        mcNBTBracket
+hi def link mcNBTIndex          mcValue
 hi def link mcNBTQuote          mcNBTPath
 hi def link mcNBTString         mcNBTValue
 
@@ -1669,6 +1671,60 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
                 let x=x+1
         endwhile
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Highlighting
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcError             Error
+hi def link mcChatMessage       String
+hi def link mcComment           Comment
+
+if !exists('g:mcColors')
+        let g:mcColors={}
+endif
+let b:mcColors = {}
+for [thing,defaultcolor] in [['Keyword', 'cterm=bold/cterm=bold,italic'],['Value', 'ctermfg=lightblue/cterm=bold'],['Selector', 'ctermfg=lightgreen cterm=bold'],['Coord', 'ctermfg=green/cterm=bold'],['Id', 'ctermfg=yellow/cterm=bold'],['Op', 'ctermfg=grey'],['Command', 'ctermfg=magenta ctermbg=none cterm=bold,underline'],['NBT', 'cterm=underline guisp=blue'],['JSON', 'cterm=underline guisp=green'],['Scarpet', 'cterm=underline guisp=yellow'],['Nest', 'magenta/blue/green/yellow'] ]
+        if has_key(g:mcColors,thing)
+                let b:mcColors[thing]=g:mcColors[thing]
+        else
+                let b:mcColors[thing]=defaultcolor
+        endif
+endfor
+
+let b:mcColors['KeyId']=substitute(b:mcColors['Id'],'/',' ','g')
+let b:mcColors['KeyValue']=substitute(b:mcColors['Value'],'/',' ','g')
+let b:mcColors['RootKeyword']=substitute(b:mcColors['Keyword'],'/',' ','g')
+let b:mcColors['Id']=matchstr(b:mcColors['Id'],'^[^/]*')
+let b:mcColors['Value']=matchstr(b:mcColors['Value'],'^[^/]*')
+let b:mcColors['Keyword']=matchstr(b:mcColors['Keyword'],'^[^/]*')
+let b:mcColors['Coordinate']=matchstr(b:mcColors['Coord'],'^[^/]*')
+let b:mcColors['Coordinate2'] = substitute(matchstr(b:mcColors['Coord'],'^[^/]*/[^/]*'),'/',' ','')
+if b:mcColors['Coord'] =~ '/[^/]*/'
+        let b:mcColors['Coordinate3'] = b:mcColors['Coordinate'] . ' ' . matchstr(b:mcColors['Coord'],'/\zs[^/]*$')
+else
+        let b:mcColors['Coordinate3'] = b:mcColors['Coordinate']
+endif
+let b:mcColors['Nest'] = split(b:mcColors['Nest'],'/')
+
+execute 'hi mcCommand' b:mcColors['Command']
+execute 'hi mcOp' b:mcColors['Op']
+execute 'hi mcSelector' b:mcColors['Selector']
+
+execute 'hi mcCoordinate ' b:mcColors['Coordinate']
+execute 'hi mcCoordinate2' b:mcColors['Coordinate2']
+execute 'hi mcCoordinate3' b:mcColors['Coordinate3']
+
+execute 'hi mcKeyword' b:mcColors['Keyword']
+execute 'hi mcRootKeyword' b:mcColors['RootKeyword']
+execute 'hi mcValue' b:mcColors['Value']
+execute 'hi mcKeyValue' b:mcColors['KeyValue']
+execute 'hi mcId' b:mcColors['Id']
+execute 'hi mcKeyId' b:mcColors['KeyId']
+
+execute 'hi mcNBTOp'    b:mcColors['Op']        '' b:mcColors['NBT']
+execute 'hi mcNBTPath'  b:mcColors['Keyword']   '' b:mcColors['NBT']
+execute 'hi mcNBTValue' b:mcColors['Value']     '' b:mcColors['NBT']
+execute 'hi mcNBTSpace'                            b:mcColors['NBT']
 
 
 if b:determinedMcVersion
