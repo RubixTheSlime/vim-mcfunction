@@ -273,20 +273,20 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Column|Rotation'
                 execute 'syn match mc'.a:type.a:group 'contained /\S\+\s\+\S\+/                 contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'NBTPath'
-                execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
-                execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
-                execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
+        elseif a:type=~ 'NBTPath$'
+                execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBound start=/.\@1<=\[/rs=e end=/]/ oneline            contained contains=mcNBTIndex,mcNBTValueTag  nextgroup=@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group
+                execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                                  contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTPathTag'.a:group
+                execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTPathTag'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
+                execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTPathTag'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
                 execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
-                execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
+                execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPath'
                 execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'NBTTag'
-                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey,mcNBTSpace skipwhite nextgroup=mcNBTPad'.a:group
+                call s:addInstance(a:type.'Tag',a:group,'@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group)
+        elseif a:type=~ 'NBT.*Tag'
+                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBound start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey,mcNBTSpace skipwhite nextgroup=mcNBTPad'.a:group
                 execute 'syn cluster mcNBT add=mcNBTTag'.a:group.',mcNBTPad'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Block$'
@@ -1621,9 +1621,9 @@ if s:atLeastVersion('19w08a')
         syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'\s*/ skip=/\\'/       oneline contained skipwhite nextgroup=mcNBTComma
 endif
 syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"\s*/ skip=/\\"/       oneline contained nextgroup=mcNBTComma
-syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}\s*/                   oneline contained contains=mcNBTTagKey,mcNBTComma nextgroup=mcNBTComma
+syn region  mcNBTValueTag       matchgroup=mcNBTBracket start=/{/rs=e end=/}\s*/                   oneline contained contains=mcNBTTagKey,mcNBTComma nextgroup=mcNBTComma
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]\s*/      oneline contained contains=@mcNBTValue,mcNBTComma nextgroup=mcNBTComma
-syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool
+syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool,mcNBTValueTag
 syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool,mcNBTQuote,mcNBTValueQuote,mcNBTBracket,mcNBTBadComma
 
 syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
@@ -1631,15 +1631,14 @@ syn match mcNBTBadComma contained /,\s*/ nextgroup=mcNBTBadComma
 hi def link mcNBTBadComma    mcError
 
 hi def link mcNBTBool           mcNBTValue
-hi def link mcNBTTagKey         mcNBTPath
 hi def link mcNBTComma          mcNBTOp
 hi def link mcNBTColon          mcNBTOp
-hi def link mcNBTPathDot        mcNBTOp
 hi def link mcNBTBracket        mcNBTOp
 hi def link mcNBTValueQuote     mcNBTValue
+hi def link mcNBTPathDot        mcNBTPath
 
 hi def link mcNBTIndex          mcValue
-hi def link mcNBTQuote          mcNBTPath
+hi def link mcNBTQuote          mcNBTTagKey
 hi def link mcNBTString         mcNBTValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1706,7 +1705,6 @@ else
 endif
 let b:mcColors['Nest'] = split(b:mcColors['Nest'],'/')
 
-execute 'hi mcCommand' b:mcColors['Command']
 execute 'hi mcOp' b:mcColors['Op']
 execute 'hi mcSelector' b:mcColors['Selector']
 
@@ -1721,10 +1719,22 @@ execute 'hi mcKeyValue' b:mcColors['KeyValue']
 execute 'hi mcId' b:mcColors['Id']
 execute 'hi mcKeyId' b:mcColors['KeyId']
 
-execute 'hi mcNBTOp'    b:mcColors['Op']        '' b:mcColors['NBT']
-execute 'hi mcNBTPath'  b:mcColors['Keyword']   '' b:mcColors['NBT']
-execute 'hi mcNBTValue' b:mcColors['Value']     '' b:mcColors['NBT']
-execute 'hi mcNBTSpace'                            b:mcColors['NBT']
+if (!exists('g:mcDeepNest') || g:mcDeepNest)
+        execute 'hi mcCommand ctermfg='.b:mcColors['Nest'][0] 'cterm=bold,underline'
+        execute 'hi mcNBTBound'                         'ctermfg='              .b:mcColors['Nest'][1]
+        execute 'hi mcNBTOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTTagKey'b:mcColors['Id']        'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTPath ctermfg='.b:mcColors['Nest'][1]
+else
+        execute 'hi mcCommand' b:mcColors['Command']
+        execute 'hi mcNBTOp'    b:mcColors['Op']        '' b:mcColors['NBT']
+        execute 'hi mcNBTPath'  b:mcColors['Keyword']   '' b:mcColors['NBT']
+        execute 'hi mcNBTValue' b:mcColors['Value']     '' b:mcColors['NBT']
+        execute 'hi mcNBTSpace'                            b:mcColors['NBT']
+endif
+
 
 
 if b:determinedMcVersion
