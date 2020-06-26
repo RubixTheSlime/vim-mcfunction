@@ -2,7 +2,7 @@ if exists("b:current_syntax")
         finish
 endif
 
-if (!exists('g:mcEnableBuiltinJSON') || g:mcEnableBuiltinJSON)
+if (exists('g:mcEnableBuiltinJSON') && g:mcEnableBuiltinJSON=~'\c\v<e%[ternal]>')
         syn match   mcJSONText          contained /.\+/ contains=@mcjson
         syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
         hi def link mcjsonNumber        jsonNumber
@@ -12,9 +12,8 @@ if (!exists('g:mcEnableBuiltinJSON') || g:mcEnableBuiltinJSON)
         " Proof that at some point we should be able to add our own 'special' keywords
         "syn keyword mcjsonKeyword contained containedin=jsonKeyword color
         "hi def link mcjsonKeyword mcKeyword
-
-        let b:current_syntax='mcfunction'
 endif
+let b:current_syntax='mcfunction'
 
 syn match mcAnySpace contained / /
 hi def link mcAnySpace mcBadWhitespace
@@ -199,7 +198,7 @@ syn match   mcGlob      /\*/    contained
 hi def link mcGlob      mcOp
 
 syn keyword mcBool      contained true false
-hi def link mcBool      mcKeyword
+hi def link mcBool      mcKeyValue
 
 " Optional Slash
 syn match mcOptionalSlash /^\/\?/ nextgroup=mcCommand
@@ -260,6 +259,29 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addTaggableInstance(type,group,nextgroup)
         execute 'syn match mcTaggable'.a:type.a:group '/[^ =,\]\t\r\n]\+/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup 'contains=@mcTaggable'.a:type
+endfunction
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Add Escaped quotes
+" adds escaped quotes for several levels
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:addEscapedQuotes(quote,group,matchgroup,contains,nextgroup,options)
+        let l:cmdpre= 'syn region '.a:group 
+        let l:cmdpost = a:options
+        if a:matchgroup !~ '^\s*$'
+                let l:cmdpre = l:cmdpre.' matchgroup='.a:matchgroup 
+        endif
+        if a:contains !~ '^\s*$'
+                let l:cmdpost = l:cmdpost.' contains='.a:contains 
+        endif
+        if a:nextgroup !~ '^\s*$'
+                let l:cmdpost = l:cmdpost.' skipwhite nextgroup='.a:nextgroup 
+        endif
+        let x = 0
+        while x < 16
+                execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
+                let x=x+1
+        endwhile
+
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -529,8 +551,8 @@ syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffec
 syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectGive    give
 call s:addInstance('Selector', "EffectGive", "mcNsEffectGive")
 call s:addInstance('NsEffect','Give','mcUIntE6EffectSeconds')
-call s:addInstance('UIntE6','EffectSeconds','mcEffectAmp')
-call s:addInstance('UInt8','EffectAmp','mcEffectBool')
+call s:addInstance('UIntE6','EffectSeconds','mcUInt8EffectAmp')
+call s:addInstance('UInt8','EffectAmp','mcBool')
 
 " Effect clear
 syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectClear   clear
@@ -1610,7 +1632,7 @@ hi def link mcRotation2         mcCoordinate2
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 " TODO maybe add pre 18w43a stuff
 syn match   mcNBTIndex          /\s*\d\+\s*/                                                               contained
-syn match   mcNBTComma          /,\s*/                                                                     contained nextgroup=mcNBTBadComma
+syn match   mcNBTComma          /\s*,\s*/                                                                     contained nextgroup=mcNBTBadComma
 syn match   mcNBTColon          /:\s*/                                                                     contained nextgroup=@mcNBTValue,mcNBTBadComma
 syn match   mcNBTTagKey         /\w\+\s*/                                                                  contained nextgroup=mcNBTColon,mcNBTBadComma
 syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"\s*/ skip=/\\"/            oneline contained nextgroup=mcNBTColon,mcNBTBadComma
@@ -1618,9 +1640,9 @@ syn match   mcNBTBool           /true\|false\s*/                                
 syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>\s*/                                        contained nextgroup=mcNBTComma
 syn match   mcNBTString         /\(\d*\h\)\@=\w*\s*/                                                       contained nextgroup=mcNBTComma
 if s:atLeastVersion('19w08a')
-        syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'\s*/ skip=/\\'/       oneline contained skipwhite nextgroup=mcNBTComma
+        call s:addEscapedQuotes("'",'mcNBTString','mcNBTValueQuote','','mcNBTComma','')
 endif
-syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"\s*/ skip=/\\"/       oneline contained nextgroup=mcNBTComma
+call s:addEscapedQuotes('"','mcNBTString','mcNBTValueQuote','','mcNBTComma','')
 syn region  mcNBTValueTag       matchgroup=mcNBTBracket start=/{/rs=e end=/}\s*/                   oneline contained contains=mcNBTTagKey,mcNBTComma nextgroup=mcNBTComma
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]\s*/      oneline contained contains=@mcNBTValue,mcNBTComma nextgroup=mcNBTComma
 syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool,mcNBTValueTag
@@ -1640,6 +1662,23 @@ hi def link mcNBTPathDot        mcNBTPath
 hi def link mcNBTIndex          mcValue
 hi def link mcNBTQuote          mcNBTTagKey
 hi def link mcNBTString         mcNBTValue
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" JSON
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
+        syn region mcJSONText matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
+        call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONKey','','')
+        call s:addEscapedQuotes('"','mcJSONKey','mcJSONOp','','mcJSONColon','')
+        syn match mcJSONColon contained nextgroup=mcJSONValue /\s*:\s*/
+        call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
+        syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/{/ end=/}/
+        syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/\[/ end=/]/
+        call s:addInstance('Float','JSONValue','mcJSONComma')
+        call s:addInstance('Bool','JSONValue','mcJSONComma')
+        syn match mcJSONComma contained /\s*,\s*/
+        hi def link mcJSONColon mcJSONOp
+        hi def link mcJSONComma mcJSONOp
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Debugging
@@ -1663,12 +1702,12 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
         syn keyword mcCommand contained skipwhite nextgroup=mcLootTable lt
 
-        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
-        let x = 0
-        while x < 16
-                execute 'syn region  mcTest matchgroup=Error start=/\\\{'.x.'}"/ end=/\\\{'.x.'}"/ skip=/\\\{' . (x+1) . ',}"/ contains=mcTest skipwhite matchgroup=Error'
-                let x=x+1
-        endwhile
+"        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
+"        let x = 0
+"        while x < 16
+"                execute 'syn region  mcTest matchgroup=Error start=/\\\{'.x.'}"/ end=/\\\{'.x.'}"/ skip=/\\\{' . (x+1) . ',}"/ contains=mcTest skipwhite matchgroup=Error'
+"                let x=x+1
+"        endwhile
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1721,21 +1760,27 @@ execute 'hi mcKeyId' b:mcColors['KeyId']
 
 if (!exists('g:mcDeepNest') || g:mcDeepNest)
         execute 'hi mcCommand ctermfg='.b:mcColors['Nest'][0] 'cterm=bold,underline'
+
         execute 'hi mcNBTBound'                         'ctermfg='              .b:mcColors['Nest'][1]
         execute 'hi mcNBTOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][1]
         execute 'hi mcNBTTagKey'b:mcColors['Id']        'cterm=underline guisp='.b:mcColors['Nest'][1]
         execute 'hi mcNBTValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][1]
         execute 'hi mcNBTSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][1]
         execute 'hi mcNBTPath ctermfg='.b:mcColors['Nest'][1]
+
+        execute 'hi mcJSONBound ctermfg='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONKey'b:mcColors['Id']           'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][2]
 else
+        hi def link mcNBTTagKey mcNBTPath
         execute 'hi mcCommand' b:mcColors['Command']
         execute 'hi mcNBTOp'    b:mcColors['Op']        '' b:mcColors['NBT']
         execute 'hi mcNBTPath'  b:mcColors['Keyword']   '' b:mcColors['NBT']
         execute 'hi mcNBTValue' b:mcColors['Value']     '' b:mcColors['NBT']
         execute 'hi mcNBTSpace'                            b:mcColors['NBT']
 endif
-
-
 
 if b:determinedMcVersion
         unlet b:mcversion
