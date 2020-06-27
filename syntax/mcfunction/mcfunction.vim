@@ -140,11 +140,10 @@ endif
 endfunction
 
 if (exists('g:mcEnableBuiltinJSON') && g:mcEnableBuiltinJSON=~'\c\v<e%[ternal]>')
-        syn match   mcJSONText          contained /.\+/ contains=@mcjson
         syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
         hi def link mcjsonNumber        jsonNumber
-        syn include @mcJSON syntax/json.vim
-        syn cluster mcJSON add=mcjsonNumber,jsonString
+        syn include @mcJSONText syntax/json.vim
+        syn cluster mcJSONText add=mcjsonNumber,jsonString
 
         " Proof that at some point we should be able to add our own 'special' keywords
         "syn keyword mcjsonKeyword contained containedin=jsonKeyword color
@@ -339,7 +338,7 @@ hi def link mcOptionalSlash mcCommand
 
 " Errors
 syn match   mcError     /.*/ contained
-syn match mcDoubleSpace / \@1<= \+\| \{2,}/ contained
+syn match mcDoubleSpace /\s\@1<=\s\+\|\s\{2,}/ contained
 syn match   mcBadWhitespace     /\t/
 syn match   mcBadDecimal        /\.\ze\_[^.]/ contained
 syn match   mcFourDots          /\.\{4,}/   contained containedin=ALLBUT,mcChatMessage
@@ -529,7 +528,7 @@ syn keyword mcCommand bossbar contained skipwhite nextgroup=mcDoubleSpace,mcBoss
 
 " Bossbar add
 syn keyword mcBossbarKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdAdd    add
-call s:addInstance('NsBossbarId','Add','mcJSONText')
+call s:addInstance('NsBossbarId','Add','@mcJSONText')
 
 " Bossbar get
 syn keyword mcBossbarKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdGet    get
@@ -549,7 +548,7 @@ call s:addInstance('NsBossbarId','Set','mcBossbarSetKeyword')
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor   color
         syn keyword mcBossbarSetColor   contained                                                       blue green pink purple red white yellow
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcIntU32            max value
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          name
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText          name
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcSelector          players
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle   style
         syn keyword mcBossbarSetStyle   contained                                                       progress notched_6 notched_10 notched_12 notched_20
@@ -1098,13 +1097,13 @@ syn keyword mcScoreboardKeyword    contained skipwhite nextgroup=mcDoubleSpace,m
 
 syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveObjAdd                add
         call s:addInstance('Objective','ObjAdd','mcCriteriaObjAdd')
-        call s:addInstance('Criteria','ObjAdd','mcJSONText')
+        call s:addInstance('Criteria','ObjAdd','@mcJSONText')
 
 syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace                                  list
 
 syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveObjModify             modify
         call s:addInstance('Objective','ObjModify','mcScoreboardModifyWhat')
-        syn keyword mcScoreboardModifyWhat contained skipwhite nextgroup=mcDoubleSpace,mcJSONText               displayname
+        syn keyword mcScoreboardModifyWhat contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText               displayname
         syn keyword mcScoreboardModifyWhat contained skipwhite nextgroup=mcDoubleSpace,mcScoreboardModifyRender rendertype
         syn keyword mcScoreboardModifyRender contained                                                          hearts integer
 
@@ -1174,7 +1173,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcTeamKeyword 
 
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelector        leave
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamAdd         add
-        call s:addInstance('Team','Add','mcJSONText')
+        call s:addInstance('Team','Add','@mcJSONText')
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeam            empty remove list
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamJoin        join
         call s:addInstance('Team','Join','mcSelector')
@@ -1185,7 +1184,7 @@ syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamModi
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamModifyCollision   collisionRule
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamColor             color
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamModifyVisibility  deathMessageVisibility nametagVisibility
-syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcJSONText              displayName prefix suffix
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText              displayName prefix suffix
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcBool                  friendlyFire seeFriendlyInvisibles
 syn keyword mcTeamModifyCollision  contained                                                           always never pushOtherTeams pushOwnTeam
 syn keyword mcTeamModifyVisibility contained                                                           always never hideForOtherTeams hideForOwnTeam
@@ -1203,7 +1202,7 @@ hi def link mcTeam                 mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTellraw tellraw
 
-call s:addInstance('Selector', 'Tellraw','mcJSONText')
+call s:addInstance('Selector', 'Tellraw','@mcJSONText')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Time
@@ -1264,7 +1263,7 @@ syn keyword mcCommand title contained skipwhite nextgroup=mcDoubleSpace,mcSelect
 
 call s:addInstance('Selector', "Title","mcTitleKeyword")
 
-syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          actionbar subtitle title
+syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText          actionbar subtitle title
 syn keyword mcTitleKeyword      contained                                                       clear reset
 syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcIntU32TitleTime     times
 call s:addInstance('IntU32','TitleTime', 'mcIntU32TitleTime2')
@@ -1800,18 +1799,22 @@ hi def link mcNBTString         mcNBTValue
 " JSON
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
-        syn region mcJSONText matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
+        execute 'syn match mcJSONNumber contained /\<'.s:numre(0,2147483647,0,-1).'\>\.\@1!\|-\?\d\+\.\d\+/'
+        hi def link mcJSONNumber mcValue
+        syn region mcJSONText contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
+        syn cluster mcJSONText add=mcJSONNumber,mcJSONText,mcBool
         call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONKey','','')
         call s:addEscapedQuotes('"','mcJSONKey','mcJSONOp','','mcJSONColon','')
-        syn match mcJSONColon contained nextgroup=mcJSONValue /\s*:\s*/
+        syn match mcJSONColon contained nextgroup=mcJSONValue,mcJSONBool /\s*:\s*/
         call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
         syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/{/ end=/}/
         syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/\[/ end=/]/
-        call s:addInstance('Float','JSONValue','mcJSONComma')
-        call s:addInstance('Bool','JSONValue','mcJSONComma')
+        execute 'syn match mcJSONValue contained nextgroup=mcJSONComma /\<'.s:numre(0,2147483647,0,-1).'\.\@1!\|-\?\d\+\.\d\+/'
+        syn keyword mcJSONBool contained true false
         syn match mcJSONComma contained /\s*,\s*/
         hi def link mcJSONColon mcJSONOp
         hi def link mcJSONComma mcJSONOp
+        hi def link mcJSONBool  mcJSONKeyValue
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1906,6 +1909,7 @@ if (!exists('g:mcDeepNest') || g:mcDeepNest)
         execute 'hi mcJSONOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][2]
         execute 'hi mcJSONKey'b:mcColors['Id']           'cterm=underline guisp='.b:mcColors['Nest'][2]
         execute 'hi mcJSONValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONKeyValue' b:mcColors['Value']  'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
         execute 'hi mcJSONSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][2]
 else
         hi def link mcNBTTagKey mcNBTPath
