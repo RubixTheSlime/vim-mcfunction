@@ -2,37 +2,46 @@ if exists("b:current_syntax")
         finish
 endif
 
-function NumRE(minn,maxn,mind,maxd)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Create Int
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:createInt(name,minn,maxn,mind,maxd)
+        execute 'syn match   mcInt'.a:name 'contained /[[:digit:].-]\+/ contains=mcInteger'.a:name
+        execute 'syn match   mcInteger'.a:name 'contained /\<'.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\>/'
+        execute 'hi def link mcInt'.a:name 'mcError'
+        execute 'hi def link mcInteger'.a:name 'mcValue'
+endfunction
+function! s:numre(minn,maxn,mind,maxd)
         if a:mind > a:maxd
-                return NumRE(a:minn,a:maxn,a:mind,a:mind)
+                return s:numre(a:minn,a:maxn,a:mind,a:mind)
         elseif a:mind < 1
-                return NumRE(a:minn,a:maxn,1,a:maxd)
+                return s:numre(a:minn,a:maxn,1,a:maxd)
         elseif a:maxn=='-'
                 " 123-999
         elseif a:maxn=='inf'
                 if empty(a:maxd)
                         if a:mind <= 1
-                                return '\d*'.NumRE(a:minn,'-',0,0)
+                                return '\d*'.s:numre(a:minn,'-',0,0)
                         else
-                                return '\d\{'.(a:mind-len(a:minn)).',}'.a:NumRE(a:minn,'-',a:mind,0)
+                                return '\d\{'.(a:mind-len(a:minn)).',}'.s:numre(a:minn,'-',a:mind,0)
                         endif
                 else
                         if a:maxd==a:mind
-                                return '\d\{'.(a:mind-len(a:minn)).'}'.a:NumRE(a:minn,'-',a:mind,a:maxd)
+                                return '\d\{'.(a:mind-len(a:minn)).'}'.s:numre(a:minn,'-',a:mind,a:maxd)
                         else
-                                return '\d\{'.(a:mind-len(a:minn)).','.(a:maxd-len(a:minn)).'}'.a:NumRE(a:minn,'-',a:mind,a:maxd)
+                                return '\d\{'.(a:mind-len(a:minn)).','.(a:maxd-len(a:minn)).'}'.s:numre(a:minn,'-',a:mind,a:maxd)
                         endif
                 endif
         elseif a:minn * a:maxn < 0
-                return '-\?'.NumRE(0,min([a:minn,a:maxn]),a:mind,a:maxd).'\|'.NumRE(min([a:minn,a:maxn]),max([a:minn,a:maxn]),a:mind,a:maxd)
+                return '-\?'.s:numre(0,min([a:minn,a:maxn]),a:mind,a:maxd).'\|'.s:numre(min([a:minn,a:maxn]),max([a:minn,a:maxn]),a:mind,a:maxd)
         elseif a:minn > a:maxn
-                return NumRE(a:maxn,a:minn,a:mind,a:maxd)
+                return s:numre(a:maxn,a:minn,a:mind,a:maxd)
         elseif a:maxd == -1
-                return '0*'.NumRE(a:minn,a:maxn,a:mind,len(a:maxn))
+                return '0*'.s:numre(a:minn,a:maxn,a:mind,len(a:maxn))
         elseif a:minn == 0
                 if a:maxd > len(a:maxn)
                         " Keep adding zeros until they're equal
-                        return NumRE(0,'0'.a:maxn,a:mind,a:maxd)
+                        return s:numre(0,'0'.a:maxn,a:mind,a:maxd)
                 elseif len(a:maxn)==1
                         " last digit
                         " optimize later
@@ -44,7 +53,7 @@ function NumRE(minn,maxn,mind,maxd)
                                 return '[0-'.a:maxn.']'
                         endif
                 elseif a:maxd < len(a:maxn)
-                        return NumRE(0,a:maxn,a:mind,len(a:maxn))
+                        return s:numre(0,a:maxn,a:mind,len(a:maxn))
                 elseif a:mind == a:maxd
                         " Return the number with the exact number of digits
                         if a:maxn =~ '^9*$'
@@ -52,7 +61,7 @@ function NumRE(minn,maxn,mind,maxd)
                                 return '\d\{'.len(a:maxn).'}'
                         else
                                 let l:first = matchstr(a:maxn,'^.')
-                                let l:rest = NumRE(0,matchstr(a:maxn,'^.\zs.*$'),a:maxd-1,a:maxd-1)
+                                let l:rest = s:numre(0,matchstr(a:maxn,'^.\zs.*$'),a:maxd-1,a:maxd-1)
                                 let l:tail = '\d'
                                 let l:range = ''
                                 if l:first == 1
@@ -68,7 +77,7 @@ function NumRE(minn,maxn,mind,maxd)
                                 if l:first == 0
                                         return '0'.l:rest
                                 else
-                                        return '\%('.l:range.l:tail.'\|1'.l:rest.'\)'
+                                        return '\%('.l:range.l:tail.'\|'.l:first.l:rest.'\)'
                                 endif
                         endif
                 else
@@ -94,7 +103,7 @@ function NumRE(minn,maxn,mind,maxd)
                                         let l:tail='\d\{'.a:mind.','.(a:maxd-1).'}'
                                 endif
                         endif
-                        let l:rest = NumRE(0,matchstr(a:maxn,'^.\zs.*$'),a:maxd-1,a:maxd-1)
+                        let l:rest = s:numre(0,matchstr(a:maxn,'^.\zs.*$'),a:maxd-1,a:maxd-1)
                         if l:first == 0
                                 return l:rest
                         elseif l:first == 1
@@ -109,16 +118,16 @@ function NumRE(minn,maxn,mind,maxd)
         endif
         " WIP
         "        if empty(a:maxn)
-        "                return '\d*'.NumRE(a:minn,'-',a:mind,a:maxd)
+        "                return '\d*'.s:numre(a:minn,'-',a:mind,a:maxd)
         "        elseif len(a:maxn) > len(a:minn)
         "                if len(a:maxn) > a:maxd
-        "                        return matchstr(a:maxn,'^.').NumRE(0,matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd).'\|'.NumRE(a:minn,'-',a:mind,a:maxd)
-        "                return matchstr(a:maxn,'^.').NumRE(0,matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd).'\|'.NumRE(a:minn,'-',a:mind,a:maxd)
+        "                        return matchstr(a:maxn,'^.').s:numre(0,matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd).'\|'.s:numre(a:minn,'-',a:mind,a:maxd)
+        "                return matchstr(a:maxn,'^.').s:numre(0,matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd).'\|'.s:numre(a:minn,'-',a:mind,a:maxd)
         "        else
         "                " At this point they should be equal length
         "                let l:maxfirst=matchstr(a:maxn,'^.')
         "                let l:minfirst=matchstr(a:minn,'^.')
-        "                let l:rest=NumRE(matchstr(a:minn,'^.\zs.*$'),matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd)
+        "                let l:rest=s:numre(matchstr(a:minn,'^.\zs.*$'),matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd)
         "                if l:maxfirst == l:minfirst
         "                        return l:maxfirst.
         "                elseif len(a:maxn) > a:maxd
@@ -129,13 +138,6 @@ function NumRE(minn,maxn,mind,maxd)
         "        endif
 endif
 endfunction
-
-
-
-
-
-
-
 
 if (exists('g:mcEnableBuiltinJSON') && g:mcEnableBuiltinJSON=~'\c\v<e%[ternal]>')
         syn match   mcJSONText          contained /.\+/ contains=@mcjson
@@ -303,26 +305,22 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Numbers
 syn match   mcInt       contained nextgroup=mcBadDecimal /\v<0*%(-?1?\d{,9}|-?2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7]))))))))|-0*2147483648)>/
-"2147483648
-syn match   mcUInt      contained nextgroup=mcBadDecimal /\v<0*%(1?\d{,9}|2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7])))))))))>/
-" 6 digit uint
-syn match   mcUIntE6    contained nextgroup=mcBadDecimal /\<0*\d\{1,6}\>/
-" 6 bit uint including 2^6
-syn match   mcUInt6i    contained nextgroup=mcBadDecimal /\v<0*%(6[0-4]|[1-5]\d)>/
-" 8 bit uint
-syn match   mcUInt8     contained nextgroup=mcBadDecimal /\v<0*%([0-1]?\d{,2}|2%([0-4]\d|5[0-5]))>/
+call s:createInt('U32',0,2147483647,0,-1)
+call s:createInt('UE6',0,999999,0,-1)
+call s:createInt('U6i',0,64,0,-1)
+call s:createInt('U8',0,255,0,-1)
 syn match   mcUFloat    contained /\(\d*\.\)\?\d\+/
 syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\+/
 
-hi def link mcUInt      mcInt
-hi def link mcUIntE6    mcInt
-hi def link mcUInt6i    mcInt
-hi def link mcUInt8     mcInt
+hi def link mcIntU      mcInt
+hi def link mcIntUE6    mcInt
+hi def link mcIntU6i    mcInt
+hi def link mcIntU8     mcInt
 hi def link mcUFloat    mcFloat
 hi def link mcInt       mcValue
 hi def link mcFloat     mcValue
 
-syn match   mcUIntRange         contained contains=mcBadDecimal,mcUInt,mcRangeDots   /\d*\%(\.\+\d*\)\?/ 
+syn match   mcIntURange         contained contains=mcBadDecimal,mcIntU,mcRangeDots   /\d*\%(\.\+\d*\)\?/ 
 syn match   mcIntRange          contained contains=mcBadDecimal,mcInt,mcRangeDots    /-\?\d*\%(\.\+-\?\d*\)\?/ 
 syn match   mcUFloatRange       contained contains=mcUFloat,mcRangeDots /[[:digit:].]*\%(\.\.[[:digit:].]*\)\?/ 
 syn match   mcFloatRange        contained contains=mcFloat,mcRangeDots  /[[:digit:].-]*\%(\.\.[[:digit:].-]*\)\?/ 
@@ -395,6 +393,8 @@ endfunction
 function! s:addTaggableInstance(type,group,nextgroup)
         execute 'syn match mcTaggable'.a:type.a:group '/[^ =,\]\t\r\n]\+/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup 'contains=@mcTaggable'.a:type
 endfunction
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Add Escaped quotes
 " adds escaped quotes for several levels
@@ -548,7 +548,7 @@ call s:addInstance('NsBossbarId','Set','mcBossbarSetKeyword')
 
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor   color
         syn keyword mcBossbarSetColor   contained                                                       blue green pink purple red white yellow
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcUInt              max value
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcIntU32            max value
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          name
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcSelector          players
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle   style
@@ -574,7 +574,7 @@ hi def link mcBossbarIdSet              mcId
 syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorClear
 
 call s:addInstance('PlayerSelector',"Clear","mcNsTItemClear")
-call s:addInstance('NsTItem','Clear','mcUInt')
+call s:addInstance('NsTItem','Clear','mcIntU32')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clone
@@ -628,8 +628,8 @@ syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSp
         syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,@mcNBTValue                 value
         syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataRemove             from
 
-syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcUIntDataModifyIndex       insert
-        call s:addInstance('UInt', 'DataModifyIndex', 'mcDataModifySource')
+syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcIntU32DataModifyIndex       insert
+        call s:addInstance('IntU32', 'DataModifyIndex', 'mcDataModifySource')
 endif
 
 " Data remove
@@ -685,9 +685,9 @@ syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffec
 " Effect give
 syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectGive    give
 call s:addInstance('Selector', "EffectGive", "mcNsEffectGive")
-call s:addInstance('NsEffect','Give','mcUIntE6EffectSeconds')
-call s:addInstance('UIntE6','EffectSeconds','mcUInt8EffectAmp')
-call s:addInstance('UInt8','EffectAmp','mcBool')
+call s:addInstance('NsEffect','Give','mcIntUE6EffectSeconds')
+call s:addInstance('IntUE6','EffectSeconds','mcIntU8EffectAmp')
+call s:addInstance('IntU8','EffectAmp','mcBool')
 
 " Effect clear
 syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectClear   clear
@@ -703,9 +703,8 @@ syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSele
 
 call s:addInstance('Selector',"Enchant", "mcNsEnchantmentEnchant")
 
-call s:addInstance('NsEnchantment','Enchant','mcEnchantLevel')
-syn match   mcEnchantLevel  contained /[1-5]/ skipwhite nextgroup=mcTheRestIsBad
-hi def link mcEnchantLevel  mcValue
+call s:addInstance('NsEnchantment','Enchant','mcIntEnchantLevel')
+call s:createInt('EnchantLevel',0,5,0,-1)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Execute
@@ -895,12 +894,12 @@ hi def link mcGamerule mcKeyId
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorGive
 
 call s:addInstance('PlayerSelector',"Give", "mcNsItemGive")
-call s:addInstance('NsItem','Give','mcUInt')
+call s:addInstance('NsItem','Give','mcIntU32')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Help
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcUInt,mcHelpCommand
+syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcIntU32,mcHelpCommand
 
 " Help commands (why am i even including this, or UUID highlighting for that matter)
 " (i guess you could /execute store result ... run help for a message generator)
@@ -968,8 +967,8 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
         call s:addInstance('Selector', "Loot", "mcLootSourceKeyword")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockLootReplace  replace
         call s:mcSelectorBlock('LootReplace','mcSlotLoot')
-        call s:addInstance('Slot','Loot','mcUInt6iLootCount,mcLootSourceKeyword')
-        call s:addInstance('UInt6i','LootCount','mcLootSourceKeyword')
+        call s:addInstance('Slot','Loot','mcIntU6iLootCount,mcLootSourceKeyword')
+        call s:addInstance('IntU6i','LootCount','mcLootSourceKeyword')
 
 " Source
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
@@ -991,7 +990,7 @@ hi def link mcLootTableFish             mcLootTable
 hi def link mcLootTable                 mcId
 hi def link mcLootFishingLocation       mcId
 
-hi def link mcLootCount                 mcUInt
+hi def link mcLootCount                 mcIntU32
 
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1015,8 +1014,8 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticlePa
 call s:addInstance('NsParticle', 'Particle','mcCoordinateParticle')
 call s:addInstance('Coordinate', 'Particle','mcCoordinate2Particle')
 call s:addInstance('Coordinate2', 'Particle','mcUFloatParticleSpeed')
-call s:addInstance('UFloat','ParticleSpeed','mcUIntParticleCount')
-call s:addInstance('UInt','ParticleCount','mcParticleMode')
+call s:addInstance('UFloat','ParticleSpeed','mcIntU32ParticleCount')
+call s:addInstance('IntU32','ParticleCount','mcParticleMode')
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
 
 hi def link mcParticleMode  mcKeyword
@@ -1053,7 +1052,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBloc
 
 call s:mcSelectorBlock('Replaceitem','mcSlotReplaceitem')
 call s:addInstance('Slot','Replaceitem','mcNsItemReplaceitem')
-call s:addInstance('NsItem','Replaceitem','mcUInt')
+call s:addInstance('NsItem','Replaceitem','mcIntU32')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Schedule
@@ -1133,8 +1132,8 @@ call s:addInstance('UFloat','SpreadRange','mcBoolSpreadRespect,mcSpreadUnder')
 call s:addInstance('Bool','SpreadRespect','mcPlayerSelector')
 
 if s:atLeastVersion('20w21a')
-        syn keyword mcSpreadUnder        contained skipwhite nextgroup=mcDoubleSpace,mcUIntSpreadHeight under
-        call s:addInstance('UInt','SpreadHeight','mcSpreadRespect')
+        syn keyword mcSpreadUnder        contained skipwhite nextgroup=mcDoubleSpace,mcIntU8SpreadHeight under
+        call s:addInstance('IntU8','SpreadHeight','mcSpreadRespect')
         hi def link mcSpreadUnder        mcKeyword
 endif
 
@@ -1267,10 +1266,10 @@ call s:addInstance('Selector', "Title","mcTitleKeyword")
 
 syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          actionbar subtitle title
 syn keyword mcTitleKeyword      contained                                                       clear reset
-syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcUIntTitleTime     times
-call s:addInstance('UInt','TitleTime', 'mcUIntTitleTime2')
-call s:addInstance('UInt','TitleTime2','mcUIntTitleTime3')
-call s:addInstance('UInt','TitleTime3','')
+syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcIntU32TitleTime     times
+call s:addInstance('IntU32','TitleTime', 'mcIntU32TitleTime2')
+call s:addInstance('IntU32','TitleTime2','mcIntU32TitleTime3')
+call s:addInstance('IntU32','TitleTime3','')
 
 hi def link mcTitleKeyword mcRootKeyWord
 
@@ -1296,7 +1295,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTri
 
 " no namespace
 call s:addInstance('Objective','Trigger','mcTriggerMode')
-syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcUInt add set
+syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcIntU32 add set
 
 hi def link mcTriggerMode mcRootKeyword
 
@@ -1310,8 +1309,8 @@ syn keyword mcCommand reload seed contained
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand weather contained skipwhite nextgroup=mcDoubleSpace,mcWeather
 
-syn keyword mcWeather           contained skipwhite nextgroup=mcDoubleSpace,mcUIntE6WeatherDuration clear rain thunder
-call s:addInstance('UIntE6', 'WeatherDuration','')
+syn keyword mcWeather           contained skipwhite nextgroup=mcDoubleSpace,mcIntUE6WeatherDuration clear rain thunder
+call s:addInstance('IntUE6', 'WeatherDuration','')
 
 hi def link mcWeather           mcKeyword
 
@@ -1323,13 +1322,13 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderK
 syn keyword mcWorldborderKeyword         contained                                                               get
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcColumn                    center
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderSet            set
-        call s:addInstance('UFloat','WorldborderSet','mcUInt')
+        call s:addInstance('UFloat','WorldborderSet','mcIntU32')
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderAdd            add
-        call s:addInstance('Float','WorldborderAdd','mcUInt')
+        call s:addInstance('Float','WorldborderAdd','mcIntU32')
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderDamage         damage
         syn keyword mcWorldborderDamage  contained skipwhite nextgroup=mcDoubleSpace,mcUFloat                    amount buffer
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderWarning        warning
-        syn keyword mcWorldborderWarning contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      time distance
+        syn keyword mcWorldborderWarning contained skipwhite nextgroup=mcDoubleSpace,mcIntU32                      time distance
 
 hi def link mcWorldborderKeyword        mcRootKeyword
 hi def link mcWorldborderDamage         mcKeyword
@@ -1344,8 +1343,8 @@ syn keyword mcXpKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorXp
 call s:addInstance('Selector', "XpQuery", "mcXpUnit")
 
 syn keyword mcXpKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorXpSet     add set
-call s:addInstance('Selector', "XpSet", "mcUIntXpAmount")
-call s:addInstance('UInt','XpAmount','mcXpUnit')
+call s:addInstance('Selector', "XpSet", "mcIntU32XpAmount")
+call s:addInstance('IntU32','XpAmount','mcXpUnit')
 
 syn keyword mcXpUnit    contained                                                       points levels
 
@@ -1365,7 +1364,7 @@ if (!exists('g:mcEnableMP') || g:mcEnableMP) && s:atLeastVersion('1.14.4p4')
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelectorKick,mcIPBan      ban-ip
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelector,mcIP             pardon-ip
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelector                  pardon op
-        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      setidletimeout publish
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcIntU32                      setidletimeout publish
         syn match   mcIP        contained skipwhite nextgroup=mcDoubleSpace                             /\v%(%([0-1]?\d{1,2}|2%([0-4]\d|5[0-5]))\.){4}/ "ipv4
         call s:addInstance('mcIP','Ban','mcChatMesssage')
         syn keyword mcSaveKW    contained flush
@@ -1521,8 +1520,8 @@ syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeam
 syn match   mcFilterEqType      contained /=!\?/ skipwhite nextgroup=mcNsTEntity
 syn match   mcFilterEqTag       contained /=!\?/ skipwhite nextgroup=mcTag
 syn match   mcFilterEqF         contained /=/    skipwhite nextgroup=mcFloat
-syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcUInt
-syn match   mcFilterEqUIR       contained /=/    skipwhite nextgroup=mcUInt,mcUIntRange
+syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcIntU32
+syn match   mcFilterEqUIR       contained /=/    skipwhite nextgroup=mcIntU32,mcIntU32Range
 syn match   mcFilterEqUFR       contained /=/    skipwhite nextgroup=mcUFloat,mcUFloatRange
 syn match   mcFilterEqXR        contained /=/    skipwhite nextgroup=mcXRotation,mcXRotationRange
 syn match   mcFilterEqYR        contained /=/    skipwhite nextgroup=mcYRotation,mcYRotationRange
@@ -1627,7 +1626,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
         endfunction
         function! s:addGamerule(name, values)
                 if a:values =~ '\cuint'
-                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcUInt'
+                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcIntU32'
                 elseif a:values != ''
                         execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcGameruleValue'.a:name
                         execute 'syn match   mcGameruleValue'.a:name a:values 'contained'
