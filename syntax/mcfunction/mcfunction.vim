@@ -5,18 +5,18 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Create Int
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:createBitInt(name,link,bits,mind,maxd)
+function! s:createBitInt(name,link,bits,mind,maxd,suffix)
         let l:n = 1
         let l:i = a:bits - 1
         while l:i
                 let l:n = l:n*2
                 let l:i = l:i -1
         endwhile
-        call s:createInt(a:name,a:link,-l:n,l:n-1,a:mind,a:maxd)
+        call s:createInt(a:name,a:link,-l:n,l:n-1,a:mind,a:maxd,a:suffix)
 endfunction
-function! s:createInt(name,link,minn,maxn,mind,maxd)
-        execute 'syn match   mc'.a:name 'contained /[[:digit:].-]\+\>/ contains=mcBounded'.a:name
-        execute 'syn match   mcBounded'.a:name 'contained /[[:digit:].-]\@1<!\%('.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\)\>/'
+function! s:createInt(name,link,minn,maxn,mind,maxd,suffix)
+        execute 'syn match   mc'.a:name 'contained /[[:alnum:].-]\+\>/ contains=mcBounded'.a:name
+        execute 'syn match   mcBounded'.a:name 'contained /\%('.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\)'.a:suffix.'\>/'
         execute 'hi def link mc'.a:name 'mcError'
         execute 'hi def link mcBounded'.a:name a:link
 endfunction
@@ -48,11 +48,11 @@ function! s:numre(minn,maxn,mind,maxd)
                 return '-'.s:numre(-a:maxn,-a:minn,a:mind,a:maxd)
         elseif a:minn < 0
                 if abs(a:minn) == a:maxn
-                        return '-\?'.s:numre(0,a:maxn,a:mind,a:maxd)
+                        return '-\?\<'.s:numre(0,a:maxn,a:mind,a:maxd)
                 elseif abs(a:minn) > a:maxn
-                        return '-\?'.s:numre(0,a:maxn,a:mind,a:maxd).'\|-'.s:numre(a:maxn+1,abs(a:minn),a:mind,a:maxd)
+                        return '-\?\<'.s:numre(0,a:maxn,a:mind,a:maxd).'\|-'.s:numre(a:maxn+1,abs(a:minn),a:mind,a:maxd)
                 else
-                        return '-\?'.s:numre(0,abs(a:minn),a:mind,a:maxd).'|'.s:numre(abs(a:minn)+1,a:maxn,a:mind,a:maxd)
+                        return '-\?\<'.s:numre(0,abs(a:minn),a:mind,a:maxd).'|'.s:numre(abs(a:minn)+1,a:maxn,a:mind,a:maxd)
                 endif
         elseif a:minn > a:maxn
                 return s:numre(a:maxn,a:minn,a:mind,a:maxd)
@@ -326,12 +326,12 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Numbers
 syn match   mcInt       contained nextgroup=mcBadDecimal /\v<0*%(-?1?\d{,9}|-?2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7]))))))))|-0*2147483648)>/
-call s:createInt('IntU32','mcValue',0,2147483647,0,-1)
-call s:createInt('IntUE6','mcValue',0,999999,0,-1)
-call s:createInt('IntU6i','mcValue',0,64,0,-1)
-call s:createInt('IntU8','mcValue',0,255,0,-1)
-syn match   mcUFloat    contained /\(\d*\.\)\?\d\+/
-syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\+/
+call s:createInt('IntU32','mcValue',0,2147483647,0,-1,'')
+call s:createInt('IntUE6','mcValue',0,999999,0,-1,'')
+call s:createInt('IntU6i','mcValue',0,64,0,-1,'')
+call s:createInt('IntU8','mcValue',0,255,0,-1,'')
+syn match   mcUFloat    contained /\(\d*\.\)\?\d\{1,38}/
+syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\{1,38}/
 
 hi def link mcUFloat    mcFloat
 hi def link mcInt       mcValue
@@ -725,7 +725,7 @@ syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSele
 call s:addInstance('Selector',"Enchant", "mcNsEnchantmentEnchant")
 
 call s:addInstance('NsEnchantment','Enchant','mcIntEnchantLevel')
-call s:createInt('IntEnchantLevel','mcValue',0,5,0,-1)
+call s:createInt('IntEnchantLevel','mcValue',0,5,0,-1,'')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Execute
@@ -1919,10 +1919,23 @@ if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
         call s:addEscapedQuotes('both','mcKeyNBTEnchantmentID','mcNBTValueQuote','','mcNBTComma','')
         hi def link mcKeyNBTString mcNBTValue
         hi def link mcKeyNBTEnchantmentID mcNBTValue
-        call s:createBitInt('KeyNBTByte', 'mcNBTValue',8 ,0,-1)
-        call s:createBitInt('KeyNBTShort','mcNBTValue',16,0,-1)
-        call s:createBitInt('KeyNBTInt',  'mcNBTValue',32,0,-1)
-        call s:createBitInt('KeyNBTLong', 'mcNBTValue',64,0,-1)
+        call s:createBitInt('KeyNBTByte', 'mcNBTValue',8 ,0,-1,'b\?')
+        call s:createBitInt('KeyNBTShort','mcNBTValue',16,0,-1,'s\?')
+        call s:createBitInt('KeyNBTInt',  'mcNBTValue',32,0,-1,'i\?')
+        call s:createBitInt('KeyNBTLong', 'mcNBTValue',64,0,-1,'l\?')
+        " Fortunately for me, but not for you, nbt does not support scientific notation
+        " Not getting too detailed on bounds for now
+        " that's a lot of ~~damage~~ numbers
+        syn match   mcKeyNBTFloat       contained contains=mcKeyNBTRealFloat    /[[:alnum:].-]\+/
+        syn match   mcKeyNBTDouble      contained contains=mcKeyNBTRealDouble   /[[:alnum:].-]\+/
+        syn match   mcKeyNBTRealFloat   contained nextgroup=mcKeyNBTBadFloat    /\v-?<%(\.\d+|0*\d{1,38}%(\.\d*)?)f?>/
+        syn match   mcKeyNBTRealDouble  contained nextgroup=mcKeyNBTBadFloat    /\v-?<%(\.\d+|0*\d{1,307}%(\.\d*)?)d?>/
+        syn match   mcKeyNBTBadFloat    contained                               /-/
+        hi def link mcKeyNBTBadFloat    mcError
+        hi def link mcKeyNBTFloat       mcError
+        hi def link mcKeyNBTDouble      mcError
+        hi def link mcKeyNBTRealFloat   mcNBTValue
+        hi def link mcKeyNBTRealDouble  mcNBTValue
 endif
 
 hi def link mcNBTBool           mcNBTValue
