@@ -5,11 +5,23 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Create Int
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:createBitInt(name,link,bits,mind,maxd)
+        let l:n = 1
+        let l:i = a:bits - 1
+        while l:i
+                let l:n = l:n*2
+                let l:i = l:i -1
+        endwhile
+        call s:createInt(a:name,a:link,-l:n,l:n-1,a:mind,a:maxd)
+endfunction
 function! s:createInt(name,link,minn,maxn,mind,maxd)
-        execute 'syn match   mc'.a:name 'contained /[[:digit:].-]\+/ contains=mcBounded'.a:name
-        execute 'syn match   mcBounded'.a:name 'contained /\<'.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\>/'
+        execute 'syn match   mc'.a:name 'contained /[[:digit:].-]\+\>/ contains=mcBounded'.a:name
+        execute 'syn match   mcBounded'.a:name 'contained /[[:digit:].-]\@1<!\%('.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\)\>/'
         execute 'hi def link mc'.a:name 'mcError'
         execute 'hi def link mcBounded'.a:name a:link
+endfunction
+function! Numre(a,b,c,d)
+        return s:numre(a:a,a:b,a:c,a:d)
 endfunction
 function! s:numre(minn,maxn,mind,maxd)
         if a:mind > a:maxd
@@ -32,8 +44,16 @@ function! s:numre(minn,maxn,mind,maxd)
                                 return '\d\{'.(a:mind-len(a:minn)).','.(a:maxd-len(a:minn)).'}'.s:numre(a:minn,'-',a:mind,a:maxd)
                         endif
                 endif
-        elseif a:minn * a:maxn < 0
-                return '-\?'.s:numre(0,min([a:minn,a:maxn]),a:mind,a:maxd).'\|'.s:numre(min([a:minn,a:maxn]),max([a:minn,a:maxn]),a:mind,a:maxd)
+        elseif a:maxn < 0
+                return '-'.s:numre(-a:maxn,-a:minn,a:mind,a:maxd)
+        elseif a:minn < 0
+                if abs(a:minn) == a:maxn
+                        return '-\?'.s:numre(0,a:maxn,a:mind,a:maxd)
+                elseif abs(a:minn) > a:maxn
+                        return '-\?'.s:numre(0,a:maxn,a:mind,a:maxd).'\|-'.s:numre(a:maxn+1,abs(a:minn),a:mind,a:maxd)
+                else
+                        return '-\?'.s:numre(0,abs(a:minn),a:mind,a:maxd).'|'.s:numre(abs(a:minn)+1,a:maxn,a:mind,a:maxd)
+                endif
         elseif a:minn > a:maxn
                 return s:numre(a:maxn,a:minn,a:mind,a:maxd)
         elseif a:maxd == -1
@@ -115,6 +135,9 @@ function! s:numre(minn,maxn,mind,maxd)
                         endif
 
                 endif
+        elseif a:maxn == a:minn
+                " quick fix for now
+                return a:maxn
         endif
         " WIP
         "        if empty(a:maxn)
@@ -136,7 +159,6 @@ function! s:numre(minn,maxn,mind,maxd)
         "                                
         "        elseif 
         "        endif
-endif
 endfunction
 
 if (exists('g:mcEnableBuiltinJSON') && g:mcEnableBuiltinJSON=~'\c\v<e%[ternal]>')
@@ -1897,7 +1919,10 @@ if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
         call s:addEscapedQuotes('both','mcKeyNBTEnchantmentID','mcNBTValueQuote','','mcNBTComma','')
         hi def link mcKeyNBTString mcNBTValue
         hi def link mcKeyNBTEnchantmentID mcNBTValue
-        call s:createInt('KeyNBTInt','mcNBTValue',0,2147483647,0,-1)
+        call s:createBitInt('KeyNBTByte', 'mcNBTValue',8 ,0,-1)
+        call s:createBitInt('KeyNBTShort','mcNBTValue',16,0,-1)
+        call s:createBitInt('KeyNBTInt',  'mcNBTValue',32,0,-1)
+        call s:createBitInt('KeyNBTLong', 'mcNBTValue',64,0,-1)
 endif
 
 hi def link mcNBTBool           mcNBTValue
