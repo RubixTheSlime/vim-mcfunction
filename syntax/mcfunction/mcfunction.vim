@@ -5,11 +5,11 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Create Int
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:createInt(name,minn,maxn,mind,maxd)
-        execute 'syn match   mcInt'.a:name 'contained /[[:digit:].-]\+/ contains=mcInteger'.a:name
-        execute 'syn match   mcInteger'.a:name 'contained /\<'.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\>/'
-        execute 'hi def link mcInt'.a:name 'mcError'
-        execute 'hi def link mcInteger'.a:name 'mcValue'
+function! s:createInt(name,link,minn,maxn,mind,maxd)
+        execute 'syn match   mc'.a:name 'contained /[[:digit:].-]\+/ contains=mcBounded'.a:name
+        execute 'syn match   mcBounded'.a:name 'contained /\<'.s:numre(a:minn,a:maxn,a:mind,a:maxd).'\>/'
+        execute 'hi def link mc'.a:name 'mcError'
+        execute 'hi def link mcBounded'.a:name a:link
 endfunction
 function! s:numre(minn,maxn,mind,maxd)
         if a:mind > a:maxd
@@ -304,17 +304,13 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Numbers
 syn match   mcInt       contained nextgroup=mcBadDecimal /\v<0*%(-?1?\d{,9}|-?2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7]))))))))|-0*2147483648)>/
-call s:createInt('U32',0,2147483647,0,-1)
-call s:createInt('UE6',0,999999,0,-1)
-call s:createInt('U6i',0,64,0,-1)
-call s:createInt('U8',0,255,0,-1)
+call s:createInt('IntU32','mcValue',0,2147483647,0,-1)
+call s:createInt('IntUE6','mcValue',0,999999,0,-1)
+call s:createInt('IntU6i','mcValue',0,64,0,-1)
+call s:createInt('IntU8','mcValue',0,255,0,-1)
 syn match   mcUFloat    contained /\(\d*\.\)\?\d\+/
 syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\+/
 
-hi def link mcIntU      mcInt
-hi def link mcIntUE6    mcInt
-hi def link mcIntU6i    mcInt
-hi def link mcIntU8     mcInt
 hi def link mcUFloat    mcFloat
 hi def link mcInt       mcValue
 hi def link mcFloat     mcValue
@@ -399,23 +395,27 @@ endfunction
 " adds escaped quotes for several levels
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addEscapedQuotes(quote,group,matchgroup,contains,nextgroup,options)
-        let l:cmdpre= 'syn region '.a:group 
-        let l:cmdpost = a:options
-        if a:matchgroup !~ '^\s*$'
-                let l:cmdpre = l:cmdpre.' matchgroup='.a:matchgroup 
+        if a:quote =~ 'both'
+                call s:addEscapedQuotes('"',a:group,a:matchgroup,a:contains,a:nextgroup,a:options)
+                call s:addEscapedQuotes("'",a:group,a:matchgroup,a:contains,a:nextgroup,a:options)
+        else
+                let l:cmdpre= 'syn region '.a:group 
+                let l:cmdpost = a:options
+                if a:matchgroup !~ '^\s*$'
+                        let l:cmdpre = l:cmdpre.' matchgroup='.a:matchgroup 
+                endif
+                if a:contains !~ '^\s*$'
+                        let l:cmdpost = l:cmdpost.' contains='.a:contains 
+                endif
+                if a:nextgroup !~ '^\s*$'
+                        let l:cmdpost = l:cmdpost.' skipwhite nextgroup='.a:nextgroup 
+                endif
+                let x = 0
+                while x < 16
+                        execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
+                        let x=x+1
+                endwhile
         endif
-        if a:contains !~ '^\s*$'
-                let l:cmdpost = l:cmdpost.' contains='.a:contains 
-        endif
-        if a:nextgroup !~ '^\s*$'
-                let l:cmdpost = l:cmdpost.' skipwhite nextgroup='.a:nextgroup 
-        endif
-        let x = 0
-        while x < 16
-                execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
-                let x=x+1
-        endwhile
-
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -703,7 +703,7 @@ syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSele
 call s:addInstance('Selector',"Enchant", "mcNsEnchantmentEnchant")
 
 call s:addInstance('NsEnchantment','Enchant','mcIntEnchantLevel')
-call s:createInt('EnchantLevel',0,5,0,-1)
+call s:createInt('IntEnchantLevel','mcValue',0,5,0,-1)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Execute
@@ -1635,33 +1635,34 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                 endif
         endfunction
         if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
-                function! s:isBuiltin(name)
-                        " Anything in this list, or ending in ID is a builtin
-                        return a:name =~ '\v\%(^%(RecipeUse|Command|JSON|Blockstate|Bool|Byte|Short|Int|Long|Float|Double|String)|ID)$'
-                endfunction
                 function! s:addKeyNBTBase(name)
                         " Adds the base nbt things if necessary and returns a list of
                         " the groups
-                        let l:result = []
-                        let l:builtins = split(a:name,'_')
-                        let l:tags = copy(l:builtins)
-                        call filter(l:builtins, s:isBuiltin)
-                        call filter(l:tags, '! s:isBuiltin(v:var)')
-                        let l:tagname = join(l:tags)
+                        let l:builtins = []
+                        let l:tags = []
+                        for x in split(a:name, '_')
+                                if x =~ '\v%(ID|^%(RecipeUse|Command|JSON|Blockstate|Bool|Byte|Short|Int|Long|Float|Double|String))$'
+                                        let l:builtins = add(l:builtins,x)
+                                else
+                                        let l:tags = add(l:tags,x)
+                                endif
+                        endfor
+                        let l:tagname = ''
                         if ! empty(l:tags)
-                                execute 'syn region mcKeyNBTTag'.l:tagname 'contained oneline matchgroup=mcNBTOp start=/{/rs=e end=/}/ nextgroup=mcNBTComma contains='.join(map(l:tags,"'mcKeyNBTKey'.v:var"),',')
+                                let l:tagname = 'mcKeyNBTTag'.join(l:tags,'_')
+                                execute 'syn region' l:tagname 'contained oneline matchgroup=mcNBTOp start=/{\s*/rs=e end=/\s*}/ nextgroup=mcNBTComma contains='.join(map(copy(l:tags),"'mcKeyNBTKey'.v:val"),',')
                         endif
                         " return a list of the builtins and the combined tag
-                        return join(add(map(l:builtins,"'mcKeyNBT'.v:var"),l:tagname),',')
+                        return join(add(map(copy(l:builtins),"'mcKeyNBT'.v:val"),l:tagname),',')
                 endfunction
                 function! s:addKeyNBT(group,level)
                         if a:level == 0
                                 " Base part
                                 " Tag
-                                l:contain = s:addKeyNBTBase(a:group)
+                                let l:contain = s:addKeyNBTBase(a:group)
                                 " Colon
-                                execute 'syn match mcKeyNBTColon'.a:group 'contained /\s*:\s*/ nextgroup='.lcontain
-                                execute 'hi def link mcKeyNBTColon'.a:group 'mcKeyNBTColon'
+                                execute 'syn match mcKeyNBTColon'.a:group 'contained /\s*:\s*/ nextgroup='.l:contain
+                                execute 'hi def link mcKeyNBTColon'.a:group 'mcNBTColon'
                                 " Keys are handled seperately
                                 " Return for list recursion below
                                 return [a:group,l:contain]
@@ -1671,9 +1672,9 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                 let [l:group,l:contain] = s:addKeyNBT(a:group,a:level-1)
                                 " Colon
                                 execute 'syn match mcKeyNBTColonList'.l:group 'contained /\s*:\s*/ nextgroup=mcKeyNBTList'.l:group
-                                execute 'hi def link mcKeyNBTColonList'.l:group 'mcKeyNBTColon'
+                                execute 'hi def link mcKeyNBTColonList'.l:group 'mcNBTColon'
                                 " List
-                                execute 'syn region mcKeyNBTList'.l:group 'contained oneline matchgroup=mcNBTOp start=/\[/rs=e end=/]/ nextgroup=mcNBTComma contains='.l:contain
+                                execute 'syn region mcKeyNBTList'.l:group 'contained oneline matchgroup=mcNBTOp start=/\[\s*/rs=e end=/\s*]/ nextgroup=mcNBTComma contains='.l:contain
                                 " Return for list recursion
                                 return ['List'.l:group, 'mcKeyNBTList'.l:group]
                         endif
@@ -1683,64 +1684,66 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 	let s:files = split(globpath(s:path.'data','*'),'\n')
 	for s:file in s:files
 		let s:filename = fnamemodify(s:file,':t:r')
-                if s:filename == 'nbt' && exists('g:mcEnableKeyNBT') && g:mcKeyNBT==0
-                        continue
-                else
-                        " Everything that needs colon and tag, with the
-                        " value being how many layers of lists we need
-                        let s:keys = {}
-                        for s:line in readfile(s:file)
-                                let s:line = substitute(s:line,'!!.*','','')
-                                if s:line =~ '^\s*$'
-                                        " Blank
-                                elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-                                        " Beyond this version
-                                        break
-                                elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-                                        " No longer in game
-                                else
-                                        " Now parse the line
-                                        let [s:group, s:next, s:match] = split(s:line,'\s\+')
+                if s:filename == 'nbt'
+                        if exists('g:mcEnableKeyNBT') && g:mcKeyNBT==0
+                                continue
+                        else
+                                " Everything that needs colon and tag, with the
+                                " value being how many layers of lists we need
+                                let s:keys = {}
+                                for s:line in readfile(s:file)
+                                        let s:line = substitute(s:line,'!!.*','','')
+                                        if s:line =~ '^\s*$'
+                                                " Blank
+                                        elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                                " Beyond this version
+                                                break
+                                        elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                                " No longer in game
+                                        else
+                                                " Now parse the line
+                                                let [s:group, s:next, s:match] = split(s:line,'\s\+')
 
-                                        " Turn nextgroups into a level of lists and array of values
-                                        let s:listlevel=count(s:next,'[')
-                                        let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
-                                        let s:joinednexts = join(sort(s:nexts,'_'))
+                                                " Turn nextgroups into a level of lists and array of values
+                                                let s:listlevel=count(s:next,'[')
+                                                let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
+                                                let s:joinednexts = join(sort(s:nexts),'_')
 
-                                        " Register the nextgroup
-                                        if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
-                                                let s:keys[s:joinednexts] = s:listlevel
-                                        endif
-                                        " And the components of the nextgroup
-                                        " (in case of multiple cases, but only
-                                        " need the base layer)
-                                        for subnextgroup in s:nexts
-                                                if !has_key(s:keys,subnextgroup)
-                                                        let s:keys[subnextgroup] = 0
+                                                " Register the nextgroup
+                                                if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
+                                                        let s:keys[s:joinednexts] = s:listlevel
                                                 endif
-                                        endfor
+                                                " And the components of the nextgroup
+                                                " (in case of multiple cases, but only
+                                                " need the base layer)
+                                                for subnextgroup in s:nexts
+                                                        if !has_key(s:keys,subnextgroup)
+                                                                let s:keys[subnextgroup] = 0
+                                                        endif
+                                                endfor
 
-                                        " Form the final name for the nextgroup
-                                        " 'List' * listlevel + joinednexts
-                                        let s:nextgroup = s:joinednexts
-                                        let x=s:listlevel
-                                        while x
-                                                let s:nextgroup = 'List'.s:nextgroup
-                                                let x = x-1
-                                        endwhile
+                                                " Form the final name for the nextgroup
+                                                " 'List' * listlevel + joinednexts
+                                                let s:nextgroup = s:joinednexts
+                                                let x=s:listlevel
+                                                while x
+                                                        let s:nextgroup = 'List'.s:nextgroup
+                                                        let x = x-1
+                                                endwhile
 
-                                        " Match as the key, and we want both
-                                        " [match] and \"[match]\" to match
-                                        let s:nextgroup = 'Colon'.s:nextgroup
-                                        let s:modifiedmatch = substitute(s:match,'(','%(','g')
-                                        execute 'syn match mcKeyNBTKey'.s:group 'contained nextgroup='.s:nextgroup '`\v<('.s:modifiedmatch.'|"'.s:modifiedmatch.'")>)`'
-                                        execute 'hi def link mcKeyNBTKey'.s:group 'mcKeyNBTKey'
-                                endif
-                        endfor
-                        for [group,level] in items(s:keys)
-                                call s:addKeyNBT(group,level)
-                        endfor
-                        syn cluster mcKeyNBTRoot add=mcKeyNBTEntityRoot,mcKeyNBTBlockRoot,mcKeyNBTItemRoot
+                                                " Match as the key, and we want both
+                                                " [match] and \"[match]\" to match
+                                                let s:nextgroup = 'mcKeyNBTColon'.s:nextgroup
+                                                let s:modifiedmatch = substitute(s:match,'(','%(','g')
+                                                execute 'syn match mcKeyNBTKey'.s:group 'contained nextgroup='.s:nextgroup '`\v<('.s:modifiedmatch.'|"'.s:modifiedmatch.'")>`'
+                                                execute 'hi def link mcKeyNBTKey'.s:group 'mcKeyNBTKey'
+                                        endif
+                                endfor
+                                for [group,level] in items(s:keys)
+                                        call s:addKeyNBT(group,level)
+                                endfor
+                                syn cluster mcKeyNBTRoot add=mcKeyNBTKeyEntityRoot,mcKeyNBKeyTBlockRoot,mcKeyNBTKeyItemRoot
+                        endif
                 endif
 		let s:lines = readfile(s:file)
 		for s:line in s:lines
@@ -1888,6 +1891,15 @@ syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
 syn match mcNBTBadComma contained /,\s*/ nextgroup=mcNBTBadComma
 hi def link mcNBTBadComma    mcError
 
+" Key NBT
+if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
+        call s:addEscapedQuotes('both','mcKeyNBTString','mcNBTValueQuote','','mcNBTComma','')
+        call s:addEscapedQuotes('both','mcKeyNBTEnchantmentID','mcNBTValueQuote','','mcNBTComma','')
+        hi def link mcKeyNBTString mcNBTValue
+        hi def link mcKeyNBTEnchantmentID mcNBTValue
+        call s:createInt('KeyNBTInt','mcNBTValue',0,2147483647,0,-1)
+endif
+
 hi def link mcNBTBool           mcNBTValue
 hi def link mcNBTComma          mcNBTOp
 hi def link mcNBTColon          mcNBTOp
@@ -1926,6 +1938,7 @@ endif
 if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcNBTKW    nbt
         syn keyword mcNBTKW   contained skipwhite nextgroup=mcNBTTag   tag
+        syn keyword mcNBTKW   contained skipwhite nextgroup=@mcKeyNBTRoot key
         syn keyword mcNBTKW   contained skipwhite nextgroup=@mcNBTPath path
         hi def link mcNBTKW mcKeyword
 
@@ -2007,6 +2020,7 @@ if (!exists('g:mcDeepNest') || g:mcDeepNest)
         execute 'hi mcNBTValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][1]
         execute 'hi mcNBTSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][1]
         execute 'hi mcNBTPath ctermfg='.b:mcColors['Nest'][1]
+        execute 'hi mcKeyNBTKey' b:mcColors['Id'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][1]
 
         execute 'hi mcJSONBound ctermfg='.b:mcColors['Nest'][2]
         execute 'hi mcJSONOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][2]

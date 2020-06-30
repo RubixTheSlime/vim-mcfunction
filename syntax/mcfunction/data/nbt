@@ -147,9 +147,9 @@ EntityRoot              ParticleID              Particle
 EntityRoot              Pos                     (Beam|Patrol|Wander)Target
 EntityRoot              Pose                    Pose
 EntityRoot              BlockRoot               TileEntityData
-EntityRoot              ItemRoot                (Decor)?Item
-EntityRoot              ItemRoot                Trident
-EntityRoot              SlottedItemRoot         (Armor|Saddle)Item
+EntityRoot              Item                (Decor)?Item
+EntityRoot              Item                Trident
+EntityRoot              SlottedItem         (Armor|Saddle)Item
 EntityRoot              Short                   Air
 EntityRoot              Short                   Fire
 EntityRoot              Short                   Fuse
@@ -180,21 +180,21 @@ EntityRoot              [Effect]                ActiveEffects
 EntityRoot              [Effect]                CustomPotionEffects
 EntityRoot              [Float]                 (Hand|Armor)DropChances
 EntityRoot              [EntityRoot]            Passengers
-EntityRoot              [ItemRoot]              (Hand|Armor)Items
-EntityRoot              [SlottedItemRoot]       Items
-EntityRoot              [SlottedItemRoot]       Inventory
+EntityRoot              [Item]              (Hand|Armor)Items
+EntityRoot              [SlottedItem]       Items
+EntityRoot              [SlottedItem]       Inventory
 EntityRoot              [String]                Tags
 EntityRoot              [UUID]                  Trusted
 
 
 !! Items
-ItemRoot                Byte                    Count
-ItemRoot                ItemID                  id
-ItemRoot                ItemTag                 tag
-SlottedItemRoot         Byte                    Count
-SlottedItemRoot         Byte                    Slot
-SlottedItemRoot         ItemID                  id
-SlottedItemRoot         ItemTag                 tag
+Item                Byte                    Count
+Item                ItemID                  id
+Item                ItemRoot                 tag
+SlottedItem         Byte                    Count
+SlottedItem         Byte                    Slot
+SlottedItem         ItemID                  id
+SlottedItem         ItemRoot                 tag
 
 
 !! Block Entity
@@ -232,8 +232,8 @@ BlockRoot               Int                     TransferCooldown
 BlockRoot               Int                     [x-z]
 BlockRoot               Int                     color
 BlockRoot               Int                     facing
-BlockRoot               ItemRoot                Book
-BlockRoot               ItemRoot                RecordItem
+BlockRoot               Item                Book
+BlockRoot               Item                RecordItem
 BlockRoot               JSON                    CustomName
 BlockRoot               JSON                    Lock
 BlockRoot               JSON                    Text[1-4]
@@ -267,7 +267,7 @@ BlockRoot               [Bee]                   Bees
 BlockRoot               [Int]                   Cooking(Total)?Times
 BlockRoot               [Pattern]               Patterns
 BlockRoot               [RecipeUse]             RecipesUsed
-BlockRoot               [SlottedItemRoot]       Items
+BlockRoot               [SlottedItem]       Items
 BlockRoot               [SpawnPotential]        SpawnPotentials
 
 !! Block
@@ -361,14 +361,14 @@ VillagerTrade           Int                     demand
 VillagerTrade           Byte                    rewaradExp
 VillagerTrade           Int                     maxUses
 VillagerTrade           Int                     uses
-VillagerTrade           ItemRoot                (buyB?|sell)
+VillagerTrade           Item                (buyB?|sell)
 
 !! Wandering trader offers
 WanderOffers            [WanderTrade]           Recipes
 WanderTrade             Byte                    rewaradExp
 WanderTrade             Int                     maxUses
 WanderTrade             Int                     uses
-WanderTrade             ItemRoot                (buyB?|sell)
+WanderTrade             Item                (buyB?|sell)
 
 !! Spawner stuff
 SpawnPotential          EntityRoot              Entity
@@ -390,36 +390,36 @@ FireworkExplosion       [Int]                   (Fade)?Colors
 Pose                    [Float]                 Body|(Left|Right)(Arm|Leg)|Head
 
 !! Item Tags
-ItemTag                 BlockID                 CanPlaceOn
-ItemTag                 BlockRoot               BlockEntityTag
-ItemTag                 Blockstate              BlockStateTag
-ItemTag                 Byte                    Charged
-ItemTag                 Byte                    LodestoneTracked
-ItemTag                 Byte                    resolved
-ItemTag                 DimensionID             LodestoneDimension
-ItemTag                 Display                 display
-ItemTag                 EffectID                Potion
-ItemTag                 EntityRoot              EntityTag
-ItemTag                 FireworkExplosion       Explosion
-ItemTag                 Fireworks               Fireworks
-ItemTag                 Int                     BucketVariantTag
-ItemTag                 Int                     CustomPotionColor
-ItemTag                 Int                     HideFlags
-ItemTag                 Int                     RepairCost
-ItemTag                 Int                     generation
-ItemTag                 Int                     map(_scale_direction)?
-ItemTag                 MapDisplay              display
-ItemTag                 Pos                     LodestonePos
-ItemTag                 Skull,String            SkullOwner
-ItemTag                 String                  author|title
-ItemTag                 [AttrModifier]          AttributeModifiers
-ItemTag                 [Effect]                CustomPotionEffects
-ItemTag                 [Enchantment]           (Stored)?Enchantments
-ItemTag                 [ItemRoot]              ChargedProjectiles
-ItemTag                 [JSON]                  pages
-ItemTag                 [MapDecor]              Decorations
-ItemTag                 [String]                DebugProperty
-ItemTag                 [SuspiciousEffect]      Effects
+ItemRoot                 BlockID                CanPlaceOn
+ItemRoot                 BlockRoot              BlockEntityTag
+ItemRoot                 Blockstate             BlockStateTag
+ItemRoot                 Byte                   Charged
+ItemRoot                 Byte                   LodestoneTracked
+ItemRoot                 Byte                   resolved
+ItemRoot                 DimensionID            LodestoneDimension
+ItemRoot                 Display                display
+ItemRoot                 EffectID               Potion
+ItemRoot                 EntityRoot             EntityTag
+ItemRoot                 FireworkExplosion      Explosion
+ItemRoot                 Fireworks              Fireworks
+ItemRoot                 Int                    BucketVariantTag
+ItemRoot                 Int                    CustomPotionColor
+ItemRoot                 Int                    HideFlags
+ItemRoot                 Int                    RepairCost
+ItemRoot                 Int                    generation
+ItemRoot                 Int                    map(_scale_direction)?
+ItemRoot                 MapDisplay             display
+ItemRoot                 Pos                    LodestonePos
+ItemRoot                 Skull,String           SkullOwner
+ItemRoot                 String                 author|title
+ItemRoot                 [AttrModifier]         AttributeModifiers
+ItemRoot                 [Effect]               CustomPotionEffects
+ItemRoot                 [Enchantment]          (Stored)?Enchantments
+ItemRoot                 [Item]                 ChargedProjectiles
+ItemRoot                 [JSON]                 pages
+ItemRoot                 [MapDecor]             Decorations
+ItemRoot                 [String]               DebugProperty
+ItemRoot                 [SuspiciousEffect]     Effects
 
 
 !! Display
