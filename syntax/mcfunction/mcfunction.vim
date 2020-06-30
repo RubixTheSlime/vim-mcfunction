@@ -1641,7 +1641,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 		let s:lines = readfile(s:file)
 		for s:line in s:lines
 			let s:line = substitute(s:line,'".*','','')
-			if s:line =~ '^\s*\("\|$\)'
+			if s:line =~ '^\s*\(!!\|$\)'
 				"just whitespace/comment, skip
 			elseif s:line =~ '^!'
 				let g:ver = substitute(s:line,'!','','')
@@ -1684,6 +1684,8 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 						endif
 					endif
 				endif
+                        elseif s:filename == 'nbt'
+                                "TODO
 			else
 				call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
 			endif

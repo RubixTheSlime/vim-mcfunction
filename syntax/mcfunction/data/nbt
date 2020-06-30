@@ -1,0 +1,296 @@
+!! ParticleID, Command, EffectID, SoundID, BlockID, EntityID, ItemID, JSON, UUID, Blockstate, LootTableID, EnchantmentID are handled specially
+!! Byte, Short, Int, Long, Float, Double, String are too
+
+!!Name                  Value                   Match
+RootEntity              [SpawnPotential]        SpawnPotentials
+RootEntity              RootEntity              SpawnData
+RootEntity              Short                   Spawn(Count|Range)
+RootEntity              Short                   (M(in|ax)Spawn)?Delay
+RootEntity              Short                   MaxNearbyEntities
+RootEntity              Short                   RequiredPlayerRange
+RootEntity              Block                   ((carried|in)?Block|Display)State
+RootEntity              Brain                   Brain
+RootEntity              Byte                    (Collar)?Color
+RootEntity              Byte                    (Sleep|Trust|Will|Crouch)ing
+RootEntity              Byte                    Angry
+RootEntity              Byte                    AttachFace
+RootEntity              Byte                    BatFlags
+RootEntity              Byte                    Bred
+RootEntity              Byte                    Can(BreakDoors|FindTreasure)
+RootEntity              Byte                    CanJoinRaid
+RootEntity              Byte                    CanPickUpLoot
+RootEntity              Byte                    ChestedHorse
+RootEntity              Byte                    CustomDisplayTile
+RootEntity              Byte                    CustomNameVisible
+RootEntity              Byte                    DealtDamage
+RootEntity              Byte                    DropItem
+RootEntity              Byte                    EatingHaystack
+RootEntity              Byte                    EffectId
+RootEntity              Byte                    Enabled
+RootEntity              Byte                    ExplosionRadius
+RootEntity              Byte                    Facing
+RootEntity              Byte                    FallFlying
+RootEntity              Byte                    Fixed
+RootEntity              Byte                    FromBucket
+RootEntity              Byte                    Glowing
+RootEntity              Byte                    GotFish
+RootEntity              Byte                    HasEgg
+RootEntity              Byte                    HasRaidGoal
+RootEntity              Byte                    HurtEntities
+RootEntity              Byte                    Invisible
+RootEntity              Byte                    Invul
+RootEntity              Byte                    IsChickenJockey
+RootEntity              Byte                    ItemRotation
+RootEntity              Byte                    Johnny
+RootEntity              Byte                    LeftHanded
+RootEntity              Byte                    Marker
+RootEntity              Byte                    NoAI
+RootEntity              Byte                    NoBasePlate
+RootEntity              Byte                    NoGravity
+RootEntity              Byte                    OnGround
+RootEntity              Byte                    PatrolLeader
+RootEntity              Byte                    Patrolling
+RootEntity              Byte                    Peek
+RootEntity              Byte                    PersistenceRequired
+RootEntity              Byte                    PierceLevel
+RootEntity              Byte                    Player(Created|Spawned)
+RootEntity              Byte                    Pumpkin
+RootEntity              Byte                    Saddle
+RootEntity              Byte                    Sheared
+RootEntity              Byte                    ShotAtAngle
+RootEntity              Byte                    ShotFromCrossbow
+RootEntity              Byte                    ShowArms
+RootEntity              Byte                    ShowBottom
+RootEntity              Byte                    Silent
+RootEntity              Byte                    Sitting
+RootEntity              Byte                    Sitting
+RootEntity              Byte                    SkeletonTrap
+RootEntity              Byte                    Small
+RootEntity              Byte                    Tame
+RootEntity              Byte                    TrackOutput
+RootEntity              Byte                    crit
+RootEntity              Byte                    ignited
+RootEntity              Byte                    inGround
+RootEntity              Byte                    isBaby
+RootEntity              Byte                    pickup
+RootEntity              Byte                    player
+RootEntity              Byte                    powered
+RootEntity              Byte                    shake
+RootEntity              Byte                    wasOnGround
+RootEntity              Command                 Command
+RootEntity              Double                  Push[X-Z]
+RootEntity              Double                  T[X-Z]D
+RootEntity              Double                  damage
+RootEntity              EffectID                Potion
+RootEntity              EntityID                id
+RootEntity              Firework                FireworksItem
+RootEntity              Float                   AbsorptionAmount
+RootEntity              Float                   FallDistance
+RootEntity              Float                   Health
+RootEntity              Float                   ItemDropChance
+RootEntity              Float                   Radius(OnUse|PerTick)?
+RootEntity              Int                     (Attack|Roar|Stun)Tick
+RootEntity              Int                     (Forced)?Age
+RootEntity              Int                     (Home|Travel|Treasure)Pos[X-Z]
+RootEntity              Int                     AP?[X-Z]
+RootEntity              Int                     AngerTime
+RootEntity              Int                     Bound[X-Z]
+RootEntity              Int                     CatType
+RootEntity              Int                     ConversionTime
+RootEntity              Int                     CustomPotionColor
+RootEntity              Int                     DeathTime
+RootEntity              Int                     DespawnDelay
+RootEntity              Int                     DisabledSlots
+RootEntity              Int                     DisplayOffset
+RootEntity              Int                     DragonPhase
+RootEntity              Int                     DrownedConversionTime
+RootEntity              Int                     Duration
+RootEntity              Int                     DurationOnUse
+RootEntity              Int                     EffectDuration
+RootEntity              Int                     EggLayTime
+RootEntity              Int                     ExplosionPower
+RootEntity              Int                     FallHurt(Max|Amount)
+RootEntity              Int                     HurtByTimestamp
+RootEntity              Int                     InLove
+RootEntity              Int                     InWaterTime
+RootEntity              Int                     Life(Ticks|[tT]ime)
+RootEntity              Int                     MoreCarrotTicks
+RootEntity              Int                     PortalCooldown
+RootEntity              Int                     PuffState
+RootEntity              Int                     RabbitType
+RootEntity              Int                     RaidId
+RootEntity              Int                     ReapplicationDelay
+RootEntity              Int                     RestocksToday
+RootEntity              Int                     Size
+RootEntity              Int                     SkeletonTrapTime
+RootEntity              Int                     Sleeping[XYZ]
+RootEntity              Int                     SpellTicks
+RootEntity              Int                     Steps
+RootEntity              Int                     Strength
+RootEntity              Int                     SuccessCount
+RootEntity              Int                     TNTFuse
+RootEntity              Int                     Temper
+RootEntity              Int                     Tile[X-Z]
+RootEntity              Int                     Time
+RootEntity              Int                     TransferCooldown
+RootEntity              Int                     Variant
+RootEntity              Int                     WaitTime
+RootEntity              Int                     Warmup
+RootEntity              Int                     Wave
+RootEntity              Int                     [x-z]Tile
+RootEntity              JSON                    CustomName
+RootEntity              Leash                   Leash
+RootEntity              Long                    DeathLootTableSeed
+RootEntity              Long                    Last(Restock|GossipDecay)
+RootEntity              LootTableID             DeathLootTable
+RootEntity              ParticleID              Particle
+RootEntity              Pos                     (Beam|Patrol|Wander)Target
+RootEntity              Pose                    Pose
+RootEntity              RootBlock               TileEntityData
+RootEntity              RootItem                (Decor)?Item
+RootEntity              RootItem                Trident
+RootEntity              RootSlottedItem         (Armor|Saddle)Item
+RootEntity              Short                   Air
+RootEntity              Short                   Fire
+RootEntity              Short                   Fuse
+RootEntity              Short                   Fuse
+RootEntity              Short                   HurtTime
+RootEntity              Short                   PickupDelay
+RootEntity              Short                   Value
+RootEntity              Short                   life
+RootEntity              SoundID                 SoundEvent
+RootEntity              String                  (Main|Hidden)Gene
+RootEntity              String                  LastOutput
+RootEntity              String                  Motive
+RootEntity              String                  Team
+RootEntity              String                  Type
+RootEntity              UUID                    AngryAt
+RootEntity              UUID                    ConversionPlayer
+RootEntity              UUID                    LoveCause
+RootEntity              UUID                    Owner
+RootEntity              UUID                    Target
+RootEntity              UUID                    Thrower
+RootEntity              UUID                    UUID
+RootEntity              Villager                VillagerData
+RootEntity              WanderOffers            Offers
+RootEntity              [Attribute]             Attributes
+RootEntity              [Double]                Pos|(Mo|Rota)tion
+RootEntity              [Double]                power
+RootEntity              [Effect]                ActiveEffects
+RootEntity              [Effect]                CustomPotionEffects
+RootEntity              [Float]                 (Hand|Armor)DropChances
+RootEntity              [RootEntity]            Passengers
+RootEntity              [RootItem]              (Hand|Armor)Items
+RootEntity              [RootSlottedItem]       Items
+RootEntity              [RootSlottedItem]       Inventory
+RootEntity              [String]                Tags
+RootEntity              [UUID]                  Trusted
+
+
+
+!! Items
+RootItem                Byte                    Count
+RootItem                ItemID                  id
+RootItem                ItemTag                 tag
+RootSlottedItem         Byte                    Count
+RootSlottedItem         Byte                    Slot
+RootSlottedItem         ItemID                  id
+RootSlottedItem         ItemTag                 tag
+
+
+!! Block Entity
+
+!! Block
+Block                   BlockID                 Name
+Block                   Blockstate              Properties
+
+!! Memories
+Brain                   Memory                  memories
+Memory                  MemLocation             minecraft:(meeting_point|home|job_site)
+Memory                  MemTick                 minecraft:last_(slept|woken|worked_at_poi)
+Memory                  MemAngry                minecraft:angry_at
+Memory                  MemPiglin               minecraft:(admiring_(item|disabled)|hunted_recently)
+MemLocation             MemLocationValue        value
+MemTick                 Long                    value
+MemAngry                UUID                    value
+MemAngry                Long                    ttl
+MemPiglin               Byte                    value
+MemPiglin               Long                    ttl
+MemLocationValue        [Int]                   pos
+MemLocationValue        DimensionID             dimension
+
+!! Attributes
+Attribute               String                  Name
+Attribute               Double                  Base
+Attribute               [AttrMod]               Modifiers
+AttrMod                 String                  Name
+AttrMod                 Double                  Amount
+AttrMod                 Int                     Operation
+AttrMod                 UUID                    UUID
+
+!! Effects
+Effect                  Byte                    Id
+Effect                  Byte                    Amplifier
+Effect                  Byte                    Ambient
+Effect                  Byte                    ShowParticles
+Effect                  Byte                    ShowIcon
+Effect                  Int                     Duration
+Effect                  EffectHidden            HiddenEffect
+
+EffectHidden            Byte                    Amplifier
+EffectHidden            Byte                    Ambient
+EffectHidden            Byte                    ShowParticles
+EffectHidden            Byte                    ShowIcon
+EffectHidden            Int                     Duration
+EffectHidden            EffectHidden            HiddenEffect
+
+!! Leash
+Leash                   UUID                    UUID
+Leash                   Int                     [XYZ]
+
+Pos                     Int                     [XYZ]
+
+
+!! Villager Data
+Villager                Int                     level
+Villager                [VillageGossip]         Gossips
+Villager                Int                     Xp
+Villager                VillagerOffers          Offers
+VillagerGossip          String                  Type
+VillagerGossip          Int                     Value
+VillagerGossip          UUID                    Target
+VillagerOffers          [VillagerTrade]         Recipes
+VillagerTrade           Int                     xp
+VillagerTrade           Float                   priceMultiplier
+VillagerTrade           Int                     specialPrice
+VillagerTrade           Int                     demand
+VillagerTrade           Byte                    rewaradExp
+VillagerTrade           Int                     maxUses
+VillagerTrade           Int                     uses
+VillagerTrade           RootItem                (buyB?|sell)
+
+!! Wandering trader offers
+WanderOffers            [WanderTrade]           Recipes
+WanderTrade             Byte                    rewaradExp
+WanderTrade             Int                     maxUses
+WanderTrade             Int                     uses
+WanderTrade             RootItem                (buyB?|sell)
+
+!! Spawner stuff
+SpawnPotential          RootEntity              Entity
+SpawnPotential          Int                     Weight
+
+!! Fireworks
+Firework                ItemID                  id
+Firework                Byte                    Count
+Firework                FireworkTag             tag
+FireworkTag             Fireworks               Fireworks
+Fireworks               Byte                    Flight
+Fireworks               [FireworkExplosion]     Explosions
+FireworkExplosion       Byte                    Flicker
+FireworkExplosion       Byte                    Trail
+FireworkExplosion       Byte                    Type
+FireworkExplosion       [Int]                   (Fade)?Colors
+
+!! Armor stands
+Pose                    [Float]                 Body|(Left|Right)(Arm|Leg)|Head
