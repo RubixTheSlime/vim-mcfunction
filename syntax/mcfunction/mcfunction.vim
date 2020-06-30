@@ -1618,10 +1618,10 @@ hi def link mcBuiltinNamespace  mcKeyId
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
         function! s:addBuiltin(type,match)
-                execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
+                execute 'syn match mcBuiltin'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
         endfunction
         function! s:addBuiltinTag(type,match)
-                execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
+                execute 'syn match mcBuiltinTag'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
         endfunction
         function! s:addGamerule(name, values)
                 if a:values =~ '\cuint'
@@ -1634,21 +1634,121 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                         execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcBool'
                 endif
         endfunction
+        if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
+                function! s:isBuiltin(name)
+                        " Anything in this list, or ending in ID is a builtin
+                        return a:name =~ '\v\%(^%(RecipeUse|Command|JSON|Blockstate|Bool|Byte|Short|Int|Long|Float|Double|String)|ID)$'
+                endfunction
+                function! s:addKeyNBTBase(name)
+                        " Adds the base nbt things if necessary and returns a list of
+                        " the groups
+                        let l:result = []
+                        let l:builtins = split(a:name,'_')
+                        let l:tags = copy(l:builtins)
+                        call filter(l:builtins, s:isBuiltin)
+                        call filter(l:tags, '! s:isBuiltin(v:var)')
+                        let l:tagname = join(l:tags)
+                        if ! empty(l:tags)
+                                execute 'syn region mcKeyNBTTag'.l:tagname 'contained oneline matchgroup=mcNBTOp start=/{/rs=e end=/}/ nextgroup=mcNBTComma contains='.join(map(l:tags,"'mcKeyNBTKey'.v:var"),',')
+                        endif
+                        " return a list of the builtins and the combined tag
+                        return join(add(map(l:builtins,"'mcKeyNBT'.v:var"),l:tagname),',')
+                endfunction
+                function! s:addKeyNBT(group,level)
+                        if a:level == 0
+                                " Base part
+                                " Tag
+                                l:contain = s:addKeyNBTBase(a:group)
+                                " Colon
+                                execute 'syn match mcKeyNBTColon'.a:group 'contained /\s*:\s*/ nextgroup='.lcontain
+                                execute 'hi def link mcKeyNBTColon'.a:group 'mcKeyNBTColon'
+                                " Keys are handled seperately
+                                " Return for list recursion below
+                                return [a:group,l:contain]
+                        else
+                                " List
+                                " Run recursively
+                                let [l:group,l:contain] = s:addKeyNBT(a:group,a:level-1)
+                                " Colon
+                                execute 'syn match mcKeyNBTColonList'.l:group 'contained /\s*:\s*/ nextgroup=mcKeyNBTList'.l:group
+                                execute 'hi def link mcKeyNBTColonList'.l:group 'mcKeyNBTColon'
+                                " List
+                                execute 'syn region mcKeyNBTList'.l:group 'contained oneline matchgroup=mcNBTOp start=/\[/rs=e end=/]/ nextgroup=mcNBTComma contains='.l:contain
+                                " Return for list recursion
+                                return ['List'.l:group, 'mcKeyNBTList'.l:group]
+                        endif
+                endfunction
+        endif
 
 	let s:files = split(globpath(s:path.'data','*'),'\n')
 	for s:file in s:files
 		let s:filename = fnamemodify(s:file,':t:r')
+                if s:filename == 'nbt' && exists('g:mcEnableKeyNBT') && g:mcKeyNBT==0
+                        continue
+                else
+                        " Everything that needs colon and tag, with the
+                        " value being how many layers of lists we need
+                        let s:keys = {}
+                        for s:line in readfile(s:file)
+                                let s:line = substitute(s:line,'!!.*','','')
+                                if s:line =~ '^\s*$'
+                                        " Blank
+                                elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                        " Beyond this version
+                                        break
+                                elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                        " No longer in game
+                                else
+                                        " Now parse the line
+                                        let [s:group, s:next, s:match] = split(s:line,'\s\+')
+
+                                        " Turn nextgroups into a level of lists and array of values
+                                        let s:listlevel=count(s:next,'[')
+                                        let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
+                                        let s:joinednexts = join(sort(s:nexts,'_'))
+
+                                        " Register the nextgroup
+                                        if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
+                                                let s:keys[s:joinednexts] = s:listlevel
+                                        endif
+                                        " And the components of the nextgroup
+                                        " (in case of multiple cases, but only
+                                        " need the base layer)
+                                        for subnextgroup in s:nexts
+                                                if !has_key(s:keys,subnextgroup)
+                                                        let s:keys[subnextgroup] = 0
+                                                endif
+                                        endfor
+
+                                        " Form the final name for the nextgroup
+                                        " 'List' * listlevel + joinednexts
+                                        let s:nextgroup = s:joinednexts
+                                        let x=s:listlevel
+                                        while x
+                                                let s:nextgroup = 'List'.s:nextgroup
+                                                let x = x-1
+                                        endwhile
+
+                                        " Match as the key, and we want both
+                                        " [match] and \"[match]\" to match
+                                        let s:nextgroup = 'Colon'.s:nextgroup
+                                        let s:modifiedmatch = substitute(s:match,'(','%(','g')
+                                        execute 'syn match mcKeyNBTKey'.s:group 'contained nextgroup='.s:nextgroup '`\v<('.s:modifiedmatch.'|"'.s:modifiedmatch.'")>)`'
+                                        execute 'hi def link mcKeyNBTKey'.s:group 'mcKeyNBTKey'
+                                endif
+                        endfor
+                        for [group,level] in items(s:keys)
+                                call s:addKeyNBT(group,level)
+                        endfor
+                        syn cluster mcKeyNBTRoot add=mcKeyNBTEntityRoot,mcKeyNBTBlockRoot,mcKeyNBTItemRoot
+                endif
 		let s:lines = readfile(s:file)
 		for s:line in s:lines
-			let s:line = substitute(s:line,'".*','','')
+			let s:line = substitute(s:line,'!!.*','','')
 			if s:line =~ '^\s*\(!!\|$\)'
 				"just whitespace/comment, skip
-			elseif s:line =~ '^!'
-				let g:ver = substitute(s:line,'!','','')
-				let g:numver = s:toNumericVersion(g:ver)
-				if s:toNumericVersion(g:ver) > s:numericVersion
-					break
-				endif
+                        elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                break
 			elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
 				" the item is no longer part of the game
 			elseif s:filename =='things'
@@ -1686,6 +1786,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 				endif
                         elseif s:filename == 'nbt'
                                 "TODO
+                        elseif s:filename == 'json'
 			else
 				call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
 			endif
