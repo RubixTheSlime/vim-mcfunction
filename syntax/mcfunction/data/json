@@ -1,0 +1,23 @@
+!! ClickEvent, HoverEvent, Storage, Coordinate, JSON, NBTPath, Score, String, KeybindID, Click/Hover Action, SlashCommand, Command, URL, Path, ColorID defined elsewhere
+!! Bool, String are builtins defined elsewhere
+
+!!Name                  Value                   Match
+Root                    Bool                    bold|italic|underlined|strikethrough|obfuscated
+Root                    Bool                    interperet
+Root                    ClickEvent              clickEvent
+Root                    ColorID                 color
+Root                    Coordinate              block
+Root                    HoverEvent              hoverEvent
+Root                    KeybindID               keybind
+Root                    NBTPath                 nbt
+Root                    Score                   score
+Root                    Selector                selector|entity
+Root                    SlashCommand            insertion
+Root                    Storage                 storage
+Root                    String                  font
+Root                    String                  text
+Root                    String                  translate
+Root                    [JSON]                  with|extra
+
+Score                   Selector                name
+Score                   String                  objective|value
