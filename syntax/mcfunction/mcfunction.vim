@@ -2,19 +2,40 @@ if exists("b:current_syntax")
         finish
 endif
 
-if (!exists('g:mcJSONMethod') || g:mcJSONMethod =~ '\v\c<e%[xternal]>')
-        syn match   mcJSONText          contained /.\+/ contains=@mcjson
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Create Int
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:createBitInt(name,link,bits,mind,maxd,suffix,nextgroup)
+        let l:n = 1
+        let l:i = a:bits - 1
+        while l:i
+                let l:n = l:n*2
+                let l:i = l:i -1
+        endwhile
+        call s:createInt(a:name,a:link,-l:n,l:n-1,a:mind,a:maxd,a:suffix,a:nextgroup)
+endfunction
+function! s:createInt(name,link,minn,maxn,mind,maxd,suffix,nextgroup)
+        let l:next=''
+        if !empty(a:nextgroup)
+                let l:next = 'nextgroup='.a:nextgroup
+        endif
+        execute 'syn match   mc'.a:name 'contained /[[:alnum:].-]\+\>/ contains=mcBounded'.a:name l:next
+        execute 'syn match   mcBounded'.a:name 'contained /\%('.Numre(a:minn,a:maxn,a:mind,a:maxd).'\)'.a:suffix.'\>/'
+        execute 'hi def link mc'.a:name 'mcError'
+        execute 'hi def link mcBounded'.a:name a:link
+endfunction
+
+if (exists('g:mcEnableBuiltinJSON') && g:mcEnableBuiltinJSON=~'\c\v<e%[ternal]>')
         syn match   mcjsonNumber        contained /\v-?(0|[1-9]\d*)(\.\d*)?([eE](0|[1-9]\d*))?/
         hi def link mcjsonNumber        jsonNumber
-        syn include @mcJSON syntax/json.vim
-        syn cluster mcJSON add=mcjsonNumber,jsonString
+        syn include @mcJSONText syntax/json.vim
+        syn cluster mcJSONText add=mcjsonNumber,jsonString
 
         " Proof that at some point we should be able to add our own 'special' keywords
         "syn keyword mcjsonKeyword contained containedin=jsonKeyword color
         "hi def link mcjsonKeyword mcKeyword
-
-        let b:current_syntax='mcfunction'
 endif
+let b:current_syntax='mcfunction'
 
 syn match mcAnySpace contained / /
 hi def link mcAnySpace mcBadWhitespace
@@ -67,7 +88,9 @@ function! s:toNumericVersion(name)
                 elseif a:name =~ '1.16'
                         return s:addOffset('20w23z',a:name)
                 elseif a:name =~ '1.16.1'
-                        return s:addOffset('21w23z',a:name)
+                        return s:addOffset('20w24z',a:name)
+                elseif a:name =~ '1.16.2'
+                        return s:addOffset('21w24z',a:name)
                 elseif a:name =~ '1.17'
                         return s:addOffset('22w23z',a:name)
                 endif
@@ -169,26 +192,18 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Numbers
 syn match   mcInt       contained nextgroup=mcBadDecimal /\v<0*%(-?1?\d{,9}|-?2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7]))))))))|-0*2147483648)>/
-"2147483648
-syn match   mcUInt      contained nextgroup=mcBadDecimal /\v<0*%(1?\d{,9}|2%(0\d{,8}|1%([0-3]\d{,7}|4%([0-6]\d{,6}|7%([0-3]\d{,5}|4%([0-7]\d{,4}|8%([0-2]\d{,3}|3%([0-5]\d{,2}|6%([0-3]\d|4[0-7])))))))))>/
-" 6 digit uint
-syn match   mcUIntE6    contained nextgroup=mcBadDecimal /\<0*\d\{1,6}\>/
-" 6 bit uint including 2^6
-syn match   mcUInt6i    contained nextgroup=mcBadDecimal /\v<0*%(6[0-4]|[1-5]\d)>/
-" 8 bit uint
-syn match   mcUInt8     contained nextgroup=mcBadDecimal /\v<0*%([0-1]?\d{,2}|2%([0-4]\d|5[0-5]))>/
-syn match   mcUFloat    contained /\(\d*\.\)\?\d\+/
-syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\+/
+call s:createInt('IntU32','mcValue',0,2147483647,0,-1,'','')
+call s:createInt('IntUE6','mcValue',0,999999,0,-1,'','')
+call s:createInt('IntU6i','mcValue',0,64,0,-1,'','')
+call s:createInt('IntU8','mcValue',0,255,0,-1,'','')
+syn match   mcUFloat    contained /\(\d*\.\)\?\d\{1,38}/
+syn match   mcFloat     contained /-\?\(\d*\.\)\?\d\{1,38}/
 
-hi def link mcUInt      mcInt
-hi def link mcUIntE6    mcInt
-hi def link mcUInt6i    mcInt
-hi def link mcUInt8     mcInt
 hi def link mcUFloat    mcFloat
 hi def link mcInt       mcValue
 hi def link mcFloat     mcValue
 
-syn match   mcUIntRange         contained contains=mcBadDecimal,mcUInt,mcRangeDots   /\d*\%(\.\+\d*\)\?/ 
+syn match   mcIntURange         contained contains=mcBadDecimal,mcIntU,mcRangeDots   /\d*\%(\.\+\d*\)\?/ 
 syn match   mcIntRange          contained contains=mcBadDecimal,mcInt,mcRangeDots    /-\?\d*\%(\.\+-\?\d*\)\?/ 
 syn match   mcUFloatRange       contained contains=mcUFloat,mcRangeDots /[[:digit:].]*\%(\.\.[[:digit:].]*\)\?/ 
 syn match   mcFloatRange        contained contains=mcFloat,mcRangeDots  /[[:digit:].-]*\%(\.\.[[:digit:].-]*\)\?/ 
@@ -199,7 +214,7 @@ syn match   mcGlob      /\*/    contained
 hi def link mcGlob      mcOp
 
 syn keyword mcBool      contained true false
-hi def link mcBool      mcKeyword
+hi def link mcBool      mcKeyValue
 
 " Optional Slash
 syn match mcOptionalSlash /^\/\?/ nextgroup=mcCommand
@@ -207,7 +222,7 @@ hi def link mcOptionalSlash mcCommand
 
 " Errors
 syn match   mcError     /.*/ contained
-syn match mcDoubleSpace / \@1<= \+\| \{2,}/ contained
+syn match mcDoubleSpace /\s\@1<=\s\+\|\s\{2,}/ contained
 syn match   mcBadWhitespace     /\t/
 syn match   mcBadDecimal        /\.\ze\_[^.]/ contained
 syn match   mcFourDots          /\.\{4,}/   contained containedin=ALLBUT,mcChatMessage
@@ -262,6 +277,35 @@ function! s:addTaggableInstance(type,group,nextgroup)
         execute 'syn match mcTaggable'.a:type.a:group '/[^ =,\]\t\r\n]\+/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup 'contains=@mcTaggable'.a:type
 endfunction
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Add Escaped quotes
+" adds escaped quotes for several levels
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:addEscapedQuotes(quote,group,matchgroup,contains,nextgroup,options)
+        if a:quote =~ 'both'
+                call s:addEscapedQuotes('"',a:group,a:matchgroup,a:contains,a:nextgroup,a:options)
+                call s:addEscapedQuotes("'",a:group,a:matchgroup,a:contains,a:nextgroup,a:options)
+        else
+                let l:cmdpre= 'syn region '.a:group 
+                let l:cmdpost = a:options
+                if a:matchgroup !~ '^\s*$'
+                        let l:cmdpre = l:cmdpre.' matchgroup='.a:matchgroup 
+                endif
+                if a:contains !~ '^\s*$'
+                        let l:cmdpost = l:cmdpost.' contains='.a:contains 
+                endif
+                if a:nextgroup !~ '^\s*$'
+                        let l:cmdpost = l:cmdpost.' skipwhite nextgroup='.a:nextgroup 
+                endif
+                let x = 0
+                while x < 16
+                        execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
+                        let x=x+1
+                endwhile
+        endif
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Add Instance
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -273,29 +317,33 @@ function! s:addInstance(type,group,nextgroup)
                 execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Column|Rotation'
                 execute 'syn match mc'.a:type.a:group 'contained /\S\+\s\+\S\+/                 contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'NBTPath'
-                execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
-                execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
-                execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
+        elseif a:type=~ 'NBTPath$'
+                execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group
+                execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBound start=/.\@1<=\[/rs=e end=/]/ oneline            contained contains=mcNBTIndex,mcNBTValueTag  nextgroup=@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group
+                execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                                  contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
+                execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTPathTag'.a:group
+                execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTPathTag'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
+                execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTPathTag'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
                 execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
-                execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
+                execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPath'
                 execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'NBTTag'
-                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcNBTPad'.a:group
+                call s:addInstance(a:type.'Tag',a:group,'@mcNBTContinue'.a:group.',mcNBTPathPad'.a:group)
+        elseif a:type=~ 'NBT.*Tag'
+                let l:subtype=''
+                if a:type=~'KeyNBT.*Tag'
+                        let l:subtype=',mcKeyNBTKey'.matchstr(a:type,'NBT\zs.*\zeTag')
+                endif
+                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBound start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey'.l:subtype.',mcNBTSpace skipwhite nextgroup=mcNBTPad'.a:group
                 execute 'syn cluster mcNBT add=mcNBTTag'.a:group.',mcNBTPad'.a:group
                 execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:type=~ 'Block$'
                 execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:type.a:group.',mcNBTTag'.a:type.a:group.','.a:nextgroup
                 call s:addInstance('BlockState',a:type.a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTag'.a:type.a:group)
-                call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
+                call s:addInstance('KeyNBTBlockRootTag',a:type.a:group,a:nextgroup)
         elseif a:type=~ 'Item$'
                 execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcNBTTag'.a:type.a:group.','.a:nextgroup
-                call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
+                call s:addInstance('KeyNBTItemRootTag',a:type.a:group,a:nextgroup)
         elseif a:type=~ 'Entity$'
                 execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
         elseif a:nextgroup == ""
@@ -356,7 +404,7 @@ syn keyword mcAttrKeyword                       contained skipwhite nextgroup=mc
                 call s:addInstance('Float','AttrModAdd','mcAttrModAddMode')
                 syn keyword mcAttrModAddMode    contained skipwhite nextgroup=mcDoubleSpace,mcFloatAttrModAdd   add multiply multiply_base
 
-hi def link mcAttrKeyword               mcKeyword
+hi def link mcAttrKeyword               mcRootKeyword
 hi def link mcAttrBaseKeyword            mcKeyword
 hi def link mcAttrModGet                mcKeyword
 hi def link mcAttrModKeyword            mcKeyword
@@ -372,7 +420,7 @@ syn keyword mcCommand bossbar contained skipwhite nextgroup=mcDoubleSpace,mcBoss
 
 " Bossbar add
 syn keyword mcBossbarKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdAdd    add
-call s:addInstance('NsBossbarId','Add','mcJSONText')
+call s:addInstance('NsBossbarId','Add','@mcJSONText')
 
 " Bossbar get
 syn keyword mcBossbarKeyword            contained skipwhite nextgroup=mcDoubleSpace,mcNsBossbarIdGet    get
@@ -391,15 +439,15 @@ call s:addInstance('NsBossbarId','Set','mcBossbarSetKeyword')
 
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetColor   color
         syn keyword mcBossbarSetColor   contained                                                       blue green pink purple red white yellow
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcUInt              max value
-syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          name
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcIntU32            max value
+syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText          name
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcSelector          players
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBossbarSetStyle   style
         syn keyword mcBossbarSetStyle   contained                                                       progress notched_6 notched_10 notched_12 notched_20
 syn keyword mcBossbarSetKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcBool              visible
 
 " Links
-hi def link mcBossbarKeyword            mcKeyword
+hi def link mcBossbarKeyword            mcRootKeyword
 hi def link mcBossbarGetKeyword         mcKeyword
 hi def link mcBossbarSetKeyword         mcKeyword
 
@@ -417,7 +465,7 @@ hi def link mcBossbarIdSet              mcId
 syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorClear
 
 call s:addInstance('PlayerSelector',"Clear","mcNsTItemClear")
-call s:addInstance('NsTItem','Clear','mcUInt')
+call s:addInstance('NsTItem','Clear','mcIntU32')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Clone
@@ -442,6 +490,7 @@ hi def link mcCloneMode         mcKeyword
 if s:atLeastVersion('1.14.4p1')
         syn keyword mcCommand debug contained skipwhite nextgroup=mcDoubleSpace,mcDebugKeyword
         syn keyword mcDebugKeyword contained report
+        hi def link mcDebugKeyword mcRootKeyword
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -470,8 +519,8 @@ syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSp
         syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,@mcNBTValue                 value
         syn keyword mcDataModifySource  contained skipwhite nextgroup=mcDoubleSpace,mcEBSDataRemove             from
 
-syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcUIntDataModifyIndex       insert
-        call s:addInstance('UInt', 'DataModifyIndex', 'mcDataModifySource')
+syn keyword mcDataModifyHow             contained skipwhite nextgroup=mcDoubleSpace,mcIntU32DataModifyIndex       insert
+        call s:addInstance('IntU32', 'DataModifyIndex', 'mcDataModifySource')
 endif
 
 " Data remove
@@ -479,7 +528,7 @@ syn keyword mcDataKeyword               contained skipwhite nextgroup=mcDoubleSp
 call s:mcEBS('DataRemove','@mcNBTPath')
 
 " Links
-hi def link mcDataKeyword       mcKeyword
+hi def link mcDataKeyword       mcRootKeyword
 hi def link mcDataModifyHow     mcKeyword
 hi def link mcDataModifySource  mcKeyword
 
@@ -507,7 +556,7 @@ syn keyword mcDatapackListKeyword       contained                               
 
 hi def link mcDatapackEnableKeyword     mcKeyword
 hi def link mcDatapackListKeyword       mcKeyword
-hi def link mcDatapackKeyword           mcKeyword
+hi def link mcDatapackKeyword           mcRootKeyword
 
 hi def link mcDatapackNameEnable        mcDatapackName
 hi def link mcDatapackNameEnableRel     mcDatapackName
@@ -527,16 +576,16 @@ syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffec
 " Effect give
 syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectGive    give
 call s:addInstance('Selector', "EffectGive", "mcNsEffectGive")
-call s:addInstance('NsEffect','Give','mcUIntE6EffectSeconds')
-call s:addInstance('UIntE6','EffectSeconds','mcEffectAmp')
-call s:addInstance('UInt8','EffectAmp','mcEffectBool')
+call s:addInstance('NsEffect','Give','mcIntUE6EffectSeconds')
+call s:addInstance('IntUE6','EffectSeconds','mcIntU8EffectAmp')
+call s:addInstance('IntU8','EffectAmp','mcBool')
 
 " Effect clear
 syn keyword mcEffectKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEffectClear   clear
 call s:addInstance('Selector', "EffectClear", "mcEffect")
 
 " Links
-hi def link mcEffectKeyword mcKeyword
+hi def link mcEffectKeyword mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enchant
@@ -545,9 +594,8 @@ syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSele
 
 call s:addInstance('Selector',"Enchant", "mcNsEnchantmentEnchant")
 
-call s:addInstance('NsEnchantment','Enchant','mcEnchantLevel')
-syn match   mcEnchantLevel  contained /[1-5]/ skipwhite nextgroup=mcTheRestIsBad
-hi def link mcEnchantLevel  mcValue
+call s:addInstance('NsEnchantment','Enchant','mcIntEnchantLevel')
+call s:createInt('IntEnchantLevel','mcValue',0,5,0,-1,'','')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Execute
@@ -656,7 +704,7 @@ endif
 " Links
 hi def link mcExecuteAsKeyword                  mcExecuteKeyword
 
-hi def link mcExecuteKeyword                    mcKeyword
+hi def link mcExecuteKeyword                    mcRootKeyword
 hi def link mcExecuteAs                         mcKeyword
 hi def link mcExecuteCond                       mcKeyword
 hi def link mcExecuteCondData                   mcKeyword
@@ -709,8 +757,8 @@ syn keyword mcForceloadRemKeyword contained                                     
 syn keyword mcForceloadKeyword    contained skipwhite nextgroup=mcDoubleSpace,mcColumn                                     query
 
 " Links
-hi def link mcForceloadRemKeyword mcForceloadKeyword
-hi def link mcForceloadKeyword    mcKeyword
+hi def link mcForceloadRemKeyword mcKeyword
+hi def link mcForceloadKeyword    mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Function
@@ -737,12 +785,12 @@ hi def link mcGamerule mcKeyId
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorGive
 
 call s:addInstance('PlayerSelector',"Give", "mcNsItemGive")
-call s:addInstance('NsItem','Give','mcUInt')
+call s:addInstance('NsItem','Give','mcIntU32')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Help
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcUInt,mcHelpCommand
+syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcIntU32,mcHelpCommand
 
 " Help commands (why am i even including this, or UUID highlighting for that matter)
 " (i guess you could /execute store result ... run help for a message generator)
@@ -758,7 +806,7 @@ endif
 if s:atLeastVersion('20w17a')
         syn keyword mcHelpCommand contained attribute
 endif
-hi def link mcHelpCommand mcCommand
+hi def link mcHelpCommand mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Kick
@@ -778,7 +826,7 @@ syn keyword mcCommand kill contained skipwhite nextgroup=mcDoubleSpace,mcSelecto
 syn keyword mcCommand list contained skipwhite nextgroup=mcDoubleSpace,mcListUUIDs
 
 syn keyword mcListUUIDs contained uuids
-hi def link mcListUUIDs mcKeyword
+hi def link mcListUUIDs mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Locate
@@ -810,8 +858,8 @@ syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mc
         call s:addInstance('Selector', "Loot", "mcLootSourceKeyword")
 syn keyword mcLootTargetKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockLootReplace  replace
         call s:mcSelectorBlock('LootReplace','mcSlotLoot')
-        call s:addInstance('Slot','Loot','mcUInt6iLootCount,mcLootSourceKeyword')
-        call s:addInstance('UInt6i','LootCount','mcLootSourceKeyword')
+        call s:addInstance('Slot','Loot','mcIntU6iLootCount,mcLootSourceKeyword')
+        call s:addInstance('IntU6i','LootCount','mcLootSourceKeyword')
 
 " Source
 syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mcDoubleSpace,mcLootTableFish                             fish
@@ -824,16 +872,16 @@ syn keyword mcLootSourceKeyword                 contained skipwhite nextgroup=mc
 syn keyword mcLootHand                          contained                                                                               mainhand offhand
 
 " Links
-hi def link mcLootTargetKeyword         mcKeyword
+hi def link mcLootTargetKeyword         mcRootKeyword
 hi def link mcLootReplaceKeyword        mcKeyword
-hi def link mcLootSourceKeyword         mcKeyword
+hi def link mcLootSourceKeyword         mcRootKeyword
 hi def link mcLootHand                  mcKeyword
 
 hi def link mcLootTableFish             mcLootTable
 hi def link mcLootTable                 mcId
 hi def link mcLootFishingLocation       mcId
 
-hi def link mcLootCount                 mcUInt
+hi def link mcLootCount                 mcIntU32
 
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -847,7 +895,7 @@ endif
 
 call s:addInstance('Selector', "Msg", "mcChatMessage")
 
-syn match   mcChatMessage       contained /.*/
+syn match   mcChatMessage       contained /.{-}/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Particle
@@ -857,8 +905,8 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticlePa
 call s:addInstance('NsParticle', 'Particle','mcCoordinateParticle')
 call s:addInstance('Coordinate', 'Particle','mcCoordinate2Particle')
 call s:addInstance('Coordinate2', 'Particle','mcUFloatParticleSpeed')
-call s:addInstance('UFloat','ParticleSpeed','mcUIntParticleCount')
-call s:addInstance('UInt','ParticleCount','mcParticleMode')
+call s:addInstance('UFloat','ParticleSpeed','mcIntU32ParticleCount')
+call s:addInstance('IntU32','ParticleCount','mcParticleMode')
 syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelector        force normal
 
 hi def link mcParticleMode  mcKeyword
@@ -886,7 +934,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcRecipeKeywor
 
 syn keyword mcRecipeKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorRecipe give take
 call s:addInstance('Selector', 'Recipe', 'mcRecipe,mcGlob')
-hi def link mcRecipeKeyword mcKeyword
+hi def link mcRecipeKeyword mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ReplaceItem
@@ -895,7 +943,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBloc
 
 call s:mcSelectorBlock('Replaceitem','mcSlotReplaceitem')
 call s:addInstance('Slot','Replaceitem','mcNsItemReplaceitem')
-call s:addInstance('NsItem','Replaceitem','mcUInt')
+call s:addInstance('NsItem','Replaceitem','mcIntU32')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Schedule
@@ -914,7 +962,7 @@ if s:atLeastVersion('18w43a')
                 hi def link mcScheduleMode    mcKeyword
         endif
 
-        hi def link mcScheduleKeyword mcKeyword
+        hi def link mcScheduleKeyword mcRootKeyword
         hi def link mcScheduleTime    mcValue
 
 endif
@@ -941,13 +989,13 @@ syn keyword mcScoreboardKeyword    contained skipwhite nextgroup=mcDoubleSpace,m
 
 syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveObjAdd                add
         call s:addInstance('Objective','ObjAdd','mcCriteriaObjAdd')
-        call s:addInstance('Criteria','ObjAdd','mcJSONText')
+        call s:addInstance('Criteria','ObjAdd','@mcJSONText')
 
 syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace                                  list
 
 syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveObjModify             modify
         call s:addInstance('Objective','ObjModify','mcScoreboardModifyWhat')
-        syn keyword mcScoreboardModifyWhat contained skipwhite nextgroup=mcDoubleSpace,mcJSONText               displayname
+        syn keyword mcScoreboardModifyWhat contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText               displayname
         syn keyword mcScoreboardModifyWhat contained skipwhite nextgroup=mcDoubleSpace,mcScoreboardModifyRender rendertype
         syn keyword mcScoreboardModifyRender contained                                                          hearts integer
 
@@ -959,7 +1007,7 @@ syn keyword mcScoreboardObjectives contained skipwhite nextgroup=mcDoubleSpace,m
 " Links
 hi def link mcScoreboardObjectives      mcKeyword
 hi def link mcScoreboardPlayers         mcKeyword
-hi def link mcScoreboardKeyword         mcKeyword
+hi def link mcScoreboardKeyword         mcRootKeyword
 hi def link mcScoreboardModifyWhat      mcKeyword
 hi def link mcScoreboardModifyRender    mcKeyword
 hi def link mcScoreboardOp              mcOp
@@ -975,8 +1023,8 @@ call s:addInstance('UFloat','SpreadRange','mcBoolSpreadRespect,mcSpreadUnder')
 call s:addInstance('Bool','SpreadRespect','mcPlayerSelector')
 
 if s:atLeastVersion('20w21a')
-        syn keyword mcSpreadUnder        contained skipwhite nextgroup=mcDoubleSpace,mcUIntSpreadHeight under
-        call s:addInstance('UInt','SpreadHeight','mcSpreadRespect')
+        syn keyword mcSpreadUnder        contained skipwhite nextgroup=mcDoubleSpace,mcIntU8SpreadHeight under
+        call s:addInstance('IntU8','SpreadHeight','mcSpreadRespect')
         hi def link mcSpreadUnder        mcKeyword
 endif
 
@@ -1007,7 +1055,7 @@ syn keyword mcTagKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTag add r
 syn keyword mcTagKeyword contained                                         list
 syn match   mcTag        contained /\w\+/
 
-hi def link mcTagKeyword mcKeyword
+hi def link mcTagKeyword mcRootKeyword
 hi def link mcTag mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1017,7 +1065,7 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcTeamKeyword 
 
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelector        leave
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamAdd         add
-        call s:addInstance('Team','Add','mcJSONText')
+        call s:addInstance('Team','Add','@mcJSONText')
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeam            empty remove list
 syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamJoin        join
         call s:addInstance('Team','Join','mcSelector')
@@ -1028,14 +1076,14 @@ syn keyword mcTeamKeyword contained skipwhite nextgroup=mcDoubleSpace,mcTeamModi
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamModifyCollision   collisionRule
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamColor             color
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcTeamModifyVisibility  deathMessageVisibility nametagVisibility
-syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcJSONText              displayName prefix suffix
+syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText              displayName prefix suffix
 syn keyword mcTeamModifyHow        contained skipwhite nextgroup=mcDoubleSpace,mcBool                  friendlyFire seeFriendlyInvisibles
 syn keyword mcTeamModifyCollision  contained                                                           always never pushOtherTeams pushOwnTeam
 syn keyword mcTeamModifyVisibility contained                                                           always never hideForOtherTeams hideForOwnTeam
 
 
 syn match   mcTeam contained /\w\+/
-hi def link mcTeamKeyword          mcKeyword
+hi def link mcTeamKeyword          mcRootKeyword
 hi def link mcTeamModifyHow        mcKeyword
 hi def link mcTeamModifyCollision  mcKeyword
 hi def link mcTeamModifyVisibility mcKeyword
@@ -1046,7 +1094,7 @@ hi def link mcTeam                 mcValue
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTellraw tellraw
 
-call s:addInstance('Selector', 'Tellraw','mcJSONText')
+call s:addInstance('Selector', 'Tellraw','@mcJSONText')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Time
@@ -1064,7 +1112,7 @@ endif
 syn keyword mcTimeKeyword       contained skipwhite nextgroup=mcDoubleSpace,mcTimeAdd,mcTimeSet set
         syn keyword mcTimeSet   contained skipwhite                                             day night midnight noon
 
-hi def link mcTimeKeyword mcKeyword
+hi def link mcTimeKeyword mcRootKeyword
 hi def link mcTimeQuery   mcKeyword
 hi def link mcTimeSet     mcKeyword
 
@@ -1107,14 +1155,14 @@ syn keyword mcCommand title contained skipwhite nextgroup=mcDoubleSpace,mcSelect
 
 call s:addInstance('Selector', "Title","mcTitleKeyword")
 
-syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcJSONText          actionbar subtitle title
+syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,@mcJSONText          actionbar subtitle title
 syn keyword mcTitleKeyword      contained                                                       clear reset
-syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcUIntTitleTime     times
-call s:addInstance('UInt','TitleTime', 'mcUIntTitleTime2')
-call s:addInstance('UInt','TitleTime2','mcUIntTitleTime3')
-call s:addInstance('UInt','TitleTime3','')
+syn keyword mcTitleKeyword      contained skipwhite nextgroup=mcDoubleSpace,mcIntU32TitleTime     times
+call s:addInstance('IntU32','TitleTime', 'mcIntU32TitleTime2')
+call s:addInstance('IntU32','TitleTime2','mcIntU32TitleTime3')
+call s:addInstance('IntU32','TitleTime3','')
 
-hi def link mcTitleKeyword mcKeyWord
+hi def link mcTitleKeyword mcRootKeyWord
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tp
@@ -1138,9 +1186,9 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTri
 
 " no namespace
 call s:addInstance('Objective','Trigger','mcTriggerMode')
-syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcUInt add set
+syn keyword mcTriggerMode contained skipwhite nextgroup=mcDoubleSpace,mcIntU32 add set
 
-hi def link mcTriggerMode mcKeyword
+hi def link mcTriggerMode mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trivial Commands
@@ -1152,8 +1200,8 @@ syn keyword mcCommand reload seed contained
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand weather contained skipwhite nextgroup=mcDoubleSpace,mcWeather
 
-syn keyword mcWeather           contained skipwhite nextgroup=mcDoubleSpace,mcUIntE6WeatherDuration clear rain thunder
-call s:addInstance('UIntE6', 'WeatherDuration','')
+syn keyword mcWeather           contained skipwhite nextgroup=mcDoubleSpace,mcIntUE6WeatherDuration clear rain thunder
+call s:addInstance('IntUE6', 'WeatherDuration','')
 
 hi def link mcWeather           mcKeyword
 
@@ -1165,15 +1213,15 @@ syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderK
 syn keyword mcWorldborderKeyword         contained                                                               get
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcColumn                    center
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderSet            set
-        call s:addInstance('UFloat','WorldborderSet','mcUInt')
+        call s:addInstance('UFloat','WorldborderSet','mcIntU32')
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderAdd            add
-        call s:addInstance('Float','WorldborderAdd','mcUInt')
+        call s:addInstance('Float','WorldborderAdd','mcIntU32')
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderDamage         damage
         syn keyword mcWorldborderDamage  contained skipwhite nextgroup=mcDoubleSpace,mcUFloat                    amount buffer
 syn keyword mcWorldborderKeyword         contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderWarning        warning
-        syn keyword mcWorldborderWarning contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      time distance
+        syn keyword mcWorldborderWarning contained skipwhite nextgroup=mcDoubleSpace,mcIntU32                      time distance
 
-hi def link mcWorldborderKeyword        mcKeyword
+hi def link mcWorldborderKeyword        mcRootKeyword
 hi def link mcWorldborderDamage         mcKeyword
 hi def link mcWorldborderWarning        mcKeyword
 
@@ -1186,13 +1234,13 @@ syn keyword mcXpKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorXp
 call s:addInstance('Selector', "XpQuery", "mcXpUnit")
 
 syn keyword mcXpKeyword contained skipwhite nextgroup=mcDoubleSpace,mcSelectorXpSet     add set
-call s:addInstance('Selector', "XpSet", "mcUIntXpAmount")
-call s:addInstance('UInt','XpAmount','mcXpUnit')
+call s:addInstance('Selector', "XpSet", "mcIntU32XpAmount")
+call s:addInstance('IntU32','XpAmount','mcXpUnit')
 
 syn keyword mcXpUnit    contained                                                       points levels
 
 hi def link mcXpUnit    mcKeyword
-hi def link mcXpKeyword mcKeyword
+hi def link mcXpKeyword mcRootKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MP COMMANDS
@@ -1207,15 +1255,15 @@ if (!exists('g:mcEnableMP') || g:mcEnableMP) && s:atLeastVersion('1.14.4p4')
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelectorKick,mcIPBan      ban-ip
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelector,mcIP             pardon-ip
         syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcSelector                  pardon op
-        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcUInt                      setidletimeout publish
+        syn keyword mcCommand   contained skipwhite nextgroup=mcDoubleSpace,mcIntU32                      setidletimeout publish
         syn match   mcIP        contained skipwhite nextgroup=mcDoubleSpace                             /\v%(%([0-1]?\d{1,2}|2%([0-4]\d|5[0-5]))\.){4}/ "ipv4
         call s:addInstance('mcIP','Ban','mcChatMesssage')
         syn keyword mcSaveKW    contained flush
         syn keyword mcBanlistKW contained ips players
 
         hi def link mcIP        mcValue
-        hi def link mcSaveKW    mcKeyword
-        hi def link mcBanlistKW mcKeyword
+        hi def link mcSaveKW    mcRootKeyword
+        hi def link mcBanlistKW mcRootKeyword
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1363,8 +1411,8 @@ syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeam
 syn match   mcFilterEqType      contained /=!\?/ skipwhite nextgroup=mcNsTEntity
 syn match   mcFilterEqTag       contained /=!\?/ skipwhite nextgroup=mcTag
 syn match   mcFilterEqF         contained /=/    skipwhite nextgroup=mcFloat
-syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcUInt
-syn match   mcFilterEqUIR       contained /=/    skipwhite nextgroup=mcUInt,mcUIntRange
+syn match   mcFilterEqUI        contained /=/    skipwhite nextgroup=mcIntU32
+syn match   mcFilterEqUIR       contained /=/    skipwhite nextgroup=mcIntU32,mcIntU32Range
 syn match   mcFilterEqUFR       contained /=/    skipwhite nextgroup=mcUFloat,mcUFloatRange
 syn match   mcFilterEqXR        contained /=/    skipwhite nextgroup=mcXRotation,mcXRotationRange
 syn match   mcFilterEqYR        contained /=/    skipwhite nextgroup=mcYRotation,mcYRotationRange
@@ -1456,83 +1504,277 @@ syn match   mcNamespace         contained contains=mcBuiltinNamespace /\w\+:/
 syn match   mcBuiltinNamespace  contained /minecraft:/
 hi def link mcNamespace         mcId
 hi def link mcBuiltinNamespace  mcKeyId
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" NBT Parts
+""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" TODO maybe add pre 18w43a stuff
+syn match   mcNBTIndex          /\s*\d\+\s*/                                                               contained
+syn match   mcNBTComma          /\s*,\s*/                                                                  contained nextgroup=mcNBTBadComma
+syn match   mcNBTColon          /:\s*/                                                                     contained nextgroup=@mcNBTValue,mcNBTBadComma
+syn match   mcNBTTagKey         /\w\+\s*/                                                                  contained nextgroup=mcNBTColon,mcNBTBadComma
+syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"\s*/ skip=/\\"/            oneline contained nextgroup=mcNBTColon,mcNBTBadComma
+syn match   mcNBTBool           /true\|false\s*/                                                           contained nextgroup=mcNBTComma
+syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>\s*/                                        contained nextgroup=mcNBTComma
+syn match   mcNBTString         /\(\d*\h\)\@=\w*\s*/                                                       contained nextgroup=mcNBTComma
+if s:atLeastVersion('19w08a')
+        call s:addEscapedQuotes("'",'mcNBTString','mcNBTValueQuote','','mcNBTComma','')
+endif
+call s:addEscapedQuotes('"','mcNBTString','mcNBTValueQuote','','mcNBTComma','')
+syn region  mcNBTValueTag       matchgroup=mcNBTBracket start=/{/rs=e end=/}\s*/                   oneline contained contains=mcNBTTagKey,mcNBTComma nextgroup=mcNBTComma
+syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]\s*/      oneline contained contains=@mcNBTValue,mcNBTComma nextgroup=mcNBTComma
+syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool,mcNBTValueTag
+syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool,mcNBTQuote,mcNBTValueQuote,mcNBTBracket,mcNBTBadComma
+
+syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
+syn match mcNBTBadComma contained /,\s*/ nextgroup=mcNBTBadComma
+hi def link mcNBTBadComma    mcError
+
+" Key NBT
+if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
+        call s:addEscapedQuotes('both','mcKeyNBTString',        'mcNBTValueQuote','',                           'mcNBTComma','')
+        hi def link mcKeyNBTString              mcNBTValue
+        for x in split('Block Color Effect Enchantment Entity Item LootTable Particle Pattern Sound StringUU',' ')
+                execute 'call s:addEscapedQuotes("both","mcKeyNBT'.x.'ID","mcNBTValueQuote","mcKeyNBT'.x.'KeyID","mcNBTComma","")'
+                execute 'hi def link mcKeyNBT'.x.'ID mcNBTValue'
+                execute 'hi def link mcKeyNBT'.x.'KeyID mcKeyNBTValue'
+        endfor
+
+        syn match mcKeyNBTStringUUKeyID contained /\v<\x{1,8}-%(\x{1,4}-){3}\x{1,12}>/
+        call s:createBitInt('KeyNBTByte', 'mcNBTValue',8 ,0,-1,'b\?','mcNBTComma')
+        call s:createBitInt('KeyNBTShort','mcNBTValue',16,0,-1,'s\?','mcNBTComma')
+        call s:createBitInt('KeyNBTInt',  'mcNBTValue',32,0,-1,'i\?','mcNBTComma')
+        call s:createBitInt('KeyNBTLong', 'mcNBTValue',64,0,-1,'l\?','mcNBTComma')
+        " Fortunately for me, but not for you, nbt does not support scientific notation
+        " Not getting too detailed on bounds for now
+        " that's a lot of ~~damage~~ numbers
+        syn match   mcKeyNBTFloat       contained contains=mcKeyNBTRealFloat    /[[:alnum:].-]\+/
+        syn match   mcKeyNBTDouble      contained contains=mcKeyNBTRealDouble   /[[:alnum:].-]\+/
+        syn match   mcKeyNBTRealFloat   contained nextgroup=mcKeyNBTBadFloat    /\v-?<%(\.\d+|0*\d{1,38}%(\.\d*)?)f?>/
+        syn match   mcKeyNBTRealDouble  contained nextgroup=mcKeyNBTBadFloat    /\v-?<%(\.\d+|0*\d{1,307}%(\.\d*)?)d?>/
+        syn match   mcKeyNBTBadFloat    contained                               /-/
+        hi def link mcKeyNBTBadFloat    mcError
+        hi def link mcKeyNBTFloat       mcError
+        hi def link mcKeyNBTDouble      mcError
+        hi def link mcKeyNBTRealFloat   mcNBTValue
+        hi def link mcKeyNBTRealDouble  mcNBTValue
+        call s:addEscapedQuotes('both', 'mcKeyNBTCommand','mcNBTCommandQuote','mcCommand','mcNBTComma','')
+        call s:addEscapedQuotes('both', 'mcKeyNBTBlockstate','mcNBTValueQuote','','mcNBTComma','')
+        call s:addEscapedQuotes('both', 'mcKeyNBTJSON','mcNBTJSONQuote','mcJSONText','mcNBTComma','')
+
+"BlockID
+"ColorID
+"EffectID
+"EnchantmentID
+"EntityID
+"ItemID
+"LootTableID
+"ParticleID
+"PatternID
+"SoundID
+
+"StringUUID
+"UUID
+
+"Blockstate
+"Command
+"JSON
+"RecipeUse
+
+endif
+
+hi def link mcNBTBool           mcNBTValue
+hi def link mcNBTComma          mcNBTOp
+hi def link mcNBTColon          mcNBTOp
+hi def link mcNBTBracket        mcNBTOp
+hi def link mcNBTValueQuote     mcNBTValue
+hi def link mcNBTPathDot        mcNBTPath
+
+hi def link mcNBTIndex          mcValue
+hi def link mcNBTQuote          mcNBTTagKey
+hi def link mcNBTString         mcNBTValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Builtins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
-        function! s:addBuiltin(type,match)
-                execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
-        endfunction
-        function! s:addBuiltinTag(type,match)
-                execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
-        endfunction
-        function! s:addGamerule(name, values)
-                if a:values =~ '\cuint'
-                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcUInt'
-                elseif a:values != ''
-                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcGameruleValue'.a:name
-                        execute 'syn match   mcGameruleValue'.a:name a:values 'contained'
-                        execute 'hi def link mcGameruleValue'.a:name 'mcValue'
-                else
-                        execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcBool'
-                endif
-        endfunction
+function! s:addBuiltin(type,match)
+        execute 'syn match mcBuiltin'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
+endfunction
+function! s:addBuiltinTag(type,match)
+        execute 'syn match mcBuiltinTag'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
+endfunction
+function! s:addGamerule(name, values)
+        if a:values =~ '\cuint'
+                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcIntU32'
+        elseif a:values != ''
+                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcGameruleValue'.a:name
+                execute 'syn match   mcGameruleValue'.a:name a:values 'contained'
+                execute 'hi def link mcGameruleValue'.a:name 'mcValue'
+        else
+                execute 'syn keyword mcGamerule' a:name 'contained skipwhite nextgroup=mcDoubleSpace,mcBool'
+        endif
+endfunction
 
-	let s:files = split(globpath(s:path.'data','*'),'\n')
-	for s:file in s:files
-		let s:filename = fnamemodify(s:file,':t:r')
-		let s:lines = readfile(s:file)
-		for s:line in s:lines
-			let s:line = substitute(s:line,'".*','','')
-			if s:line =~ '^\s*\("\|$\)'
-				"just whitespace/comment, skip
-			elseif s:line =~ '^!'
-				let g:ver = substitute(s:line,'!','','')
-				let g:numver = s:toNumericVersion(g:ver)
-				if s:toNumericVersion(g:ver) > s:numericVersion
-					break
-				endif
-			elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-				" the item is no longer part of the game
-			elseif s:filename =='things'
-				let s:parts = split(s:line, '\s\+')
-				" Block
-				if s:parts[0] =~ 'b'    | call s:addBuiltin(   'Block', s:parts[1]) | endif
-				if s:parts[0] =~ 'B'    | call s:addBuiltinTag('Block', s:parts[1]) | endif
-				" Recipe
-				if s:parts[0] =~ '[cr]' | call s:addBuiltin('Recipe',   s:parts[1]) | endif
-				" Item
-				if s:parts[0] =~ '[ci]' | call s:addBuiltin(   'Item',  s:parts[1]) | endif
-				if s:parts[0] =~ 'I'    | call s:addBuiltinTag('Item',  s:parts[1]) | endif
-				" Spawn Egg
-				if s:parts[0] =~ 'm'    | call s:addBuiltin('Item',     s:parts[1].'_spawn_egg') | endif
-				" Entity
-				if s:parts[0] =~ '[me]' | call s:addBuiltin(   'Entity',s:parts[1]) | endif
-				if s:parts[0] =~ 'E'    | call s:addBuiltinTag('Entity',s:parts[1]) | endif
-			elseif s:filename == 'Gamerule'
-				call s:addGamerule(matchstr(s:line,'^\S\+\>'), matchstr(s:line,'/.\{-}/'))
-			elseif s:filename == 'Criteria'
-				call s:addBuiltin('CustomCriteria',matchstr(s:line, '^[^!]*'))
-			elseif s:filename == 'Structure'
-				call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
-				if s:line =~ '^\*'
-					if s:atLeastVersion('20w21a')
-						call s:addBuiltin('LocatableStructure', matchstr(s:line,'^\*\?\zs\S*\>'))
-					else
-						" it would be very consistent if it weren't for EndCity
-						if s:line=~ 'endcity'
-							call s:addBuiltin('LocatableStructure','EndCity')
-						else
-							call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
-						endif
-					endif
-				endif
-			else
-				call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
-			endif
-		endfor
-	endfor
+function! s:addKeyNBTBase(name)
+        " Adds the base nbt things if necessary and returns a list of
+        " the groups
+        let l:builtins = []
+        let l:tags = []
+        for x in split(a:name, '_')
+                if x =~ '\v%(ID|^%(RecipeUse|Command|JSON|Blockstate|Bool|Byte|Short|Int|Long|Float|Double|String))$'
+                        let l:builtins = add(l:builtins,x)
+                else
+                        let l:tags = add(l:tags,x)
+                endif
+        endfor
+        let l:tagname = ''
+        if ! empty(l:tags)
+                let l:tagname = 'mcKeyNBTTag'.join(l:tags,'_')
+                let l:keyname= join(map(copy(l:tags),"'mcKeyNBTKey'.v:val"),',')
+                execute 'syn region' l:tagname 'contained oneline matchgroup=mcNBTOp start=/{\s*/rs=e end=/\s*}/ nextgroup=mcNBTComma contains=mcNBTTagKey,'.l:keyname
+        endif
+        " return a list of the builtins and the combined tag
+        return join(add(map(copy(l:builtins),"'mcKeyNBT'.v:val"),l:tagname),',')
+endfunction
+function! s:addKeyNBT(group,level)
+        " mcNBTTagKey was defined before reaching here so it has less priority
+        " This way invalid NBT still highlights somewhat nicely
+        if a:level == 0
+                " Base part
+                " Tag
+                let l:contain = join([s:addKeyNBTBase(a:group), 'mcNBTValue'],',')
+                " Colon
+                execute 'syn match mcKeyNBTColon'.a:group 'contained /\s*:\s*/ nextgroup=mcNBTBadComma,@mcNBTValue,'.l:contain
+                execute 'hi def link mcKeyNBTColon'.a:group 'mcNBTColon'
+                " Keys are handled seperately
+                " Return for list recursion below
+                return [a:group,l:contain]
+        else
+                " List
+                " Run recursively
+                let [l:group,l:contain] = s:addKeyNBT(a:group,a:level-1)
+                " Colon
+                execute 'syn match mcKeyNBTColonList'.l:group 'contained /\s*:\s*/ nextgroup=mcNBTBadComma,@mcNBTValue,mcKeyNBTList'.l:group
+                execute 'hi def link mcKeyNBTColonList'.l:group 'mcNBTColon'
+                " List
+                execute 'syn region mcKeyNBTList'.l:group 'contained oneline matchgroup=mcNBTOp start=/\[\s*/rs=e end=/\s*]/ nextgroup=mcNBTComma contains=mcNBTTagKey,'.l:contain
+                " Return for list recursion
+                return ['List'.l:group, 'mcKeyNBTList'.l:group]
+        endif
+endfunction
+if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
+        let s:files = split(globpath(s:path.'data','*'),'\n')
+        for s:file in s:files
+                let s:filename = fnamemodify(s:file,':t:r')
+                if s:filename == 'nbt'
+                        if exists('g:mcEnableKeyNBT') && g:mcKeyNBT==0
+                                continue
+                        else
+                                " Everything that needs colon and tag, with the
+                                " value being how many layers of lists we need
+                                let s:keys = {}
+                                for s:line in readfile(s:file)
+                                        let s:line = substitute(s:line,'!!.*','','')
+                                        if s:line =~ '^\s*$'
+                                                " Blank
+                                        elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                                " Beyond this version
+                                                break
+                                        elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                                " No longer in game
+                                        else
+                                                " Now parse the line
+                                                let [s:group, s:next, s:match] = split(s:line,'\s\+')
+
+                                                " Turn nextgroups into a level of lists and array of values
+                                                let s:listlevel=count(s:next,'[')
+                                                let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
+                                                let s:joinednexts = join(sort(s:nexts),'_')
+
+                                                " Register the nextgroup
+                                                if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
+                                                        let s:keys[s:joinednexts] = s:listlevel
+                                                endif
+                                                " And the components of the nextgroup
+                                                " (in case of multiple cases, but only
+                                                " need the base layer)
+                                                for subnextgroup in s:nexts
+                                                        if !has_key(s:keys,subnextgroup)
+                                                                let s:keys[subnextgroup] = 0
+                                                        endif
+                                                endfor
+
+                                                " Form the final name for the nextgroup
+                                                " 'List' * listlevel + joinednexts
+                                                let s:nextgroup = s:joinednexts
+                                                let x=s:listlevel
+                                                while x
+                                                        let s:nextgroup = 'List'.s:nextgroup
+                                                        let x = x-1
+                                                endwhile
+
+                                                " Match as the key, and we want both
+                                                " [match] and \"[match]\" to match
+                                                let s:nextgroup = 'mcNBTBadComma,mcKeyNBTColon'.s:nextgroup
+                                                let s:modifiedmatch = substitute(s:match,'(','%(','g')
+                                                execute 'syn match mcKeyNBTKey'.s:group 'contained nextgroup='.s:nextgroup '`\v<('.s:modifiedmatch.'|"'.s:modifiedmatch.'")>`'
+                                                execute 'hi def link mcKeyNBTKey'.s:group 'mcKeyNBTKey'
+                                        endif
+                                endfor
+                                for [group,level] in items(s:keys)
+                                        call s:addKeyNBT(group,level)
+                                endfor
+                                syn cluster mcKeyNBTRoot add=mcKeyNBTKeyEntityRoot,mcKeyNBKeyTBlockRoot,mcKeyNBTKeyItemRoot
+                        endif
+                endif
+                let s:lines = readfile(s:file)
+                for s:line in s:lines
+                        let s:line = substitute(s:line,'!!.*','','')
+                        if s:line =~ '^\s*\(!!\|$\)'
+                                "just whitespace/comment, skip
+                        elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                break
+                        elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                " the item is no longer part of the game
+                        elseif s:filename =='things'
+                                let s:parts = split(s:line, '\s\+')
+                                " Block
+                                if s:parts[0] =~ 'b'    | call s:addBuiltin(   'Block', s:parts[1]) | endif
+                                if s:parts[0] =~ 'B'    | call s:addBuiltinTag('Block', s:parts[1]) | endif
+                                " Recipe
+                                if s:parts[0] =~ '[cr]' | call s:addBuiltin('Recipe',   s:parts[1]) | endif
+                                " Item
+                                if s:parts[0] =~ '[ci]' | call s:addBuiltin(   'Item',  s:parts[1]) | endif
+                                if s:parts[0] =~ 'I'    | call s:addBuiltinTag('Item',  s:parts[1]) | endif
+                                " Spawn Egg
+                                if s:parts[0] =~ 'm'    | call s:addBuiltin('Item',     s:parts[1].'_spawn_egg') | endif
+                                " Entity
+                                if s:parts[0] =~ '[me]' | call s:addBuiltin(   'Entity',s:parts[1]) | endif
+                                if s:parts[0] =~ 'E'    | call s:addBuiltinTag('Entity',s:parts[1]) | endif
+                        elseif s:filename == 'Gamerule'
+                                call s:addGamerule(matchstr(s:line,'^\S\+\>'), matchstr(s:line,'/.\{-}/'))
+                        elseif s:filename == 'Criteria'
+                                call s:addBuiltin('CustomCriteria',matchstr(s:line, '^[^!]*'))
+                        elseif s:filename == 'Structure'
+                                call s:addBuiltin('Structure',matchstr(s:line,'^\*\?\zs\S*\>'))
+                                if s:line =~ '^\*'
+                                        if s:atLeastVersion('20w21a')
+                                                call s:addBuiltin('LocatableStructure', matchstr(s:line,'^\*\?\zs\S*\>'))
+                                        else
+                                                " it would be very consistent if it weren't for EndCity
+                                                if s:line=~ 'endcity'
+                                                        call s:addBuiltin('LocatableStructure','EndCity')
+                                                else
+                                                        call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
+                                                endif
+                                        endif
+                                endif
+                        elseif s:filename == 'json'
+                                "TODO
+                        else
+                                call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
+                        endif
+                endfor
+        endfor
 endif
 
 " literally the only difference in the entire experimental snapshots so far
@@ -1604,41 +1846,27 @@ hi def link mcRotation          mcCoordinate
 hi def link mcRotation2         mcCoordinate2
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NBT Parts
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" TODO maybe add pre 18w43a stuff
-syn match   mcNBTIndex          /\s*\d\+\s*/                                                            contained
-syn match   mcNBTComma          /,/                                                                     contained
-syn match   mcNBTColon          /:/                                                                     contained skipwhite nextgroup=@mcNBTValue
-syn match   mcNBTTagKey         /\w\+/                                                                  contained skipwhite nextgroup=mcNBTColon
-syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"/ skip=/\\"/            oneline contained skipwhite nextgroup=mcNBTColon
-syn keyword mcNBTBool           true false                                                              contained
-syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>/                                        contained
-syn match   mcNBTString         /\(\d*\h\)\@=\w*/                                                       contained
-if s:atLeastVersion('19w08a')
-        syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/"/ end=/"/ skip=/\\"/       oneline contained
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" JSON
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
+        execute 'syn match mcJSONNumber contained /\<'.Numre(0,2147483647,0,-1).'\>\.\@1!\|-\?\d\+\.\d\+/'
+        hi def link mcJSONNumber mcValue
+        syn region mcJSONText contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
+        syn cluster mcJSONText add=mcJSONNumber,mcJSONText,mcBool
+        call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONKey','','')
+        call s:addEscapedQuotes('"','mcJSONKey','mcJSONOp','','mcJSONColon','')
+        syn match mcJSONColon contained nextgroup=mcJSONValue,mcJSONBool /\s*:\s*/
+        call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
+        syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/{/ end=/}/
+        syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/\[/ end=/]/
+        execute 'syn match mcJSONValue contained nextgroup=mcJSONComma /\<'.Numre(0,2147483647,0,-1).'\.\@1!\|-\?\d\+\.\d\+/'
+        syn keyword mcJSONBool contained true false
+        syn match mcJSONComma contained /\s*,\s*/
+        hi def link mcJSONColon mcJSONOp
+        hi def link mcJSONComma mcJSONOp
+        hi def link mcJSONBool  mcJSONKeyValue
 endif
-syn region  mcNBTString         matchgroup=mcNBTValueQuote   start=/'/ end=/'/ skip=/\\'/       oneline contained
-syn region  mcNBTValue          matchgroup=mcNBTBracket start=/{/rs=e end=/}/                   oneline contained contains=mcNBTTagKey,mcNBTComma
-syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]/      oneline contained contains=@mcNBTValue,mcNBTComma
-syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool
-syn cluster mcNBT               add=mcNBTIndex,mcNBTComma,mcNBTColon,mcNBTTagKey,mcNBTValue,mcNBTString,mcNBTBool,mcNBTQuote,mcNBTValueQuote,mcNBTBracket
-
-syn match mcNBTSpace contained containedin=@mcNBT /\s\+/
-syn match mcNBTDoubleComma containedin=@mcNBT /,\s*,/
-hi def link mcNBTDoubleComma    mcError
-
-hi def link mcNBTBool           mcNBTValue
-hi def link mcNBTTagKey         mcNBTPath
-hi def link mcNBTComma          mcNBTPathDot
-hi def link mcNBTColon          mcNBTPathDot
-hi def link mcNBTValueQuote     mcNBTValue
-
-hi def link mcNBTIndex          mcNBTPathDot
-hi def link mcNBTPathDot        mcNBTBracket
-hi def link mcNBTQuote          mcNBTPath
-hi def link mcNBTString         mcNBTValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Debugging
@@ -1646,6 +1874,7 @@ hi def link mcNBTString         mcNBTValue
 if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcNBTKW    nbt
         syn keyword mcNBTKW   contained skipwhite nextgroup=mcNBTTag   tag
+        syn keyword mcNBTKW   contained skipwhite nextgroup=@mcKeyNBTRoot key
         syn keyword mcNBTKW   contained skipwhite nextgroup=@mcNBTPath path
         hi def link mcNBTKW mcKeyword
 
@@ -1661,8 +1890,91 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
         syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
         syn keyword mcCommand contained skipwhite nextgroup=mcLootTable lt
+
+"        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
+"        let x = 0
+"        while x < 16
+"                execute 'syn region  mcTest matchgroup=Error start=/\\\{'.x.'}"/ end=/\\\{'.x.'}"/ skip=/\\\{' . (x+1) . ',}"/ contains=mcTest skipwhite matchgroup=Error'
+"                let x=x+1
+"        endwhile
 endif
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Highlighting
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi def link mcError             Error
+hi def link mcChatMessage       String
+hi def link mcComment           Comment
+
+if !exists('g:mcColors')
+        let g:mcColors={}
+endif
+let b:mcColors = {}
+for [thing,defaultcolor] in [['Keyword', 'cterm=bold/cterm=bold,italic'],['Value', 'ctermfg=lightblue/cterm=bold'],['Selector', 'ctermfg=lightgreen cterm=bold'],['Coord', 'ctermfg=green/cterm=bold'],['Id', 'ctermfg=yellow/cterm=bold'],['Op', 'ctermfg=grey'],['Command', 'ctermfg=magenta ctermbg=none cterm=bold,underline'],['NBT', 'cterm=underline guisp=blue'],['JSON', 'cterm=underline guisp=green'],['Scarpet', 'cterm=underline guisp=yellow'],['Nest', 'magenta/blue/green/yellow'] ]
+        if has_key(g:mcColors,thing)
+                let b:mcColors[thing]=g:mcColors[thing]
+        else
+                let b:mcColors[thing]=defaultcolor
+        endif
+endfor
+
+let b:mcColors['KeyId']=substitute(b:mcColors['Id'],'/',' ','g')
+let b:mcColors['KeyValue']=substitute(b:mcColors['Value'],'/',' ','g')
+let b:mcColors['RootKeyword']=substitute(b:mcColors['Keyword'],'/',' ','g')
+let b:mcColors['Id']=matchstr(b:mcColors['Id'],'^[^/]*')
+let b:mcColors['Value']=matchstr(b:mcColors['Value'],'^[^/]*')
+let b:mcColors['Keyword']=matchstr(b:mcColors['Keyword'],'^[^/]*')
+let b:mcColors['Coordinate']=matchstr(b:mcColors['Coord'],'^[^/]*')
+let b:mcColors['Coordinate2'] = substitute(matchstr(b:mcColors['Coord'],'^[^/]*/[^/]*'),'/',' ','')
+if b:mcColors['Coord'] =~ '/[^/]*/'
+        let b:mcColors['Coordinate3'] = b:mcColors['Coordinate'] . ' ' . matchstr(b:mcColors['Coord'],'/\zs[^/]*$')
+else
+        let b:mcColors['Coordinate3'] = b:mcColors['Coordinate']
+endif
+let b:mcColors['Nest'] = split(b:mcColors['Nest'],'/')
+
+execute 'hi mcOp' b:mcColors['Op']
+execute 'hi mcSelector' b:mcColors['Selector']
+
+execute 'hi mcCoordinate ' b:mcColors['Coordinate']
+execute 'hi mcCoordinate2' b:mcColors['Coordinate2']
+execute 'hi mcCoordinate3' b:mcColors['Coordinate3']
+
+execute 'hi mcKeyword' b:mcColors['Keyword']
+execute 'hi mcRootKeyword' b:mcColors['RootKeyword']
+execute 'hi mcValue' b:mcColors['Value']
+execute 'hi mcKeyValue' b:mcColors['KeyValue']
+execute 'hi mcId' b:mcColors['Id']
+execute 'hi mcKeyId' b:mcColors['KeyId']
+
+if (!exists('g:mcDeepNest') || g:mcDeepNest)
+        execute 'hi mcCommand ctermfg='.b:mcColors['Nest'][0] 'cterm=bold,underline'
+
+        execute 'hi mcNBTBound'                         'ctermfg='              .b:mcColors['Nest'][1]
+        execute 'hi mcNBTOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTTagKey'b:mcColors['Id']        'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTPath ctermfg='.b:mcColors['Nest'][1]
+        execute 'hi mcKeyNBTKey' b:mcColors['Id'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcKeyNBTValue' b:mcColors['Value'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTCommandQuote ctermfg='.b:mcColors['Nest'][0] 'cterm=underline guisp='.b:mcColors['Nest'][1]
+        execute 'hi mcNBTJSONQuote ctermfg='.b:mcColors['Nest'][2] 'cterm=underline guisp='.b:mcColors['Nest'][1]
+
+        execute 'hi mcJSONBound ctermfg='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONKey'b:mcColors['Id']           'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONKeyValue' b:mcColors['Value']  'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][2]
+else
+        hi def link mcNBTTagKey mcNBTPath
+        execute 'hi mcCommand' b:mcColors['Command']
+        execute 'hi mcNBTOp'    b:mcColors['Op']        '' b:mcColors['NBT']
+        execute 'hi mcNBTPath'  b:mcColors['Keyword']   '' b:mcColors['NBT']
+        execute 'hi mcNBTValue' b:mcColors['Value']     '' b:mcColors['NBT']
+        execute 'hi mcNBTSpace'                            b:mcColors['NBT']
+endif
 
 if b:determinedMcVersion
         unlet b:mcversion
