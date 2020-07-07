@@ -252,7 +252,7 @@ BlockRoot               Short                   MaxNearbyEntities
 BlockRoot               Short                   PotionId
 BlockRoot               Short                   RequiredPlayerRange
 BlockRoot               Short                   Spawn(Count|Range)
-BlockRoot               Skull                   SkillOwner
+BlockRoot               Skull                   SkullOwner
 BlockRoot               String                  LastOutput
 BlockRoot               String                  attachment_type
 BlockRoot               String                  author
@@ -267,7 +267,7 @@ BlockRoot               [Bee]                   Bees
 BlockRoot               [Int]                   Cooking(Total)?Times
 BlockRoot               [Pattern]               Patterns
 BlockRoot               [RecipeUse]             RecipesUsed
-BlockRoot               [SlottedItem]       Items
+BlockRoot               [SlottedItem]           Items
 BlockRoot               [SpawnPotential]        SpawnPotentials
 
 !! Block
@@ -390,36 +390,40 @@ FireworkExplosion       [Int]                   (Fade)?Colors
 Pose                    [Float]                 Body|(Left|Right)(Arm|Leg)|Head
 
 !! Item Tags
-ItemRoot                 BlockID                CanPlaceOn
-ItemRoot                 BlockRoot              BlockEntityTag
-ItemRoot                 Blockstate             BlockStateTag
-ItemRoot                 Byte                   Charged
-ItemRoot                 Byte                   LodestoneTracked
-ItemRoot                 Byte                   resolved
-ItemRoot                 DimensionID            LodestoneDimension
-ItemRoot                 Display                display
-ItemRoot                 EffectID               Potion
-ItemRoot                 EntityRoot             EntityTag
-ItemRoot                 FireworkExplosion      Explosion
-ItemRoot                 Fireworks              Fireworks
-ItemRoot                 Int                    BucketVariantTag
-ItemRoot                 Int                    CustomPotionColor
-ItemRoot                 Int                    HideFlags
-ItemRoot                 Int                    RepairCost
-ItemRoot                 Int                    generation
-ItemRoot                 Int                    map(_scale_direction)?
-ItemRoot                 MapDisplay             display
-ItemRoot                 Pos                    LodestonePos
-ItemRoot                 Skull,String           SkullOwner
-ItemRoot                 String                 author|title
-ItemRoot                 [AttrModifier]         AttributeModifiers
-ItemRoot                 [Effect]               CustomPotionEffects
-ItemRoot                 [Enchantment]          (Stored)?Enchantments
-ItemRoot                 [Item]                 ChargedProjectiles
-ItemRoot                 [JSON]                 pages
-ItemRoot                 [MapDecor]             Decorations
-ItemRoot                 [String]               DebugProperty
-ItemRoot                 [SuspiciousEffect]     Effects
+ItemRoot                BlockID                 CanPlaceOn
+ItemRoot                BlockRoot               BlockEntityTag
+ItemRoot                Blockstate              BlockStateTag
+ItemRoot                Byte                    Charged
+ItemRoot                Byte                    LodestoneTracked
+ItemRoot                Byte                    Unbreakable
+ItemRoot                Byte                    resolved
+ItemRoot                DimensionID             LodestoneDimension
+ItemRoot                Display                 display
+ItemRoot                EffectID                Potion
+ItemRoot                EntityRoot              EntityTag
+ItemRoot                FireworkExplosion       Explosion
+ItemRoot                Fireworks               Fireworks
+ItemRoot                Int                     BucketVariantTag
+ItemRoot                Int                     CustomPotionColor
+ItemRoot                Int                     CutomModelData
+ItemRoot                Int                     Damage
+ItemRoot                Int                     HideFlags
+ItemRoot                Int                     RepairCost
+ItemRoot                Int                     generation
+ItemRoot                Int                     map(_scale_direction)?
+ItemRoot                MapDisplay              display
+ItemRoot                Pos                     LodestonePos
+ItemRoot                Skull,String            SkullOwner
+ItemRoot                String                  author|title
+ItemRoot                [AttrModifier]          AttributeModifiers
+ItemRoot                [BlockID]               CanDestroy
+ItemRoot                [Effect]                CustomPotionEffects
+ItemRoot                [Enchantment]           (Stored)?Enchantments
+ItemRoot                [Item]                  ChargedProjectiles
+ItemRoot                [JSON]                  pages
+ItemRoot                [MapDecor]              Decorations
+ItemRoot                [String]                DebugProperty
+ItemRoot                [SuspiciousEffect]      Effects
 
 
 !! Display
