@@ -117,25 +117,23 @@ function! s:numre(minn,maxn,mind,maxd)
         elseif a:maxn == a:minn
                 " quick fix for now
                 return a:maxn
+        elseif a:minn =~ '^10*$'
+                " 1000-54321
+        elseif len(a:maxn) > len(a:minn)
+                " max has more digits than min, so need to match 123-999|1000-1234
+                let l:nines = substitute(a:minn,'.','9','g')
+                return '\(' . s:numre(a:minn,l:nines,a:mind,a:maxd) . '\|' . s:numre(l:nines+1, a:maxn, a:mind, a:maxd) . '\)'
+        else
+                let l:firstmin = matchstr(a:minn,'^')
+                let l:firstmax = matchstr(a:maxn,'^')
+                let l:tailminstr=matchstr(a:min,'^.\zs.*$')
+                let l:tailmaxstr=matchstr(a:max,'^.\zs.*$')
+                if l:firstmin == l:firstmax
+                        return l:firstmin . s:numre(l:tailminstr, l:tailmaxstr, a:mind, a:maxd)
+                elseif l:firstmin + 1 == l:firstmax
+                        return '\('.l:firstmin . s:numre(l:tailminstr,substitute(l:tailminstr,'.','9','g'), a:mind, a:maxd) . '\|' . l:firstmax . s:numre( substitute(l:tailminstr,'.','9','g'),l:tailmaxstr,a:mind,a:maxd) . '\)'
+                else
+                        return '\('.l:firstmin . s:numre(l:tailminstr,substitute(l:tailminstr,'.','9','g'), a:mind, a:maxd) . '\|['.(l:firstmin+1).'-'.(l:firstmax-1).']'. s:numre(0, substitute(l:tailminstr,'.','9','g'), a:mind, a:maxd)  . '\|' . l:firstmax . s:numre(0,l:tailmaxstr,a:mind,a:maxd) . '\)'
+                endif
         endif
-        " WIP
-        "        if empty(a:maxn)
-        "                return '\d*'.s:numre(a:minn,'-',a:mind,a:maxd)
-        "        elseif len(a:maxn) > len(a:minn)
-        "                if len(a:maxn) > a:maxd
-        "                        return matchstr(a:maxn,'^.').s:numre(0,matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd).'\|'.s:numre(a:minn,'-',a:mind,a:maxd)
-        "                return matchstr(a:maxn,'^.').s:numre(0,matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd).'\|'.s:numre(a:minn,'-',a:mind,a:maxd)
-        "        else
-        "                " At this point they should be equal length
-        "                let l:maxfirst=matchstr(a:maxn,'^.')
-        "                let l:minfirst=matchstr(a:minn,'^.')
-        "                let l:rest=s:numre(matchstr(a:minn,'^.\zs.*$'),matchstr(a:maxn,'^.\zs.*$'),a:mind,a:maxd)
-        "                if l:maxfirst == l:minfirst
-        "                        return l:maxfirst.
-        "                elseif len(a:maxn) > a:maxd
-        "
-        "                        
-        "                                
-        "        elseif 
-        "        endif
 endfunction

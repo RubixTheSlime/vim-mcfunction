@@ -281,6 +281,10 @@ endfunction
 " adds escaped quotes for several levels
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addEscapedQuotes(quote,group,matchgroup,contains,nextgroup,options)
+        " quote = ' | " | both
+        " makes a group `group`, the quotes match as `matchgroup`, the group
+        " may contain `contains` and be followed by `nextgroup`
+        " `options` are extra options that can't be set here
         if a:quote =~ 'both'
                 call s:addEscapedQuotes('"',a:group,a:matchgroup,a:contains,a:nextgroup,a:options)
                 call s:addEscapedQuotes("'",a:group,a:matchgroup,a:contains,a:nextgroup,a:options)
@@ -1555,28 +1559,28 @@ if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
         hi def link mcKeyNBTDouble      mcError
         hi def link mcKeyNBTRealFloat   mcNBTValue
         hi def link mcKeyNBTRealDouble  mcNBTValue
-        call s:addEscapedQuotes('both', 'mcKeyNBTCommand','mcNBTCommandQuote','mcCommand','mcNBTComma','')
+
+        "BlockID
+        "ColorID
+        "EffectID
+        "EnchantmentID
+        "EntityID
+        "ItemID
+        "LootTableID
+        "ParticleID
+        "PatternID
+        "SoundID
+
+        "StringUUID
+        "UUID
+
+        "Blockstate
         call s:addEscapedQuotes('both', 'mcKeyNBTBlockstate','mcNBTValueQuote','','mcNBTComma','')
-        call s:addEscapedQuotes('both', 'mcKeyNBTJSON','mcNBTJSONQuote','mcJSONText','mcNBTComma','')
-
-"BlockID
-"ColorID
-"EffectID
-"EnchantmentID
-"EntityID
-"ItemID
-"LootTableID
-"ParticleID
-"PatternID
-"SoundID
-
-"StringUUID
-"UUID
-
-"Blockstate
-"Command
-"JSON
-"RecipeUse
+        "Command
+        call s:addEscapedQuotes('both', 'mcKeyNBTCommand','mcNBTCommandQuote','mcCommand','mcNBTComma','')
+        "JSON
+        call s:addEscapedQuotes('both', 'mcKeyNBTJSON','mcNBTJSONQuote','@mcJSONText','mcNBTComma','')
+        "RecipeUse
 
 endif
 
@@ -1595,7 +1599,8 @@ hi def link mcNBTString         mcNBTValue
 " Builtins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addBuiltin(type,match)
-        execute 'syn match mcBuiltin'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
+        execute 'syn match mcBuiltin'.a:type      'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
+        execute 'syn match mcKeyNBT'.a:type.'KeyID contained `\v<('.substitute(a:match,'(','%(','g').')>`'
 endfunction
 function! s:addBuiltinTag(type,match)
         execute 'syn match mcBuiltinTag'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
@@ -1847,23 +1852,53 @@ hi def link mcRotation2         mcCoordinate2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " JSON
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" WARNING: THE FOLLOWING WAS COMMENTATED LONG AFTER BEING WRITTEN
+" Load by default or if specified in config
 if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
+        " JSON text can be either a tag '{s:es,{st:ur}}', string 'Never gonna give', number '69', or bool 'true'
+        " either way, it has to be in quotes
+        syn cluster mcJSONText add=mcJSONTag,mcJSONNumber,mcJSONText,mcBool
+
+        " JSON Numbers (Not in a tag)
         execute 'syn match mcJSONNumber contained /\<'.Numre(0,2147483647,0,-1).'\>\.\@1!\|-\?\d\+\.\d\+/'
         hi def link mcJSONNumber mcValue
-        syn region mcJSONText contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
-        syn cluster mcJSONText add=mcJSONNumber,mcJSONText,mcBool
+
+        " JSON Bools (Not in tag) are simply the default mc bools
+
+        " JSON Strings (Not in a tag)
         call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONKey','','')
+
+        " JSON Tags (Not in a tag)
+        " { key : value , ...}
+        " brace enclosure
+        syn region mcJSONTag contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
+        " key
         call s:addEscapedQuotes('"','mcJSONKey','mcJSONOp','','mcJSONColon','')
-        syn match mcJSONColon contained nextgroup=mcJSONValue,mcJSONBool /\s*:\s*/
-        call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
-        syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/{/ end=/}/
-        syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp start=/\[/ end=/]/
-        execute 'syn match mcJSONValue contained nextgroup=mcJSONComma /\<'.Numre(0,2147483647,0,-1).'\.\@1!\|-\?\d\+\.\d\+/'
-        syn keyword mcJSONBool contained true false
-        syn match mcJSONComma contained /\s*,\s*/
+        " :
+        syn match mcJSONColon contained nextgroup=@mcJSONValue /\s*:\s*/
         hi def link mcJSONColon mcJSONOp
+
+        syn cluster mcJSONValue add=mcJSONValue,mcJSONBool
+                " String
+                call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
+
+                " Tag
+                syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp contains=mcJSONKey start=/{/ end=/}/
+                
+                " Array
+                " may contain any other value, including itself
+                syn region mcJSONValue contained oneline nextgroup=mcJSONComma contains=@mcJSONValue matchgroup=mcJSONOp start=/\[/ end=/]/
+
+                " Bool
+                syn keyword mcJSONBool contained true false
+                hi def link mcJSONBool  mcJSONKeyValue
+
+                " Number
+                execute 'syn match mcJSONValue contained nextgroup=mcJSONComma /\<'.Numre(0,2147483647,0,-1).'\.\@1!\|-\?\d\+\.\d\+/'
+
+        " ,
+        syn match mcJSONComma contained /\s*,\s*/
         hi def link mcJSONComma mcJSONOp
-        hi def link mcJSONBool  mcJSONKeyValue
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1978,3 +2013,4 @@ if b:determinedMcVersion
         unlet b:mcversion
         unlet b:determinedMcVersion
 endif
+

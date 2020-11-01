@@ -398,7 +398,7 @@ ItemRoot                Byte                    LodestoneTracked
 ItemRoot                Byte                    Unbreakable
 ItemRoot                Byte                    resolved
 ItemRoot                DimensionID             LodestoneDimension
-ItemRoot                Display                 display
+ItemRoot                Display,MapDisplay      display
 ItemRoot                EffectID                Potion
 ItemRoot                EntityRoot              EntityTag
 ItemRoot                FireworkExplosion       Explosion
@@ -411,7 +411,6 @@ ItemRoot                Int                     HideFlags
 ItemRoot                Int                     RepairCost
 ItemRoot                Int                     generation
 ItemRoot                Int                     map(_scale_direction)?
-ItemRoot                MapDisplay              display
 ItemRoot                Pos                     LodestonePos
 ItemRoot                Skull,String            SkullOwner
 ItemRoot                String                  author|title
