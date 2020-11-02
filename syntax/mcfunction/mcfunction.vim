@@ -305,11 +305,12 @@ function! s:addEscapedQuotes(quote,group,matchgroup,contains,nextgroup,options)
                 if a:nextgroup !~ '^\s*$'
                         let l:cmdpost = l:cmdpost.' skipwhite nextgroup='.a:nextgroup 
                 endif
-                let x = 0
-                while x < s:mcQuoteLevels
-                        execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
-                        let x=x+1
-                endwhile
+                execute l:cmdpre.' start=/\z\(\\*'.a:quote.'\)/ end=/\z1/ skip=/\\\z1/ oneline contained '.l:cmdpost
+"                let x = 0
+"                while x < s:mcQuoteLevels
+"                        execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
+"                        let x=x+1
+"                endwhile
         endif
 endfunction
 
@@ -1519,14 +1520,17 @@ syn match   mcNBTIndex          /\s*\d\+\s*/                                    
 syn match   mcNBTComma          /\s*,\s*/                                                                  contained nextgroup=mcNBTBadComma
 syn match   mcNBTColon          /:\s*/                                                                     contained nextgroup=@mcNBTValue,mcNBTBadComma
 syn match   mcNBTTagKey         /\w\+\s*/                                                                  contained nextgroup=mcNBTColon,mcNBTBadComma
-syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/"/ end=/"\s*/ skip=/\\"/            oneline contained nextgroup=mcNBTColon,mcNBTBadComma
+syn region  mcNBTTagKey         matchgroup=mcNBTQuote   start=/\z(\\*"\)/ end=/\z1\s*/ skip=/\\\z1/        oneline contained keepend nextgroup=mcNBTColon,mcNBTBadComma
 syn match   mcNBTBool           /true\|false\s*/                                                           contained nextgroup=mcNBTComma
 syn match   mcNBTValue          /-\?\d*\.\?\d\+[bBsSlLfFdD]\?\>\s*/                                        contained nextgroup=mcNBTComma
 syn match   mcNBTString         /\(\d*\h\)\@=\w*\s*/                                                       contained nextgroup=mcNBTComma
 if s:atLeastVersion('19w08a')
-        call s:addEscapedQuotes("'",'mcNBTString','mcNBTValueQuote','','mcNBTComma','')
+        "call s:addEscapedQuotes("'",'mcNBTString','mcNBTValueQuote','','mcNBTComma','')
+        syn region mcNBTString contained oneline keepend matchgroup=mcNBTValueQuote start=/\z(\\*['"]\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcNBTComma
+else
+        syn region mcNBTString contained oneline keepend matchgroup=mcNBTValueQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcNBTComma
 endif
-call s:addEscapedQuotes('"','mcNBTString','mcNBTValueQuote','','mcNBTComma','')
+"call s:addEscapedQuotes('"','mcNBTString','mcNBTValueQuote','','mcNBTComma','')
 syn region  mcNBTValueTag       matchgroup=mcNBTBracket start=/{/rs=e end=/}\s*/                   oneline contained contains=mcNBTTagKey,mcNBTComma nextgroup=mcNBTComma
 syn region  mcNBTValue          matchgroup=mcNBTBracket start=/\[\([BIL];\)\?/rs=e end=/]\s*/      oneline contained contains=@mcNBTValue,mcNBTComma nextgroup=mcNBTComma
 syn cluster mcNBTValue          contains=mcNBTValue,mcNBTString,mcNBTBool,mcNBTValueTag
@@ -1538,10 +1542,12 @@ hi def link mcNBTBadComma    mcError
 
 " Key NBT
 if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
-        call s:addEscapedQuotes('both','mcKeyNBTString',        'mcNBTValueQuote','',                           'mcNBTComma','')
+        "call s:addEscapedQuotes('both','mcKeyNBTString',        'mcNBTValueQuote','',                           'mcNBTComma','')
+        syn region mcKeyNBTString contained oneline keepend matchgroup=mcNBTValueQuote start=/\z(\\['"]\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcNBTComma
         hi def link mcKeyNBTString              mcNBTValue
         for x in split('Block Color Effect Enchantment Entity Item LootTable Particle Pattern Sound StringUU',' ')
-                execute 'call s:addEscapedQuotes("both","mcKeyNBT'.x.'ID","mcNBTValueQuote","mcKeyNBT'.x.'KeyID","mcNBTComma","")'
+                "execute 'call s:addEscapedQuotes("both","mcKeyNBT'.x.'ID","mcNBTValueQuote","mcKeyNBT'.x.'KeyID","mcNBTComma","")'
+                execute 'syn region mcKeyNBT'.x."ID contained oneline keepend matchgroup=mcNBTValueQuote start=/\z(\\*['\"]\)/ end=/\z1/ skip=/\\\z1/ contains=mcKeyNBT".x.'KeyID nextgroup=mcNBTComma'
                 execute 'hi def link mcKeyNBT'.x.'ID mcNBTValue'
                 execute 'hi def link mcKeyNBT'.x.'KeyID mcKeyNBTValue'
                 " mcKeyNBTXXXKeyID is defined during reading of builtin files
@@ -1570,11 +1576,11 @@ if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
         "UUID
 
         "Blockstate
-        call s:addEscapedQuotes('both', 'mcKeyNBTBlockstate','mcNBTValueQuote','','mcNBTComma','')
+        syn region mcKeyNBTBlockstate contained oneline matchgroup=mcNBTValueQuote start=/\z(\\*['"]\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcNBTComma
         "Command
-        call s:addEscapedQuotes('both', 'mcKeyNBTCommand','mcNBTCommandQuote','mcCommand','mcNBTComma','')
+        syn region mcKeyNBTCommand contained oneline matchgroup=mcNBTCommandQuote start=/\z(\\*['"]\)/ end=/\z1/ skip=/\\\z1/ contains=mcCommand nextgroup=mcNBTComma
         "JSON
-        call s:addEscapedQuotes('both', 'mcKeyNBTJSON','mcNBTJSONQuote','@mcJSONText','mcNBTComma','')
+        syn region mcKeyNBTJSON contained oneline matchgroup=mcNBTJSONQuote start=/\z(\\*['"]\)/ end=/\z1/ skip=/\\\z1/ contains=@mcJSONText nextgroup=mcNBTComma
         "RecipeUse
 
 endif
@@ -1609,14 +1615,16 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
         " JSON Bools (Not in tag) are simply the default mc bools
 
         " JSON Strings (Not in a tag)
-        call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONTagKey','','')
+        "call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONTagKey','','')
+        syn region mcJSONText contained oneline keepend matchgroup=mcJSONBounds start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONTagKey
 
         " JSON Tags (Not in a tag)
         " { key : value , ...}
         " brace enclosure
         syn region mcJSONTag contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONTagKey,mcKeyJSONKeyRoot
         " key
-        call s:addEscapedQuotes('"','mcJSONTagKey','mcJSONOp','','mcJSONColon','')
+        "call s:addEscapedQuotes('"','mcJSONTagKey','mcJSONOp','','mcJSONColon','')
+        syn region mcJSONTagKey contained oneline keepend matchgroup=mcJSONOp start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONColon
         " :
         syn match mcJSONColon contained nextgroup=@mcJSONValue /\s*:\s*/
         hi def link mcJSONColon mcJSONOp
@@ -1658,27 +1666,30 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
                 syn match mcKeyJSONKeyClickEvent /\v(\\*")%(action|value)\1/ contained contains=mcJSONQuote nextgroup=mcJSONColon
                 hi def link mcKeyJSONKeyClickEvent mcKeyJSONKey
 
-                syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONClickAction
-                hi def link mcKeyJSONEventKey mcKeyJSONKey
+                syn match mcKeyJSONClickKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONClickAction
+                hi def link mcKeyJSONClickKey mcKeyJSONKey
 
                 for [action,name,contain] in [['%(run|suggest)_command', 'Command', 'mcJSONEmbedCommand'], ['open_file', 'File', 'mcJSONFile'], ['open_url', 'URL', 'mcJSONURL'], ['copy_to_clipboard', 'Chat', 'mcJSONString']]
-                        call s:addEscapedQuotes('"', 'mcJSONEmbedQuote'.name,'mcJSONQuote',contain,'mcJSONComma','')
+
+                        if name != 'Number'
+                                execute 'syn region mcJSONEmbedQuote'.name 'contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.contain
+                                "call s:addEscapedQuotes('"', 'mcJSONEmbedQuote'.name,'mcJSONQuote',contain,'mcJSONComma','')
+                                execute 'syn match mcKeyJSONClick'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONEmbedQuote'.name
+                        endif
                         " action value
-                        execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")action\1\s*:\s*\1'.action.'\1\s*,\s*\1value\1\s*:\s*\1%(.%(\\\1)@<!)*\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
-                        " value action
-                        execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")value\1\s*:\s*\1%(.%(\\\1)@<!)*\1\s*,\s*\1action\1\s*:\s*\1'.action.'\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
-                        execute 'syn match mcKeyJSONClick'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONEmbedQuote'.name
+                        "execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")action\1\s*:\s*\1'.action.'\1\s*,\s*\1value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
+                        "execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1action\1\s*:\s*\1'.action.'\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
+                        " value* action value*
+                        execute 'syn match mcKeyJSONKeyClickEvent contained /\v%(\{\s*)@<=(\\*")%(value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1)*action\1\s*:\s*\1'.action.'\1%(\s*,\s*\1value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1)*/ contains=mcKeyJSONClickKey,mcKeyJSONClick'.name.'Key'
                 endfor
                 " change page (because number)
                         " action value
-                        syn match mcKeyJSONKeyClickEvent contained /\v(\\*")action\1\s*:\s*\1change_page\1\s*,\s*\1value\1\s*:\s*\1?[0-9.-]*\1?/ contains=mcKeyJSONEventKey,mcKeyJSONClickNumberKey
                         " value action
-                        syn match mcKeyJSONKeyClickEvent contained /\v(\\*")value\1\s*:\s*\1?[0-9.-]*\1?\s*,\s*\1action\1\s*:\s*\1change_page\1/ contains=mcKeyJSONEventKey,mcKeyJSONClickNumberKey
                         syn match mcKeyJSONClickNumberKey /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONValueNumber
                 syn match mcJSONEmbedCommand `/\?` contained nextgroup=mcCommand
                 syn match mcJSONFile /[^"]*/ contained
                 syn match mcJSONURL /[^"]*/ contained
-                syn match mcJSONString /[^"]*/ contained
+                syn match mcJSONString /./ contained
                 hi def link mcJSONString mcJSONValue
 
 
@@ -1692,14 +1703,12 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
                 syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONHoverAction
                 hi def link mcKeyJSONEventKey mcKeyJSONKey
                 for [name,action,value,contents] in [['Text', 'show_text', 'mcJSONString', 'mcJSONString'], ['Item', 'show_item', 'mcJSONSNBTItem', 'mcJSONItem'], ['Entity', 'show_entity', 'mcJSONSNBTEntity', 'mcJSONEntity']]
-                        call s:addEscapedQuotes('"', 'mcJSONHoverValueEmbedQuote'.name,'mcJSONQuote',value,'mcJSONComma','')
-                        call s:addEscapedQuotes('"', 'mcJSONHoverContentsEmbedQuote'.name,'mcJSONQuote',contents,'mcJSONComma','')
-                        " action value [value]
-                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v(\\*")action\1\s*:\s*\1'.action.'\1\s*%(,\s*\1%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1){1,2}/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
-                        " value action value
-                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v(\\*")%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1\s*,\s*\1action\1\s*:\s*\1'.action.'\1\s*,\s*\1%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
-                        " [value] value action
-                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v(\\*")%(%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1\s*,\s*){1,2}\1action\1\s*:\s*\1'.action.'\1/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+                        execute 'syn region mcJSONHoverValueEmbedQuote'.name    'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.value
+                        execute 'syn region mcJSONHoverContentsEmbedQuote'.name 'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.contents
+
+                        " value* action value*
+                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v%(\{\s*)@<=(\\*")%(%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1)*action\1\s*:\s*\1'.action.'\1%(\s*,\s*\1%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1)*/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+
                         execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverValueEmbedQuote'.name
                         execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")contents\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverContentsEmbedQuote'.name
                 endfor
