@@ -36,6 +36,11 @@ if (exists('g:mcEnableBuiltinJSON') && g:mcEnableBuiltinJSON=~'\c\v<e%[ternal]>'
         "hi def link mcjsonKeyword mcKeyword
 endif
 let b:current_syntax='mcfunction'
+if exists('g:mcQuoteLevels')
+        let s:mcQuoteLevels=g:mcQuoteLevels
+else
+        let s:mcQuoteLevels=16
+endif
 
 syn match mcAnySpace contained / /
 hi def link mcAnySpace mcBadWhitespace
@@ -301,7 +306,7 @@ function! s:addEscapedQuotes(quote,group,matchgroup,contains,nextgroup,options)
                         let l:cmdpost = l:cmdpost.' skipwhite nextgroup='.a:nextgroup 
                 endif
                 let x = 0
-                while x < 16
+                while x < s:mcQuoteLevels
                         execute l:cmdpre.' start=/\\\{'.x.'}'.a:quote.'/ end=/\\\{'.x.'}'.a:quote.'/ skip=/\\\{'.(x+1).'}'.a:quote.'/ oneline contained '.l:cmdpost
                         let x=x+1
                 endwhile
@@ -1539,6 +1544,7 @@ if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
                 execute 'call s:addEscapedQuotes("both","mcKeyNBT'.x.'ID","mcNBTValueQuote","mcKeyNBT'.x.'KeyID","mcNBTComma","")'
                 execute 'hi def link mcKeyNBT'.x.'ID mcNBTValue'
                 execute 'hi def link mcKeyNBT'.x.'KeyID mcKeyNBTValue'
+                " mcKeyNBTXXXKeyID is defined during reading of builtin files
         endfor
 
         syn match mcKeyNBTStringUUKeyID contained /\v<\x{1,8}-%(\x{1,4}-){3}\x{1,12}>/
@@ -1559,17 +1565,6 @@ if !exists('g:mcEnableKeyNBT') || g:mcEnableKeyNBT
         hi def link mcKeyNBTDouble      mcError
         hi def link mcKeyNBTRealFloat   mcNBTValue
         hi def link mcKeyNBTRealDouble  mcNBTValue
-
-        "BlockID
-        "ColorID
-        "EffectID
-        "EnchantmentID
-        "EntityID
-        "ItemID
-        "LootTableID
-        "ParticleID
-        "PatternID
-        "SoundID
 
         "StringUUID
         "UUID
@@ -1596,14 +1591,131 @@ hi def link mcNBTQuote          mcNBTTagKey
 hi def link mcNBTString         mcNBTValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" JSON
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" WARNING: THE FOLLOWING WAS COMMENTATED LONG AFTER BEING WRITTEN
+" Load by default or if specified in config
+if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
+        syn match mcJSONQuote /\\*"/ contained
+        hi def link mcJSONQuote mcJSONOp
+        " JSON text can be either a tag '{s:es,{st:ur}}', string 'Never gonna give', number '69', or bool 'true'
+        " either way, it has to be in quotes
+        syn cluster mcJSONText add=mcJSONTag,mcJSONNumber,mcJSONText,mcBool
+
+        " JSON Numbers (Not in a tag)
+        execute 'syn match mcJSONNumber contained /\<'.Numre(0,2147483647,0,-1).'\>\.\@1!\|-\?\d\+\.\d\+/'
+        hi def link mcJSONNumber mcValue
+
+        " JSON Bools (Not in tag) are simply the default mc bools
+
+        " JSON Strings (Not in a tag)
+        call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONTagKey','','')
+
+        " JSON Tags (Not in a tag)
+        " { key : value , ...}
+        " brace enclosure
+        syn region mcJSONTag contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONTagKey,mcKeyJSONKeyRoot
+        " key
+        call s:addEscapedQuotes('"','mcJSONTagKey','mcJSONOp','','mcJSONColon','')
+        " :
+        syn match mcJSONColon contained nextgroup=@mcJSONValue /\s*:\s*/
+        hi def link mcJSONColon mcJSONOp
+
+        syn cluster mcJSONValue add=mcJSONValue,mcJSONBool,mcJSONValueNumber
+                " String
+                call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
+
+                " Tag
+                syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp contains=mcJSONTagKey start=/{/ end=/}/
+                
+                " Array
+                " may contain any other value, including itself
+                syn region mcJSONValue contained oneline nextgroup=mcJSONComma contains=@mcJSONValue matchgroup=mcJSONOp start=/\[/ end=/]/
+
+                " Bool
+                syn keyword mcJSONBool contained true false
+                hi def link mcJSONBool  mcJSONKeyValue
+
+                " Number
+                syn match mcJSONValueNumber contained contains=mcJSONQuote nextgroup=mcJSONComma /\v(\\*"?)-?\d+%(\.\d+)?\1/
+                hi def link mcJSONValueNumber mcKeyJSONValue
+
+        " ,
+        syn match mcJSONComma contained /\s*,\s*/
+        hi def link mcJSONComma mcJSONOp
+
+        " click and hover events
+        " do by default despite how laggy this'll probably be...
+        if (!exists('g:mcJSONEvents') || g:mcJSONEvents)
+                "Click
+
+                syn match mcKeyJSONClickAction /\v(\\*")%((run|suggest)_command|open_%(url|file)|change_page|copy_to_clipboard)\1/ contained contains=mcJSONQuote nextgroup=mcJSONComma
+                hi def link mcKeyJSONClickAction mcKeyJSONValue
+
+                syn keyword mcJSONLiteralValue value contents
+                hi def link mcJSONLiteralValue mcKeyJSONKey
+
+                syn match mcKeyJSONKeyClickEvent /\v(\\*")%(action|value)\1/ contained contains=mcJSONQuote nextgroup=mcJSONColon
+                hi def link mcKeyJSONKeyClickEvent mcKeyJSONKey
+
+                syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONClickAction
+                hi def link mcKeyJSONEventKey mcKeyJSONKey
+
+                for [action,name,contain] in [['%(run|suggest)_command', 'Command', 'mcJSONEmbedCommand'], ['open_file', 'File', 'mcJSONFile'], ['open_url', 'URL', 'mcJSONURL'], ['copy_to_clipboard', 'Chat', 'mcJSONString']]
+                        call s:addEscapedQuotes('"', 'mcJSONEmbedQuote'.name,'mcJSONQuote',contain,'mcJSONComma','')
+                        " action value
+                        execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")action\1\s*:\s*\1'.action.'\1\s*,\s*\1value\1\s*:\s*\1%(.%(\\\1)@<!)*\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
+                        " value action
+                        execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")value\1\s*:\s*\1%(.%(\\\1)@<!)*\1\s*,\s*\1action\1\s*:\s*\1'.action.'\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
+                        execute 'syn match mcKeyJSONClick'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONEmbedQuote'.name
+                endfor
+                " change page (because number)
+                        " action value
+                        syn match mcKeyJSONKeyClickEvent contained /\v(\\*")action\1\s*:\s*\1change_page\1\s*,\s*\1value\1\s*:\s*\1?[0-9.-]*\1?/ contains=mcKeyJSONEventKey,mcKeyJSONClickNumberKey
+                        " value action
+                        syn match mcKeyJSONKeyClickEvent contained /\v(\\*")value\1\s*:\s*\1?[0-9.-]*\1?\s*,\s*\1action\1\s*:\s*\1change_page\1/ contains=mcKeyJSONEventKey,mcKeyJSONClickNumberKey
+                        syn match mcKeyJSONClickNumberKey /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONValueNumber
+                syn match mcJSONEmbedCommand `/\?` contained nextgroup=mcCommand
+                syn match mcJSONFile /[^"]*/ contained
+                syn match mcJSONURL /[^"]*/ contained
+                syn match mcJSONString /[^"]*/ contained
+                hi def link mcJSONString mcJSONValue
+
+
+                " Hover
+                syn match mcKeyJSONHoverAction /\(\\*"\)show_\%(text\|item\|entity\)\1/ contained contains=mcJSONQuote nextgroup=mcJSONComma
+                hi def link mcKeyJSONHoverAction mcKeyJSONValue
+
+                syn match mcKeyJSONKeyHoverEvent /\v(\\*")%(action|value|contents)\1/ contained contains=mcJSONQuote nextgroup=mcJSONColon
+                hi def link mcKeyJSONKeyHoverEvent mcKeyJSONKey
+
+                syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONHoverAction
+                hi def link mcKeyJSONEventKey mcKeyJSONKey
+                for [name,action,value,contents] in [['Text', 'show_text', 'mcJSONString', 'mcJSONString'], ['Item', 'show_item', 'mcJSONSNBTItem', 'mcJSONItem'], ['Entity', 'show_entity', 'mcJSONSNBTEntity', 'mcJSONEntity']]
+                        call s:addEscapedQuotes('"', 'mcJSONHoverValueEmbedQuote'.name,'mcJSONQuote',value,'mcJSONComma','')
+                        call s:addEscapedQuotes('"', 'mcJSONHoverContentsEmbedQuote'.name,'mcJSONQuote',contents,'mcJSONComma','')
+                        " action value [value]
+                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v(\\*")action\1\s*:\s*\1'.action.'\1\s*%(,\s*\1%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1){1,2}/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+                        " value action value
+                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v(\\*")%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1\s*,\s*\1action\1\s*:\s*\1'.action.'\1\s*,\s*\1%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+                        " [value] value action
+                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v(\\*")%(%(value|contents)\1\s*:\s*\1%(.%(\\\1)@<!)*\1\s*,\s*){1,2}\1action\1\s*:\s*\1'.action.'\1/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverValueEmbedQuote'.name
+                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")contents\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverContentsEmbedQuote'.name
+                endfor
+                " TODO implement SNBTItem, Item, SNBTEntity, and Entity
+        endif
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Builtins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addBuiltin(type,match)
-        execute 'syn match mcBuiltin'.a:type      'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
-        execute 'syn match mcKeyNBT'.a:type.'KeyID contained `\v<('.substitute(a:match,'(','%(','g').')>`'
+        execute 'syn match mcBuiltin'.a:type      'contained `\v<%('.substitute(a:match,'(','%(','g').')>`'
+        execute 'syn match mcKeyNBT'.a:type.'KeyID contained `\v<%('.substitute(a:match,'(','%(','g').')>`'
 endfunction
 function! s:addBuiltinTag(type,match)
-        execute 'syn match mcBuiltinTag'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
+        execute 'syn match mcBuiltinTag'.a:type 'contained `\v<%('.substitute(a:match,'(','%(','g').')>`'
 endfunction
 function! s:addGamerule(name, values)
         if a:values =~ '\cuint'
@@ -1617,8 +1729,8 @@ function! s:addGamerule(name, values)
         endif
 endfunction
 
-function! s:addKeyNBTBase(name)
-        " Adds the base nbt things if necessary and returns a list of
+function! s:addKeyNBTJSONBase(name,which)
+        " Add the base nbt things if necessary and return a list of
         " the groups
         let l:builtins = []
         let l:tags = []
@@ -1631,103 +1743,120 @@ function! s:addKeyNBTBase(name)
         endfor
         let l:tagname = ''
         if ! empty(l:tags)
-                let l:tagname = 'mcKeyNBTTag'.join(l:tags,'_')
-                let l:keyname= join(map(copy(l:tags),"'mcKeyNBTKey'.v:val"),',')
-                execute 'syn region' l:tagname 'contained oneline matchgroup=mcNBTOp start=/{\s*/rs=e end=/\s*}/ nextgroup=mcNBTComma contains=mcNBTTagKey,'.l:keyname
+                let l:tagname = 'mcKey'.a:which.'Tag'.join(l:tags,'_')
+                let l:keyname= join(map(copy(l:tags),"'mcKey".a:which."Key'.v:val"),',')
+                execute 'syn region' l:tagname 'contained oneline matchgroup=mc'.a:which.'Op start=/{\s*/rs=e end=/\s*}/ nextgroup=mc'.a:which.'Comma contains=mc'.a:which.'TagKey,'.l:keyname
         endif
         " return a list of the builtins and the combined tag
-        return join(add(map(copy(l:builtins),"'mcKeyNBT'.v:val"),l:tagname),',')
+        return join(add(map(copy(l:builtins),"'mcKey".a:which."'.v:val"),l:tagname),',')
 endfunction
-function! s:addKeyNBT(group,level)
+function! s:addKeyNBTJSON(group,level,which)
         " mcNBTTagKey was defined before reaching here so it has less priority
         " This way invalid NBT still highlights somewhat nicely
         if a:level == 0
                 " Base part
                 " Tag
-                let l:contain = join([s:addKeyNBTBase(a:group), 'mcNBTValue'],',')
+                let l:contain = join([s:addKeyNBTJSONBase(a:group,a:which), 'mc'.a:which.'Value'],',')
                 " Colon
-                execute 'syn match mcKeyNBTColon'.a:group 'contained /\s*:\s*/ nextgroup=mcNBTBadComma,@mcNBTValue,'.l:contain
-                execute 'hi def link mcKeyNBTColon'.a:group 'mcNBTColon'
+                execute 'syn match mcKey'.a:which.'Colon'.a:group 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,'.l:contain
+                execute 'hi def link mcKey'.a:which.'Colon'.a:group 'mc'.a:which.'Colon'
                 " Keys are handled seperately
                 " Return for list recursion below
                 return [a:group,l:contain]
         else
                 " List
                 " Run recursively
-                let [l:group,l:contain] = s:addKeyNBT(a:group,a:level-1)
+                let [l:group,l:contain] = s:addKeyNBTJSON(a:group,a:level-1,a:which)
                 " Colon
-                execute 'syn match mcKeyNBTColonList'.l:group 'contained /\s*:\s*/ nextgroup=mcNBTBadComma,@mcNBTValue,mcKeyNBTList'.l:group
-                execute 'hi def link mcKeyNBTColonList'.l:group 'mcNBTColon'
+                execute 'syn match mcKey'.a:which.'ColonList'.l:group 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,mcKey'.a:which.'List'.l:group
+                execute 'hi def link mcKey'.a:which.'ColonList'.l:group 'mc'.a:which.'Colon'
                 " List
-                execute 'syn region mcKeyNBTList'.l:group 'contained oneline matchgroup=mcNBTOp start=/\[\s*/rs=e end=/\s*]/ nextgroup=mcNBTComma contains=mcNBTTagKey,'.l:contain
+                execute 'syn region mcKey'.a:which.'List'.l:group 'contained oneline matchgroup=mc'.a:which.'Op start=/\[\s*/rs=e end=/\s*]/ nextgroup=mc'.a:which.'Comma contains=mc'.a:which.'TagKey,'.l:contain
                 " Return for list recursion
-                return ['List'.l:group, 'mcKeyNBTList'.l:group]
+                return ['List'.l:group, 'mcKey'.a:which.'List'.l:group]
         endif
 endfunction
 if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
         let s:files = split(globpath(s:path.'data','*'),'\n')
         for s:file in s:files
                 let s:filename = fnamemodify(s:file,':t:r')
-                if s:filename == 'nbt'
-                        if exists('g:mcEnableKeyNBT') && g:mcKeyNBT==0
-                                continue
-                        else
-                                " Everything that needs colon and tag, with the
-                                " value being how many layers of lists we need
-                                let s:keys = {}
-                                for s:line in readfile(s:file)
-                                        let s:line = substitute(s:line,'!!.*','','')
-                                        if s:line =~ '^\s*$'
-                                                " Blank
-                                        elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-                                                " Beyond this version
-                                                break
-                                        elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
-                                                " No longer in game
-                                        else
-                                                " Now parse the line
-                                                let [s:group, s:next, s:match] = split(s:line,'\s\+')
 
-                                                " Turn nextgroups into a level of lists and array of values
-                                                let s:listlevel=count(s:next,'[')
-                                                let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
-                                                let s:joinednexts = join(sort(s:nexts),'_')
+                " Don't load if told not to
+                if s:filename == 'nbt'  && exists('g:mcEnableKeyNBT')  && g:mcKeyNBT==0 || s:filename == 'json' && exists('g:mcEnableKeyJSON') && g:mcKeyJSON==0
+                        continue
+                endif
 
-                                                " Register the nextgroup
-                                                if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
-                                                        let s:keys[s:joinednexts] = s:listlevel
+                if s:filename == 'nbt' || s:filename=='json'
+                        " Everything that needs colon and tag, with the
+                        " value being how many layers of lists we need
+                        let s:keys = {}
+
+                        for s:line in readfile(s:file)
+                                let s:line = substitute(s:line,'!!.*','','')
+                                if s:line =~ '^\s*$'
+                                        " Blank
+                                elseif s:line =~ '^\s*!' && !s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                        " Beyond this version
+                                        break
+                                elseif s:line =~'!' && s:atLeastVersion(matchstr(s:line,'!\zs.\+$'))
+                                        " No longer in game
+                                else
+                                        " Now parse the line
+                                        let [s:group, s:next, s:match] = split(s:line,'\s\+')
+
+                                        " Turn nextgroups into a level of lists and array of values
+                                        let s:listlevel=count(s:next,'[')
+                                        let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
+                                        let s:joinednexts = join(sort(s:nexts),'_')
+
+                                        " Register the nextgroup
+                                        " equivilant to keys[joinednexts] max= listlevel
+                                        if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
+                                                let s:keys[s:joinednexts] = s:listlevel
+                                        endif
+                                        " And the components of the nextgroup
+                                        " (in case of multiple cases, but only
+                                        " need the base layer)
+                                        for subnextgroup in s:nexts
+                                                if !has_key(s:keys,subnextgroup)
+                                                        let s:keys[subnextgroup] = 0
                                                 endif
-                                                " And the components of the nextgroup
-                                                " (in case of multiple cases, but only
-                                                " need the base layer)
-                                                for subnextgroup in s:nexts
-                                                        if !has_key(s:keys,subnextgroup)
-                                                                let s:keys[subnextgroup] = 0
-                                                        endif
-                                                endfor
+                                        endfor
 
-                                                " Form the final name for the nextgroup
-                                                " 'List' * listlevel + joinednexts
-                                                let s:nextgroup = s:joinednexts
-                                                let x=s:listlevel
-                                                while x
-                                                        let s:nextgroup = 'List'.s:nextgroup
-                                                        let x = x-1
-                                                endwhile
+                                        " Form the final name for the nextgroup
+                                        " 'List' * listlevel + joinednexts
+                                        let s:nextgroup = s:joinednexts
+                                        let x=s:listlevel
+                                        while x
+                                                let s:nextgroup = 'List'.s:nextgroup
+                                                let x = x-1
+                                        endwhile
 
-                                                " Match as the key, and we want both
-                                                " [match] and \"[match]\" to match
+                                        " Match as the key
+
+                                        if s:filename=='nbt'
+                                                " NBT
+                                                " we want both [match] and \"[match]\" to match
                                                 let s:nextgroup = 'mcNBTBadComma,mcKeyNBTColon'.s:nextgroup
                                                 let s:modifiedmatch = substitute(s:match,'(','%(','g')
-                                                execute 'syn match mcKeyNBTKey'.s:group 'contained nextgroup='.s:nextgroup '`\v<('.s:modifiedmatch.'|"'.s:modifiedmatch.'")>`'
+                                                execute 'syn match mcKeyNBTKey'.s:group 'contained nextgroup='.s:nextgroup '`\v\\@<!(\\*"?)<%('.s:modifiedmatch.')>\1`'
                                                 execute 'hi def link mcKeyNBTKey'.s:group 'mcKeyNBTKey'
+                                        else
+                                                " JSON
+                                                let s:nextgroup = 'mcJSONBadComma,mcKeyJSONColon'.s:nextgroup
+                                                let s:modifiedmatch = substitute(s:match,'(','%(','g')
+                                                execute 'syn match mcKeyJSONKey'.s:group 'contained nextgroup='.s:nextgroup '`\v\\@<!(\\*")<%('.s:modifiedmatch.')>\1` contains=mcJSONQuote'
+                                                execute 'hi def link mcKeyJSONKey'.s:group 'mcKeyJSONKey'
                                         endif
-                                endfor
-                                for [group,level] in items(s:keys)
-                                        call s:addKeyNBT(group,level)
-                                endfor
-                                syn cluster mcKeyNBTRoot add=mcKeyNBTKeyEntityRoot,mcKeyNBKeyTBlockRoot,mcKeyNBTKeyItemRoot
-                        endif
+                           endif
+                        endfor
+                        for [group,level] in items(s:keys)
+                                if s:filename=='nbt'
+                                        call s:addKeyNBTJSON(group,level,'NBT')
+                                else
+                                        call s:addKeyNBTJSON(group,level,'JSON')
+                                endif
+                        endfor
                 endif
                 let s:lines = readfile(s:file)
                 for s:line in s:lines
@@ -1849,62 +1978,14 @@ hi def link mcRotation          mcCoordinate
 hi def link mcRotation2         mcCoordinate2
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" JSON
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" WARNING: THE FOLLOWING WAS COMMENTATED LONG AFTER BEING WRITTEN
-" Load by default or if specified in config
-if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
-        " JSON text can be either a tag '{s:es,{st:ur}}', string 'Never gonna give', number '69', or bool 'true'
-        " either way, it has to be in quotes
-        syn cluster mcJSONText add=mcJSONTag,mcJSONNumber,mcJSONText,mcBool
-
-        " JSON Numbers (Not in a tag)
-        execute 'syn match mcJSONNumber contained /\<'.Numre(0,2147483647,0,-1).'\>\.\@1!\|-\?\d\+\.\d\+/'
-        hi def link mcJSONNumber mcValue
-
-        " JSON Bools (Not in tag) are simply the default mc bools
-
-        " JSON Strings (Not in a tag)
-        call s:addEscapedQuotes('"','mcJSONText','mcJSONBounds','mcJSONKey','','')
-
-        " JSON Tags (Not in a tag)
-        " { key : value , ...}
-        " brace enclosure
-        syn region mcJSONTag contained oneline matchgroup=mcJSONBound start=/{/ end=/}/ contains=mcJSONKey
-        " key
-        call s:addEscapedQuotes('"','mcJSONKey','mcJSONOp','','mcJSONColon','')
-        " :
-        syn match mcJSONColon contained nextgroup=@mcJSONValue /\s*:\s*/
-        hi def link mcJSONColon mcJSONOp
-
-        syn cluster mcJSONValue add=mcJSONValue,mcJSONBool
-                " String
-                call s:addEscapedQuotes('"','mcJSONValue','mcJSONOp','','mcJSONComma','')
-
-                " Tag
-                syn region mcJSONValue contained oneline nextgroup=mcJSONComma matchgroup=mcJSONOp contains=mcJSONKey start=/{/ end=/}/
-                
-                " Array
-                " may contain any other value, including itself
-                syn region mcJSONValue contained oneline nextgroup=mcJSONComma contains=@mcJSONValue matchgroup=mcJSONOp start=/\[/ end=/]/
-
-                " Bool
-                syn keyword mcJSONBool contained true false
-                hi def link mcJSONBool  mcJSONKeyValue
-
-                " Number
-                execute 'syn match mcJSONValue contained nextgroup=mcJSONComma /\<'.Numre(0,2147483647,0,-1).'\.\@1!\|-\?\d\+\.\d\+/'
-
-        " ,
-        syn match mcJSONComma contained /\s*,\s*/
-        hi def link mcJSONComma mcJSONOp
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Debugging
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if (!exists('g:mcDebugging') || g:mcDebugging)
+if (exists('g:mcDebugging') && g:mcDebugging)
+        syn match mcTest /./ contained
+        hi def link mcTest Error
+        syn cluster mcKeyNBTRoot add=mcKeyNBTKeyEntityRoot,mcKeyNBKeyTBlockRoot,mcKeyNBTKeyItemRoot
         syn keyword mcCommand contained skipwhite nextgroup=mcNBTKW    nbt
         syn keyword mcNBTKW   contained skipwhite nextgroup=mcNBTTag   tag
         syn keyword mcNBTKW   contained skipwhite nextgroup=@mcKeyNBTRoot key
@@ -1923,6 +2004,8 @@ if (!exists('g:mcDebugging') || g:mcDebugging)
         syn keyword mcCommand contained skipwhite nextgroup=mcSelector ent
         syn keyword mcCommand contained skipwhite nextgroup=mcColumn col
         syn keyword mcCommand contained skipwhite nextgroup=mcLootTable lt
+
+        syn keyword mcCommand contained skipwhite nextgroup=@mcJSONText json
 
 "        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
 "        let x = 0
@@ -1996,10 +2079,13 @@ if (!exists('g:mcDeepNest') || g:mcDeepNest)
 
         execute 'hi mcJSONBound ctermfg='.b:mcColors['Nest'][2]
         execute 'hi mcJSONOp'    b:mcColors['Op']        'cterm=underline guisp='.b:mcColors['Nest'][2]
-        execute 'hi mcJSONKey'b:mcColors['Id']           'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONTagKey'b:mcColors['Id']           'cterm=underline guisp='.b:mcColors['Nest'][2]
         execute 'hi mcJSONValue' b:mcColors['Value']     'cterm=underline guisp='.b:mcColors['Nest'][2]
         execute 'hi mcJSONKeyValue' b:mcColors['Value']  'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
         execute 'hi mcJSONSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcKeyJSONKey' b:mcColors['Id'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcKeyJSONValue' b:mcColors['Value'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONClickCommandQuote ctermfg='.b:mcColors['Nest'][0] 'cterm=underline guisp='.b:mcColors['Nest'][2]
 else
         hi def link mcNBTTagKey mcNBTPath
         execute 'hi mcCommand' b:mcColors['Command']
