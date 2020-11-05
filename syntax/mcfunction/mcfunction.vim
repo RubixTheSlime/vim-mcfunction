@@ -1660,59 +1660,53 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
                 syn match mcKeyJSONClickAction /\v(\\*")%((run|suggest)_command|open_%(url|file)|change_page|copy_to_clipboard)\1/ contained contains=mcJSONQuote nextgroup=mcJSONComma
                 hi def link mcKeyJSONClickAction mcKeyJSONValue
 
-                syn keyword mcJSONLiteralValue value contents
-                hi def link mcJSONLiteralValue mcKeyJSONKey
-
-                syn match mcKeyJSONKeyClickEvent /\v(\\*")%(action|value)\1/ contained contains=mcJSONQuote nextgroup=mcJSONColon
+                syn match mcKeyJSONKeyClickEvent /\v(\\*")value\1/              contained contains=mcJSONQuote nextgroup=mcJSONColon
+                syn match mcKeyJSONKeyClickEvent /\v(\\*")action\1\s*:?\s*/     contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONClickAction
                 hi def link mcKeyJSONKeyClickEvent mcKeyJSONKey
 
-                syn match mcKeyJSONClickKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONClickAction
-                hi def link mcKeyJSONClickKey mcKeyJSONKey
-
-                for [action,name,contain] in [['%(run|suggest)_command', 'Command', 'mcJSONEmbedCommand'], ['open_file', 'File', 'mcJSONFile'], ['open_url', 'URL', 'mcJSONURL'], ['copy_to_clipboard', 'Chat', 'mcJSONString']]
-
-                        if name != 'Number'
-                                execute 'syn region mcJSONEmbedQuote'.name 'contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.contain
-                                "call s:addEscapedQuotes('"', 'mcJSONEmbedQuote'.name,'mcJSONQuote',contain,'mcJSONComma','')
-                                execute 'syn match mcKeyJSONClick'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONEmbedQuote'.name
-                        endif
-                        " action value
-                        "execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")action\1\s*:\s*\1'.action.'\1\s*,\s*\1value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
-                        "execute 'syn match mcKeyJSONKeyClickEvent contained /\v(\\*")value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1action\1\s*:\s*\1'.action.'\1/ contains=mcKeyJSONEventKey,mcKeyJSONClick'.name.'Key'
-                        " value* action value*
-                        execute 'syn match mcKeyJSONKeyClickEvent contained /\v%(\{\s*)@<=(\\*")%(value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1)*action\1\s*:\s*\1'.action.'\1%(\s*,\s*\1value\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1)*/ contains=mcKeyJSONClickKey,mcKeyJSONClick'.name.'Key'
-                endfor
-                " change page (because number)
-                        " action value
-                        " value action
-                        syn match mcKeyJSONClickNumberKey /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONValueNumber
-                syn match mcJSONEmbedCommand `/\?` contained nextgroup=mcCommand
-                syn match mcJSONFile /[^"]*/ contained
-                syn match mcJSONURL /[^"]*/ contained
-                syn match mcJSONString /./ contained
-                hi def link mcJSONString mcJSONValue
-
+                syn match mcJSONClickCommandKey contained /\v(\\*")value\1\s*:?\s*/ nextgroup=mcJSONClickCommand contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon
+                hi def link mcJSONClickCommandKey mcKeyJSONKey
+                syn region mcJSONClickCommand contained oneline keepend matchgroup=mcJSONCommandQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcCommand nextgroup=mcJSONComma
 
                 " Hover
-                syn match mcKeyJSONHoverAction /\(\\*"\)show_\%(text\|item\|entity\)\1/ contained contains=mcJSONQuote nextgroup=mcJSONComma
+                syn match   mcKeyJSONHoverAction /\(\\*"\)show_\%(text\|item\|entity\)\1/ contained contains=mcJSONQuote nextgroup=mcJSONComma
                 hi def link mcKeyJSONHoverAction mcKeyJSONValue
 
-                syn match mcKeyJSONKeyHoverEvent /\v(\\*")%(action|value|contents)\1/ contained contains=mcJSONQuote nextgroup=mcJSONColon
+                syn match   mcKeyJSONKeyHoverEvent      contained /\v(\\*")%(value|contents)\1/ contains=mcJSONQuote,mcJSONColon nextgroup=mcJSONColon
+                syn match   mcKeyJSONKeyHoverEvent      contained /\v(\\*")action\1\s*:?\s*/    contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONHoverAction
                 hi def link mcKeyJSONKeyHoverEvent mcKeyJSONKey
 
-                syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONHoverAction
-                hi def link mcKeyJSONEventKey mcKeyJSONKey
-                for [name,action,value,contents] in [['Text', 'show_text', 'mcJSONString', 'mcJSONString'], ['Item', 'show_item', 'mcJSONSNBTItem', 'mcJSONItem'], ['Entity', 'show_entity', 'mcJSONSNBTEntity', 'mcJSONEntity']]
-                        execute 'syn region mcJSONHoverValueEmbedQuote'.name    'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.value
-                        execute 'syn region mcJSONHoverContentsEmbedQuote'.name 'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.contents
+                syn match   mcJSONHoverTextKey          contained /\v(\\*")%(value|contents)\1\s*:?\s*/     contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverTextValue
+                hi def link mcJSONHoverTextKey mcKeyJSONKey
 
-                        " value* action value*
-                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v%(\{\s*)@<=(\\*")%(%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1)*action\1\s*:\s*\1'.action.'\1%(\s*,\s*\1%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1)*/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+                syn match   mcJSONHoverItemKey          contained /\v(\\*")value\1\s*:?\s*/     contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverItemValue
+                syn match   mcJSONHoverItemKey          contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverItemContents
+                hi def link mcJSONHoverItemKey mcKeyJSONKey
 
-                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverValueEmbedQuote'.name
-                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")contents\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverContentsEmbedQuote'.name
-                endfor
+                syn match   mcJSONHoverEntityKey        contained /\v(\\*")value\1\s*:?\s*/     contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverEntityValue
+                syn match   mcJSONHoverEntityKey        contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverEntityContents
+                hi def link mcJSONHoverEntityKey mcKeyJSONKey
+
+                syn region  mcJSONHoverTextValue        contained oneline         matchgroup=mcJSONOp    start=/{/ end=/}/                        contains=mcJSONTagKey,mcKeyJSONKeyRoot nextgroup=mcJSONComma
+                syn region  mcJSONHoverItemValue        contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcSNBTItem nextgroup=mcJSONComma
+                syn region  mcJSONHoverItemContents     contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONItem nextgroup=mcJSONComma
+                syn region  mcJSONHoverEntityValue      contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcSNBTEntity nextgroup=mcJSONComma
+                syn region  mcJSONHoverEntityContents   contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONEntity nextgroup=mcJSONComma
+
                 " TODO implement SNBTItem, Item, SNBTEntity, and Entity
+
+"                syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONHoverAction
+"                hi def link mcKeyJSONEventKey mcKeyJSONKey
+"                for [name,action,value,contents] in [['Text', 'show_text', 'mcJSONString', 'mcJSONString'], ['Item', 'show_item', 'mcJSONSNBTItem', 'mcJSONItem'], ['Entity', 'show_entity', 'mcJSONSNBTEntity', 'mcJSONEntity']]
+"                        execute 'syn region mcJSONHoverValueEmbedQuote'.name    'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.value
+"                        execute 'syn region mcJSONHoverContentsEmbedQuote'.name 'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.contents
+"
+"                        " value* action value*
+"                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v%(\{\s*)@<=(\\*")%(%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1)*action\1\s*:\s*\1'.action.'\1%(\s*,\s*\1%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1)*/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
+"
+"                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverValueEmbedQuote'.name
+"                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")contents\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverContentsEmbedQuote'.name
+"                endfor
         endif
 endif
 
@@ -1866,6 +1860,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                         call s:addKeyNBTJSON(group,level,'JSON')
                                 endif
                         endfor
+                        continue
                 endif
                 let s:lines = readfile(s:file)
                 for s:line in s:lines
@@ -1909,14 +1904,19 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                                 endif
                                         endif
                                 endif
-                        elseif s:filename == 'json'
-                                "TODO
                         else
                                 call s:addBuiltin(s:filename,matchstr(s:line, '^[^!]*'))
                         endif
                 endfor
         endfor
 endif
+
+
+syn region mcKeyJSONTagClickEvent contained oneline matchgroup=mcJSONOp start=/\v\{\s*(\\*")%(value\1\s*:\s*\1.*[^\\]\1\s*,\s*\1)*action\1\s*:\s*\1%(run|suggest)_command\1/rs=s+1 end=/\s*}/ nextgroup=mcJSONComma contains=mcJSONClickCommandKey,mcKeyJSONKeyClickEvent,mcJSONTagKey
+syn region mcKeyJSONTagHoverEvent contained oneline matchgroup=mcJSONOp start=/\v\{\s*(\\*")%(%(value|contents)\1\s*:\s*\1.*[^\\]\1\s*,\s*\1)*action\1\s*:\s*\1show_text\1/rs=s+1 end=/\s*}/ nextgroup=mcJSONComma contains=mcJSONHoverTextKey,mcKeyJSONKeyHoverEvent,mcJSONTagKey
+syn region mcKeyJSONTagHoverEvent contained oneline matchgroup=mcJSONOp start=/\v\{\s*(\\*")%(%(value|contents)\1\s*:\s*\1.*[^\\]\1\s*,\s*\1)*action\1\s*:\s*\1show_item\1/rs=s+1 end=/\s*}/ nextgroup=mcJSONComma contains=mcJSONHoverItemKey,mcKeyJSONKeyHoverEvent,mcJSONTagKey
+syn region mcKeyJSONTagHoverEvent contained oneline matchgroup=mcJSONOp start=/\v\{\s*(\\*")%(%(value|contents)\1\s*:\s*\1.*[^\\]\1\s*,\s*\1)*action\1\s*:\s*\1show_entity\1/rs=s+1 end=/\s*}/ nextgroup=mcJSONComma contains=mcJSONHoverEntityKey,mcKeyJSONKeyHoverEvent,mcJSONTagKey
+
 
 " literally the only difference in the entire experimental snapshots so far
 if s:combatVersion >= 3
@@ -2094,7 +2094,7 @@ if (!exists('g:mcDeepNest') || g:mcDeepNest)
         execute 'hi mcJSONSpace'                         'cterm=underline guisp='.b:mcColors['Nest'][2]
         execute 'hi mcKeyJSONKey' b:mcColors['Id'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
         execute 'hi mcKeyJSONValue' b:mcColors['Value'] 'cterm=underline,bold guisp='.b:mcColors['Nest'][2]
-        execute 'hi mcJSONClickCommandQuote ctermfg='.b:mcColors['Nest'][0] 'cterm=underline guisp='.b:mcColors['Nest'][2]
+        execute 'hi mcJSONCommandQuote ctermfg='.b:mcColors['Nest'][0] 'cterm=underline guisp='.b:mcColors['Nest'][2]
 else
         hi def link mcNBTTagKey mcNBTPath
         execute 'hi mcCommand' b:mcColors['Command']
