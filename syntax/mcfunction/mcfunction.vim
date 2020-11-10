@@ -1684,31 +1684,16 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
                 hi def link mcJSONHoverItemKey mcKeyJSONKey
 
                 syn match   mcJSONHoverEntityKey        contained /\v(\\*")value\1\s*:?\s*/     contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverEntityValue
-                syn match   mcJSONHoverEntityKey        contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONKeyTagShowEntity
+                syn match   mcJSONHoverEntityKey        contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONTagShowEntity
                 hi def link mcJSONHoverEntityKey mcKeyJSONKey
 
                 syn region  mcJSONHoverTextValue        contained oneline         matchgroup=mcJSONOp    start=/{/ end=/}/                        contains=mcJSONTagKey,mcKeyJSONKeyRoot nextgroup=mcJSONComma
                 syn region  mcJSONHoverItemValue        contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcSNBTItem nextgroup=mcJSONComma
-                syn region  mcJSONHoverItemContents     contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONItem nextgroup=mcJSONComma
                 syn region  mcJSONHoverEntityValue      contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcSNBTEntity nextgroup=mcJSONComma
-                syn region  mcJSONHoverEntityContents   contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONEntity nextgroup=mcJSONComma
 
                 hi def link mcJSONHoverEntityValue mcError
 
-                " TODO implement SNBTItem, Item, SNBTEntity, and Entity
-
-"                syn match mcKeyJSONEventKey /\v(\\*")action\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONHoverAction
-"                hi def link mcKeyJSONEventKey mcKeyJSONKey
-"                for [name,action,value,contents] in [['Text', 'show_text', 'mcJSONString', 'mcJSONString'], ['Item', 'show_item', 'mcJSONSNBTItem', 'mcJSONItem'], ['Entity', 'show_entity', 'mcJSONSNBTEntity', 'mcJSONEntity']]
-"                        execute 'syn region mcJSONHoverValueEmbedQuote'.name    'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.value
-"                        execute 'syn region mcJSONHoverContentsEmbedQuote'.name 'contained matchgroup=mcJSONQuote oneline keepend start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ nextgroup=mcJSONComma contains='.contents
-"
-"                        " value* action value*
-"                        execute 'syn match mcKeyJSONKeyHoverEvent contained /\v%(\{\s*)@<=(\\*")%(%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1\s*,\s*\1)*action\1\s*:\s*\1'.action.'\1%(\s*,\s*\1%(value|contents)\1\s*:\s*\1%(.\1@<!%(\\\1)?)*\1)*/ contains=mcKeyJSONEventKey,mcKeyJSONHover'.name.'Key'
-"
-"                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")value\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverValueEmbedQuote'.name
-"                        execute 'syn match mcKeyJSONHover'.name.'Key /\v(\\*")contents\1\s*:?\s*/ contained contains=mcJSONQuote,mcJSONColon,mcJSONLiteralValue nextgroup=mcJSONHoverContentsEmbedQuote'.name
-"                endfor
+                " TODO implement SNBTItem, SNBTEntity
         endif
 endif
 
@@ -1817,6 +1802,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                         let s:listlevel=count(s:next,'[')
 
                                         let s:nextsraw = split(substitute(matchstr(s:next,'[[:alnum:],{}]\+'),'}','','g'), ',')
+                                        let s:tagtoadd = [] 
                                         for subnextgroup in s:nextsraw
                                                 " Add the components of the nextgroup
                                                 " (in case of multiple cases, but only need the base layer)
@@ -1825,10 +1811,13 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                                 endif
 
                                                 " If it's a tag, make sure it will be made
-                                                if matchstr(subnextgroup,'{')
-                                                        let s:tags[matchstr(subnextgroup,'\w*')] = 1
+                                                if subnextgroup =~ '{'
+                                                        let s:tagtoadd = add(s:tagtoadd, substitute(subnextgroup,'{','','g'))
                                                 endif
                                         endfor
+                                        if len(s:tagtoadd)
+                                                let s:tags[join(s:tagtoadd,'_')]=1
+                                        endif
 
                                         let s:joinednextsraw = join(sort(s:nextsraw),'_')
 
@@ -1876,7 +1865,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                 call s:addKeyNBTJSON(group,level,s:filename)
                         endfor
                         for group in keys(s:tags)
-                                execute 'syn region mcKey'.s:filename.'Tag'.group 'start=/{/ end=/}/ contained oneline nextgroup=mc'.s:filename.'Comma contains=mcKey'.s:filename.'Key'.group
+                                execute 'syn region mcKey'.s:filename.'Tag'.group 'matchgroup=mc'.s:filename.'Op start=/{/ end=/}/ contained oneline nextgroup=mc'.s:filename.'Comma contains=mcKey'.s:filename.'Key'.substitute(group,'_',',mcKey'.s:filename.'Key','g')
                         endfor
                         continue
                 endif
