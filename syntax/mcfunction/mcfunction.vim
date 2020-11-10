@@ -1680,11 +1680,11 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
                 hi def link mcJSONHoverTextKey mcKeyJSONKey
 
                 syn match   mcJSONHoverItemKey          contained /\v(\\*")value\1\s*:?\s*/     contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverItemValue
-                syn match   mcJSONHoverItemKey          contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverItemContents
+                syn match   mcJSONHoverItemKey          contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcKeyJSONTagShowItem
                 hi def link mcJSONHoverItemKey mcKeyJSONKey
 
                 syn match   mcJSONHoverEntityKey        contained /\v(\\*")value\1\s*:?\s*/     contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverEntityValue
-                syn match   mcJSONHoverEntityKey        contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONHoverEntityContents
+                syn match   mcJSONHoverEntityKey        contained /\v(\\*")contents\1\s*:?\s*/  contains=mcJSONLiteralValue,mcJSONQuote,mcJSONColon nextgroup=mcJSONKeyTagShowEntity
                 hi def link mcJSONHoverEntityKey mcKeyJSONKey
 
                 syn region  mcJSONHoverTextValue        contained oneline         matchgroup=mcJSONOp    start=/{/ end=/}/                        contains=mcJSONTagKey,mcKeyJSONKeyRoot nextgroup=mcJSONComma
@@ -1692,6 +1692,8 @@ if (!exists('g:mcJSONMethod') || g:mcJSONMethod=~'\c\v<p%[lugin]>')
                 syn region  mcJSONHoverItemContents     contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONItem nextgroup=mcJSONComma
                 syn region  mcJSONHoverEntityValue      contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcSNBTEntity nextgroup=mcJSONComma
                 syn region  mcJSONHoverEntityContents   contained oneline keepend matchgroup=mcJSONQuote start=/\z(\\*"\)/ end=/\z1/ skip=/\\\z1/ contains=mcJSONEntity nextgroup=mcJSONComma
+
+                hi def link mcJSONHoverEntityValue mcError
 
                 " TODO implement SNBTItem, Item, SNBTEntity, and Entity
 
@@ -1738,20 +1740,19 @@ function! s:addKeyNBTJSONBase(name,which)
         let l:builtins = []
         let l:tags = []
         for x in split(a:name, '_')
-                if x =~ '\v%(ID|^%(RecipeUse|Command|JSON|Blockstate|Bool|Byte|Short|Int|Long|Float|Double|String))$'
-                        let l:builtins = add(l:builtins,x)
+                if x =~ '^{'
+                        let l:tags = add(l:tags,substitute(x,'{','',''))
                 else
-                        let l:tags = add(l:tags,x)
+                        let l:builtins = add(l:builtins,x)
                 endif
         endfor
         let l:tagname = ''
         if ! empty(l:tags)
                 let l:tagname = 'mcKey'.a:which.'Tag'.join(l:tags,'_')
-                let l:keyname= join(map(copy(l:tags),"'mcKey".a:which."Key'.v:val"),',')
-                execute 'syn region' l:tagname 'contained oneline matchgroup=mc'.a:which.'Op start=/{\s*/rs=e end=/\s*}/ nextgroup=mc'.a:which.'Comma contains=mc'.a:which.'TagKey,'.l:keyname
         endif
         " return a list of the builtins and the combined tag
-        return join(add(map(copy(l:builtins),"'mcKey".a:which."'.v:val"),l:tagname),',')
+        let s:x = join(add(map(copy(l:builtins),"'mcKey".a:which."'.v:val"),l:tagname),',')
+        return s:x
 endfunction
 function! s:addKeyNBTJSON(group,level,which)
         " mcNBTTagKey was defined before reaching here so it has less priority
@@ -1761,8 +1762,10 @@ function! s:addKeyNBTJSON(group,level,which)
                 " Tag
                 let l:contain = join([s:addKeyNBTJSONBase(a:group,a:which), 'mc'.a:which.'Value'],',')
                 " Colon
-                execute 'syn match mcKey'.a:which.'Colon'.a:group 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,'.l:contain
-                execute 'hi def link mcKey'.a:which.'Colon'.a:group 'mc'.a:which.'Colon'
+                let s:name = substitute(a:group,'{','','g')
+                "echo 'syn match mcKey'.a:which.'Colon'.s:name 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,'.l:contain
+                execute 'syn match mcKey'.a:which.'Colon'.s:name 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,'.l:contain
+                execute 'hi def link mcKey'.a:which.'Colon'.s:name 'mc'.a:which.'Colon'
                 " Keys are handled seperately
                 " Return for list recursion below
                 return [a:group,l:contain]
@@ -1770,13 +1773,14 @@ function! s:addKeyNBTJSON(group,level,which)
                 " List
                 " Run recursively
                 let [l:group,l:contain] = s:addKeyNBTJSON(a:group,a:level-1,a:which)
+                let s:name = substitute(l:group,'{','','g')
                 " Colon
-                execute 'syn match mcKey'.a:which.'ColonList'.l:group 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,mcKey'.a:which.'List'.l:group
-                execute 'hi def link mcKey'.a:which.'ColonList'.l:group 'mc'.a:which.'Colon'
+                execute 'syn match mcKey'.a:which.'ColonList'.s:name 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,mcKey'.a:which.'List'.s:name
+                execute 'hi def link mcKey'.a:which.'ColonList'.s:name 'mc'.a:which.'Colon'
                 " List
-                execute 'syn region mcKey'.a:which.'List'.l:group 'contained oneline matchgroup=mc'.a:which.'Op start=/\[\s*/rs=e end=/\s*]/ nextgroup=mc'.a:which.'Comma contains=mc'.a:which.'TagKey,'.l:contain
+                execute 'syn region mcKey'.a:which.'List'.s:name 'contained oneline matchgroup=mc'.a:which.'Op start=/\[\s*/rs=e end=/\s*]/ nextgroup=mc'.a:which.'Comma contains=mc'.a:which.'TagKey,'.l:contain
                 " Return for list recursion
-                return ['List'.l:group, 'mcKey'.a:which.'List'.l:group]
+                return ['List'.s:name, 'mcKey'.a:which.'List'.s:name]
         endif
 endfunction
 if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
@@ -1785,14 +1789,16 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                 let s:filename = fnamemodify(s:file,':t:r')
 
                 " Don't load if told not to
-                if s:filename == 'nbt'  && exists('g:mcEnableKeyNBT')  && g:mcKeyNBT==0 || s:filename == 'json' && exists('g:mcEnableKeyJSON') && g:mcKeyJSON==0
+                if s:filename == 'NBT'  && exists('g:mcEnableKeyNBT')  && g:mcKeyNBT==0 || s:filename == 'JSON' && exists('g:mcEnableKeyJSON') && g:mcKeyJSON==0
                         continue
                 endif
 
-                if s:filename == 'nbt' || s:filename=='json'
-                        " Everything that needs colon and tag, with the
+                if s:filename == 'NBT' || s:filename=='JSON'
+                        " Everything that needs colon, with the
                         " value being how many layers of lists we need
                         let s:keys = {}
+                        " Everything that needs a tag
+                        let s:tags = {}
 
                         for s:line in readfile(s:file)
                                 let s:line = substitute(s:line,'!!.*','','')
@@ -1809,22 +1815,33 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 
                                         " Turn nextgroups into a level of lists and array of values
                                         let s:listlevel=count(s:next,'[')
-                                        let s:nexts = split(matchstr(s:next,'[[:alnum:],]\+'),',')
-                                        let s:joinednexts = join(sort(s:nexts),'_')
 
-                                        " Register the nextgroup
-                                        " equivilant to keys[joinednexts] max= listlevel
-                                        if !has_key(s:keys, s:joinednexts) || s:keys[s:joinednexts] < s:listlevel
-                                                let s:keys[s:joinednexts] = s:listlevel
-                                        endif
-                                        " And the components of the nextgroup
-                                        " (in case of multiple cases, but only
-                                        " need the base layer)
-                                        for subnextgroup in s:nexts
+                                        let s:nextsraw = split(substitute(matchstr(s:next,'[[:alnum:],{}]\+'),'}','','g'), ',')
+                                        for subnextgroup in s:nextsraw
+                                                " Add the components of the nextgroup
+                                                " (in case of multiple cases, but only need the base layer)
                                                 if !has_key(s:keys,subnextgroup)
                                                         let s:keys[subnextgroup] = 0
                                                 endif
+
+                                                " If it's a tag, make sure it will be made
+                                                if matchstr(subnextgroup,'{')
+                                                        let s:tags[matchstr(subnextgroup,'\w*')] = 1
+                                                endif
                                         endfor
+
+                                        let s:joinednextsraw = join(sort(s:nextsraw),'_')
+
+                                        " Register the nextgroup
+                                        " equivilant to keys[joinednexts] max= listlevel
+                                        if !has_key(s:keys, s:joinednextsraw) || s:keys[s:joinednextsraw] < s:listlevel
+                                                let s:keys[s:joinednextsraw] = s:listlevel
+                                        endif
+
+                                        " Now we don't want the braces anymore
+                                        let s:nexts = split(substitute(substitute(matchstr(s:next,'[[:alnum:],{}]\+'),'}','','g'),'{','','g'),',')
+
+                                        let s:joinednexts = join(sort(s:nexts),'_')
 
                                         " Form the final name for the nextgroup
                                         " 'List' * listlevel + joinednexts
@@ -1835,10 +1852,12 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                                 let x = x-1
                                         endwhile
 
-                                        " Match as the key
+                                        " Add the group as a tag
+                                        let s:tags[s:group] = 1
 
-                                        if s:filename=='nbt'
-                                                " NBT
+                                        " Match as the key
+                                        if s:filename=='NBT'
+                                                "NBT
                                                 " we want both [match] and \"[match]\" to match
                                                 let s:nextgroup = 'mcNBTBadComma,mcKeyNBTColon'.s:nextgroup
                                                 let s:modifiedmatch = substitute(s:match,'(','%(','g')
@@ -1846,19 +1865,18 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                                 execute 'hi def link mcKeyNBTKey'.s:group 'mcKeyNBTKey'
                                         else
                                                 " JSON
-                                                let s:nextgroup = 'mcJSONBadComma,mcKeyJSONColon'.s:nextgroup
-                                                let s:modifiedmatch = substitute(s:match,'(','%(','g')
+                                                let s:nextgroup = 'mcJSONBadComma,mcKeyJSONColon'.s:nextgroup 
+                                                let s:modifiedmatch = substitute(s:match, '(','%(','g')
                                                 execute 'syn match mcKeyJSONKey'.s:group 'contained nextgroup='.s:nextgroup '`\v\\@<!(\\*")<%('.s:modifiedmatch.')>\1` contains=mcJSONQuote'
                                                 execute 'hi def link mcKeyJSONKey'.s:group 'mcKeyJSONKey'
                                         endif
-                           endif
+                                endif
                         endfor
                         for [group,level] in items(s:keys)
-                                if s:filename=='nbt'
-                                        call s:addKeyNBTJSON(group,level,'NBT')
-                                else
-                                        call s:addKeyNBTJSON(group,level,'JSON')
-                                endif
+                                call s:addKeyNBTJSON(group,level,s:filename)
+                        endfor
+                        for group in keys(s:tags)
+                                execute 'syn region mcKey'.s:filename.'Tag'.group 'start=/{/ end=/}/ contained oneline nextgroup=mc'.s:filename.'Comma contains=mcKey'.s:filename.'Key'.group
                         endfor
                         continue
                 endif
@@ -2016,12 +2034,12 @@ if (exists('g:mcDebugging') && g:mcDebugging)
 
         syn keyword mcCommand contained skipwhite nextgroup=@mcJSONText json
 
-"        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
-"        let x = 0
-"        while x < 16
-"                execute 'syn region  mcTest matchgroup=Error start=/\\\{'.x.'}"/ end=/\\\{'.x.'}"/ skip=/\\\{' . (x+1) . ',}"/ contains=mcTest skipwhite matchgroup=Error'
-"                let x=x+1
-"        endwhile
+        "        syn keyword mcCommand contained skipwhite nextgroup=mcTest test
+        "        let x = 0
+        "        while x < 16
+        "                execute 'syn region  mcTest matchgroup=Error start=/\\\{'.x.'}"/ end=/\\\{'.x.'}"/ skip=/\\\{' . (x+1) . ',}"/ contains=mcTest skipwhite matchgroup=Error'
+        "                let x=x+1
+        "        endwhile
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""

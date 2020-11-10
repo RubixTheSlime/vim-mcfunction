@@ -4,10 +4,10 @@
 !!Name                  Value                   Match
 Root                    Bool                    bold|italic|underlined|strikethrough|obfuscated
 Root                    Bool                    interperet
-Root                    ClickEvent              clickEvent
+Root                    {ClickEvent}              clickEvent
 Root                    ColorID                 color
 Root                    Coordinate              block
-Root                    HoverEvent              hoverEvent
+Root                    {HoverEvent}              hoverEvent
 Root                    KeybindID               keybind
 Root                    NBTPath                 nbt
 Root                    Score                   score
@@ -21,3 +21,12 @@ Root                    [JSON]                  with|extra
 
 Score                   Selector                name
 Score                   String                  objective|value
+
+ShowEntity              UUID                    id
+ShowEntity              String                  name
+ShowEntity              EntityID                type
+
+ShowItem                Number                  Count
+ShowItem                ItemNBT                 tag
+ShowItem                ItemID                  id
+

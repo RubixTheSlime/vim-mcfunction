@@ -2,14 +2,14 @@
 !! Byte, Short, Int, Long, Float, Double, String are too
 
 !!Name                  Value                   Match
-EntityRoot              [SpawnPotential]        SpawnPotentials
-EntityRoot              EntityRoot              SpawnData
+EntityRoot              [{SpawnPotential}]        SpawnPotentials
+EntityRoot              {EntityRoot}            SpawnData
 EntityRoot              Short                   Spawn(Count|Range)
 EntityRoot              Short                   (M(in|ax)Spawn)?Delay
 EntityRoot              Short                   MaxNearbyEntities
 EntityRoot              Short                   RequiredPlayerRange
-EntityRoot              Block                   ((carried|in)?Block|Display)State
-EntityRoot              Brain                   Brain
+EntityRoot              {Block}                 ((carried|in)?Block|Display)State
+EntityRoot              {Brain}                 Brain
 EntityRoot              Byte                    (Collar)?Color
 EntityRoot              Byte                    (Sleep|Trust|Will|Crouch)ing
 EntityRoot              Byte                    Angry
@@ -83,7 +83,7 @@ EntityRoot              Double                  T[X-Z]D
 EntityRoot              Double                  damage
 EntityRoot              EffectID                Potion
 EntityRoot              EntityID                id
-EntityRoot              Firework                FireworksItem
+EntityRoot              {Firework}                FireworksItem
 EntityRoot              Float                   AbsorptionAmount
 EntityRoot              Float                   FallDistance
 EntityRoot              Float                   Health
@@ -139,17 +139,17 @@ EntityRoot              Int                     Warmup
 EntityRoot              Int                     Wave
 EntityRoot              Int                     [x-z]Tile
 EntityRoot              JSON                    CustomName
-EntityRoot              Leash                   Leash
+EntityRoot              {Leash}                   Leash
 EntityRoot              Long                    DeathLootTableSeed
 EntityRoot              Long                    Last(Restock|GossipDecay)
 EntityRoot              LootTableID             DeathLootTable
 EntityRoot              ParticleID              Particle
-EntityRoot              Pos                     (Beam|Patrol|Wander)Target
-EntityRoot              Pose                    Pose
-EntityRoot              BlockRoot               TileEntityData
-EntityRoot              Item                (Decor)?Item
-EntityRoot              Item                Trident
-EntityRoot              SlottedItem         (Armor|Saddle)Item
+EntityRoot              {Pos}                     (Beam|Patrol|Wander)Target
+EntityRoot              {Pose}                    Pose
+EntityRoot              {BlockRoot}               TileEntityData
+EntityRoot              {Item}                (Decor)?Item
+EntityRoot              {Item}                Trident
+EntityRoot              {SlottedItem}         (Armor|Saddle)Item
 EntityRoot              Short                   Air
 EntityRoot              Short                   Fire
 EntityRoot              Short                   Fuse
@@ -171,18 +171,18 @@ EntityRoot              UUID                    Owner
 EntityRoot              UUID                    Target
 EntityRoot              UUID                    Thrower
 EntityRoot              UUID                    UUID
-EntityRoot              Villager                VillagerData
-EntityRoot              WanderOffers            Offers
-EntityRoot              [Attribute]             Attributes
+EntityRoot              {Villager}                VillagerData
+EntityRoot              {WanderOffers}            Offers
+EntityRoot              [{Attribute}]             Attributes
 EntityRoot              [Double]                Pos|(Mo|Rota)tion
 EntityRoot              [Double]                power
 EntityRoot              [Effect]                ActiveEffects
 EntityRoot              [Effect]                CustomPotionEffects
 EntityRoot              [Float]                 (Hand|Armor)DropChances
-EntityRoot              [EntityRoot]            Passengers
-EntityRoot              [Item]              (Hand|Armor)Items
-EntityRoot              [SlottedItem]       Items
-EntityRoot              [SlottedItem]       Inventory
+EntityRoot              [{EntityRoot}]            Passengers
+EntityRoot              [{Item}]              (Hand|Armor)Items
+EntityRoot              [{SlottedItem}]       Items
+EntityRoot              [{SlottedItem}]       Inventory
 EntityRoot              [String]                Tags
 EntityRoot              [UUID]                  Trusted
 
@@ -190,15 +190,15 @@ EntityRoot              [UUID]                  Trusted
 !! Items
 Item                Byte                    Count
 Item                ItemID                  id
-Item                ItemRoot                 tag
+Item                {ItemRoot}                 tag
 SlottedItem         Byte                    Count
 SlottedItem         Byte                    Slot
 SlottedItem         ItemID                  id
-SlottedItem         ItemRoot                 tag
+SlottedItem         {ItemRoot}                 tag
 
 
 !! Block Entity
-BlockRoot               Block                   blockState
+BlockRoot               {Block}                 blockState
 BlockRoot               BlockID                 id
 BlockRoot               Byte                    ExactTeleport
 BlockRoot               Byte                    Fuel
@@ -217,7 +217,7 @@ BlockRoot               Byte                    powered
 BlockRoot               Byte                    showBoundingBox
 BlockRoot               ColorID                 Color
 BlockRoot               Command                 Command
-BlockRoot               EntityRoot              SpawnData
+BlockRoot               {EntityRoot}              SpawnData
 BlockRoot               Float                   Integrity
 BlockRoot               Float                   progress
 BlockRoot               Int                     (pos|size)[X-Z]
@@ -232,8 +232,8 @@ BlockRoot               Int                     TransferCooldown
 BlockRoot               Int                     [x-z]
 BlockRoot               Int                     color
 BlockRoot               Int                     facing
-BlockRoot               Item                Book
-BlockRoot               Item                RecordItem
+BlockRoot               {Item}                Book
+BlockRoot               {Item}                RecordItem
 BlockRoot               JSON                    CustomName
 BlockRoot               JSON                    Lock
 BlockRoot               JSON                    Text[1-4]
@@ -242,8 +242,8 @@ BlockRoot               Long                    LastExecution
 BlockRoot               Long                    LootTableSeed
 BlockRoot               Long                    seed
 BlockRoot               LootTableID             LootTable
-BlockRoot               Pos                     ExitPortal
-BlockRoot               Pos                     FlowerPos
+BlockRoot               {Pos}                     ExitPortal
+BlockRoot               {Pos}                     FlowerPos
 BlockRoot               Short                   (M(in|ax)Spawn)?Delay
 BlockRoot               Short                   BrewTime
 BlockRoot               Short                   BurnTime
@@ -252,7 +252,7 @@ BlockRoot               Short                   MaxNearbyEntities
 BlockRoot               Short                   PotionId
 BlockRoot               Short                   RequiredPlayerRange
 BlockRoot               Short                   Spawn(Count|Range)
-BlockRoot               Skull                   SkullOwner
+BlockRoot               {Skull}                 SkullOwner
 BlockRoot               String                  LastOutput
 BlockRoot               String                  attachment_type
 BlockRoot               String                  author
@@ -263,12 +263,12 @@ BlockRoot               String                  name
 BlockRoot               String                  rotation
 BlockRoot               String                  target_pool
 BlockRoot               UUID                    Target
-BlockRoot               [Bee]                   Bees
+BlockRoot               [{Bee}]                 Bees
 BlockRoot               [Int]                   Cooking(Total)?Times
-BlockRoot               [Pattern]               Patterns
-BlockRoot               [RecipeUse]             RecipesUsed
-BlockRoot               [SlottedItem]           Items
-BlockRoot               [SpawnPotential]        SpawnPotentials
+BlockRoot               [{Pattern}]             Patterns
+BlockRoot               [{RecipeUse}]             RecipesUsed
+BlockRoot               [{SlottedItem}]           Items
+BlockRoot               [{SpawnPotential}]        SpawnPotentials
 
 !! Block
 Block                   BlockID                 Name
@@ -277,7 +277,7 @@ Block                   Blockstate              Properties
 !! Bee
 Bee                     Int                     MinOccupationTicks
 Bee                     Int                     TicksInHive
-Bee                     EntityRoot              EntityData
+Bee                     {EntityRoot}              EntityData
 
 !! Pattern
 Pattern                 Int                     Color
@@ -286,25 +286,25 @@ Pattern                 PatternID               Pattern
 !! Skull
 Skull                   UUID                    id
 Skull                   String                  Name
-Skull                   SkullProperties         Properties
-SkullProperties         [SkullTexture]          textures
+Skull                   {SkullProperties}       Properties
+SkullProperties         [{SkullTexture}]        textures
 SkullTexture            String                  Signature
-SkullTexture            SkullValue              Value
+SkullTexture            {SkullValue}            Value
 SkullValue              Long                    timestamp
 SkullValue              StringUUID              profileId
 SkullValue              String                  profileName
 SkullValue              Bool                    isPublic
-SkullValue              SkullValueTexture       textures
-SkullValueTexture       URL                     SKIN|CAPE
+SkullValue              {SkullValueTexture}     textures
+SkullValueTexture       {URL}                   SKIN|CAPE
 URL                     String                  url
 
 !! Memories
-Brain                   Memory                  memories
-Memory                  MemLocation             minecraft:(meeting_point|home|job_site)
-Memory                  MemTick                 minecraft:last_(slept|woken|worked_at_poi)
-Memory                  MemAngry                minecraft:angry_at
-Memory                  MemPiglin               minecraft:(admiring_(item|disabled)|hunted_recently)
-MemLocation             MemLocationValue        value
+Brain                   {Memory}                  memories
+Memory                  {MemLocation}             minecraft:(meeting_point|home|job_site)
+Memory                  {MemTick}                 minecraft:last_(slept|woken|worked_at_poi)
+Memory                  {MemAngry}                minecraft:angry_at
+Memory                  {MemPiglin}               minecraft:(admiring_(item|disabled)|hunted_recently)
+MemLocation             {MemLocationValue}        value
 MemTick                 Long                    value
 MemAngry                UUID                    value
 MemAngry                Long                    ttl
@@ -316,7 +316,7 @@ MemLocationValue        DimensionID             dimension
 !! Attributes
 Attribute               String                  Name
 Attribute               Double                  Base
-Attribute               [AttrMod]               Modifiers
+Attribute               [{AttrMod}]               Modifiers
 AttrMod                 String                  Name
 AttrMod                 Double                  Amount
 AttrMod                 Int                     Operation
@@ -329,14 +329,14 @@ Effect                  Byte                    Ambient
 Effect                  Byte                    ShowParticles
 Effect                  Byte                    ShowIcon
 Effect                  Int                     Duration
-Effect                  EffectHidden            HiddenEffect
+Effect                  {EffectHidden}            HiddenEffect
 
 EffectHidden            Byte                    Amplifier
 EffectHidden            Byte                    Ambient
 EffectHidden            Byte                    ShowParticles
 EffectHidden            Byte                    ShowIcon
 EffectHidden            Int                     Duration
-EffectHidden            EffectHidden            HiddenEffect
+EffectHidden            {EffectHidden}            HiddenEffect
 
 !! Leash
 Leash                   UUID                    UUID
@@ -347,13 +347,13 @@ Pos                     Int                     [XYZ]
 
 !! Villager Data
 Villager                Int                     level
-Villager                [VillageGossip]         Gossips
+Villager                [{VillageGossip}]         Gossips
 Villager                Int                     Xp
-Villager                VillagerOffers          Offers
+Villager                {VillagerOffers}          Offers
 VillagerGossip          String                  Type
 VillagerGossip          Int                     Value
 VillagerGossip          UUID                    Target
-VillagerOffers          [VillagerTrade]         Recipes
+VillagerOffers          [{VillagerTrade}]         Recipes
 VillagerTrade           Int                     xp
 VillagerTrade           Float                   priceMultiplier
 VillagerTrade           Int                     specialPrice
@@ -364,23 +364,23 @@ VillagerTrade           Int                     uses
 VillagerTrade           Item                (buyB?|sell)
 
 !! Wandering trader offers
-WanderOffers            [WanderTrade]           Recipes
+WanderOffers            [{WanderTrade}]           Recipes
 WanderTrade             Byte                    rewaradExp
 WanderTrade             Int                     maxUses
 WanderTrade             Int                     uses
 WanderTrade             Item                (buyB?|sell)
 
 !! Spawner stuff
-SpawnPotential          EntityRoot              Entity
+SpawnPotential          {EntityRoot}              Entity
 SpawnPotential          Int                     Weight
 
 !! Fireworks
 Firework                ItemID                  id
 Firework                Byte                    Count
-Firework                FireworkTag             tag
-FireworkTag             Fireworks               Fireworks
+Firework                {FireworkTag}             tag
+FireworkTag             {Fireworks}               Fireworks
 Fireworks               Byte                    Flight
-Fireworks               [FireworkExplosion]     Explosions
+Fireworks               [{FireworkExplosion}]     Explosions
 FireworkExplosion       Byte                    Flicker
 FireworkExplosion       Byte                    Trail
 FireworkExplosion       Byte                    Type
@@ -391,18 +391,18 @@ Pose                    [Float]                 Body|(Left|Right)(Arm|Leg)|Head
 
 !! Item Tags
 ItemRoot                BlockID                 CanPlaceOn
-ItemRoot                BlockRoot               BlockEntityTag
+ItemRoot                {BlockRoot}               BlockEntityTag
 ItemRoot                Blockstate              BlockStateTag
 ItemRoot                Byte                    Charged
 ItemRoot                Byte                    LodestoneTracked
 ItemRoot                Byte                    Unbreakable
 ItemRoot                Byte                    resolved
 ItemRoot                DimensionID             LodestoneDimension
-ItemRoot                Display,MapDisplay      display
+ItemRoot                {Display},{MapDisplay}      display
 ItemRoot                EffectID                Potion
-ItemRoot                EntityRoot              EntityTag
-ItemRoot                FireworkExplosion       Explosion
-ItemRoot                Fireworks               Fireworks
+ItemRoot                {EntityRoot}              EntityTag
+ItemRoot                {FireworkExplosion}       Explosion
+ItemRoot                {Fireworks}               Fireworks
 ItemRoot                Int                     BucketVariantTag
 ItemRoot                Int                     CustomPotionColor
 ItemRoot                Int                     CutomModelData
@@ -412,17 +412,17 @@ ItemRoot                Int                     RepairCost
 ItemRoot                Int                     generation
 ItemRoot                Int                     map(_scale_direction)?
 ItemRoot                Pos                     LodestonePos
-ItemRoot                Skull,String            SkullOwner
+ItemRoot                {Skull},String            SkullOwner
 ItemRoot                String                  author|title
-ItemRoot                [AttrModifier]          AttributeModifiers
+ItemRoot                [{AttrModifier}]          AttributeModifiers
 ItemRoot                [BlockID]               CanDestroy
-ItemRoot                [Effect]                CustomPotionEffects
-ItemRoot                [Enchantment]           (Stored)?Enchantments
-ItemRoot                [Item]                  ChargedProjectiles
+ItemRoot                [{Effect}]                CustomPotionEffects
+ItemRoot                [{Enchantment}]           (Stored)?Enchantments
+ItemRoot                [{Item}]                  ChargedProjectiles
 ItemRoot                [JSON]                  pages
-ItemRoot                [MapDecor]              Decorations
+ItemRoot                [{MapDecor}]              Decorations
 ItemRoot                [String]                DebugProperty
-ItemRoot                [SuspiciousEffect]      Effects
+ItemRoot                [{SuspiciousEffect}]      Effects
 
 
 !! Display
