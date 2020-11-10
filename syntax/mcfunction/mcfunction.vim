@@ -1748,7 +1748,6 @@ function! s:addKeyNBTJSON(group,level,which)
                 let l:contain = join([s:addKeyNBTJSONBase(a:group,a:which), 'mc'.a:which.'Value'],',')
                 " Colon
                 let s:name = substitute(a:group,'{','','g')
-                "echo 'syn match mcKey'.a:which.'Colon'.s:name 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,'.l:contain
                 execute 'syn match mcKey'.a:which.'Colon'.s:name 'contained /\s*:\s*/ nextgroup=mc'.a:which.'BadComma,@mc'.a:which.'Value,'.l:contain
                 execute 'hi def link mcKey'.a:which.'Colon'.s:name 'mc'.a:which.'Colon'
                 " Keys are handled seperately
@@ -1819,7 +1818,10 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
                                                 let s:tags[join(s:tagtoadd,'_')]=1
                                         endif
 
-                                        let s:joinednextsraw = join(sort(s:nextsraw),'_')
+                                        func! s:rawCompare(x, y)
+                                                return matchstr(a:x,'\w*') > matchstr(a:y,'\w*')
+                                        endfunc
+                                        let s:joinednextsraw = join(sort(s:nextsraw, 's:rawCompare'),'_')
 
                                         " Register the nextgroup
                                         " equivilant to keys[joinednexts] max= listlevel
