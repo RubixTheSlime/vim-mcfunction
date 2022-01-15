@@ -264,45 +264,48 @@ endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Add Instance
+" Adding 'Ns' to the beginning of a type makes it allow
+"   namespaces
+" Adding 'T' to the beginning allows it to be a tag
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:addInstance(type,group,nextgroup)
-        if a:type=~ 'Selector'
-                execute 'syn match mc'.a:type.a:group 'contained /\v\S+(\[[^\]]*\])?\ze\_[ ]/   contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-                execute 'syn cluster mcSelectorFilter add=mc'.a:type.a:group
-        elseif a:type=~ 'Coordinate'
-                execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'Column|Rotation'
-                execute 'syn match mc'.a:type.a:group 'contained /\S\+\s\+\S\+/                 contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'NBTPath'
-                execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
-                execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
-                execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
-                execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
-                execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
-                execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
-                execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'NBTTag'
-                execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcNBTPad'.a:group
-                execute 'syn cluster mcNBT add=mcNBTTag'.a:group.',mcNBTPad'.a:group
-                execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:type=~ 'Block$'
-                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:type.a:group.',mcNBTTag'.a:type.a:group.','.a:nextgroup
-                call s:addInstance('BlockState',a:type.a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTag'.a:type.a:group)
-                call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
-        elseif a:type=~ 'Item$'
-                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcNBTTag'.a:type.a:group.','.a:nextgroup
-                call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
-        elseif a:type=~ 'Entity$'
-                execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        elseif a:nextgroup == ""
-                execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
-        else
-                execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
-        endif
+    if a:type=~ 'Selector'
+        execute 'syn match mc'.a:type.a:group 'contained /\v\S+(\[[^\]]*\])?\ze\_[ ]/   contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+        execute 'syn cluster mcSelectorFilter add=mc'.a:type.a:group
+    elseif a:type=~ 'Coordinate'
+        execute 'syn match mc'.a:type.a:group 'contained /\v(\S+\s+){2}\S+/             contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+    elseif a:type=~ 'Column|Rotation'
+        execute 'syn match mc'.a:type.a:group 'contained /\S\+\s\+\S\+/                 contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+    elseif a:type=~ 'NBTPath'
+        execute 'syn match   mcNBTPath'.a:group           '/.\@1<=\w\+/                                                          contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTPath'.a:group           'matchgroup=mcNBTQuote   start=/.\@1<="/ end=/"/ skip=/\\"/ oneline    contained                               nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTArray'.a:group          'matchgroup=mcNBTBracket start=/.\@1<=\[/rs=e end=/]/ oneline          contained contains=mcNBTIndex,mcNBTTagP nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn region  mcNBTTagP'.a:group           'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline           contained contains=mcNBTTagKey          nextgroup=@mcNBTContinue'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn match   mcNBTPathDot'.a:group        '/\./                                                            contained                               nextgroup=mcNBTPath'.a:group ',mcNBTPathPad'.a:group
+        execute 'syn cluster mcNBTPath'.a:group           'contains=mcNBTPath'.a:group.',mcNBTTagP'.a:group
+        execute 'syn cluster mcNBTContinue'.a:group       'contains=mcNBTTagP'.a:group.',mcNBTArray'.a:group.',mcNBTPathDot'.a:group
+        execute 'syn cluster mcNBT'                       'add=mcNBTPath'.a:group.',mcNBTArray'.a:group.',mcNBTTagP'.a:group.',mcNBTPathDot'.a:group.',mcNBTPathPad'.a:group
+        execute 'hi def link mcNBTPath'.a:group 'mcNBTPath'
+        execute 'hi def link mcNBTPathDot'.a:group 'mcNBTPathDot'
+        execute 'syn match mcNBTPathPad'.a:group '/\ze\_[ ]/ contained skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+    elseif a:type=~ 'NBTTag'
+        execute 'syn region  mcNBTTag'.a:group 'matchgroup=mcNBTBracket start=/.\@1<={/rs=e end=/}/ oneline contained contains=mcNBTTagKey skipwhite nextgroup=mcNBTPad'.a:group
+        execute 'syn cluster mcNBT add=mcNBTTag'.a:group.',mcNBTPad'.a:group
+        execute 'syn match   mcNBTPad'.a:group '/\ze\_[ ]/ skipwhite contained nextgroup=mcDoubleSpace,'.a:nextgroup
+    elseif a:type=~ 'Block$'
+        execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcBlockState'.a:type.a:group.',mcNBTTag'.a:type.a:group.','.a:nextgroup
+        call s:addInstance('BlockState',a:type.a:group,a:nextgroup.',mcBadBlockWhitespace,mcNBTTag'.a:type.a:group)
+        call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
+    elseif a:type=~ 'Item$'
+        execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,mcBadBlockWhitespace,mcNBTTag'.a:type.a:group.','.a:nextgroup
+        call s:addInstance('NBTTag',a:type.a:group,a:nextgroup)
+    elseif a:type=~ 'Entity$'
+        execute 'syn match mc'.a:type.a:group '/#\?[[:alnum:]_:]\+/ contained contains=mcSimple'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+    elseif a:nextgroup == ""
+        execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type
+    else
+        execute 'syn match mc'.a:type.a:group '/[^ =,\t\r\]\n]\+/ contained contains=mc'.a:type 'skipwhite nextgroup=mcDoubleSpace,'.a:nextgroup
+    endif
 endfunction
 
 call s:addInstance('NBTPath',"","")
@@ -316,7 +319,7 @@ call s:addInstance('NsBlock','','')
 " SP COMMANDS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Advancement
+" /Advancement
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand advancement contained skipwhite nextgroup=mcDoubleSpace,mcAdvanceKeyword
 
@@ -332,7 +335,7 @@ hi def link mcAdvanceKeyword        mcKeyword
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Attribute
+" /Attribute
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('20w17a')
 syn keyword mcCommand attribute contained skipwhite nextgroup=mcDoubleSpace,mcSelectorAttr
@@ -366,7 +369,7 @@ hi def link mcAttrModAddName            mcValue
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Bossbar
+" /Bossbar
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand bossbar contained skipwhite nextgroup=mcDoubleSpace,mcBossbarKeyword
 
@@ -412,7 +415,7 @@ hi def link mcBossbarIdSet              mcId
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Clear
+" /Clear
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand clear contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorClear
 
@@ -420,7 +423,7 @@ call s:addInstance('PlayerSelector',"Clear","mcNsTItemClear")
 call s:addInstance('NsTItem','Clear','mcUInt')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Clone
+" /Clone
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand clone contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateClone
 
@@ -437,15 +440,23 @@ syn keyword mcCloneMode         contained force move normal
 hi def link mcCloneMode         mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Debug
+" /Debug
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('1.14.4p1')
-        syn keyword mcCommand debug contained skipwhite nextgroup=mcDoubleSpace,mcDebugKeyword
+    syn keyword mcCommand debug contained skipwhite nextgroup=mcDoubleSpace,mcDebugKeyword
+    syn keyword mcDebugKeyword contained start stop
+    if s:atLeastVersion('21w15a')
+        " This cannot be run inside of functions, but it exists
+        syn match mcDebugKeyword contained skipwhite contains=mcError nextgroup=mcDoubleSpace,mcFunction
+    endif
+    if !s:atLeastVersion('1.17p1')
         syn keyword mcDebugKeyword contained report
+    endif
 endif
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Data
+" /Data
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand data contained skipwhite nextgroup=mcDoubleSpace,mcDataKeyword
 
@@ -484,7 +495,7 @@ hi def link mcDataModifyHow     mcKeyword
 hi def link mcDataModifySource  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Datapack
+" /Datapack
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand datapack contained skipwhite nextgroup=mcDoubleSpace,mcDatapackKeyword
 
@@ -514,12 +525,12 @@ hi def link mcDatapackNameEnableRel     mcDatapackName
 hi def link mcDatapackName              mcId
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Difficulty
+" /Difficulty
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand difficulty contained skipwhite nextgroup=mcDoubleSpace,mcDifficulty
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Effect
+" /Effect
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand effect contained skipwhite nextgroup=mcDoubleSpace,mcEffectKeyword
 
@@ -539,7 +550,7 @@ call s:addInstance('Selector', "EffectClear", "mcEffect")
 hi def link mcEffectKeyword mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Enchant
+" /Enchant
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand enchant contained skipwhite nextgroup=mcDoubleSpace,mcSelectorEnchant
 
@@ -550,7 +561,7 @@ syn match   mcEnchantLevel  contained /[1-5]/ skipwhite nextgroup=mcTheRestIsBad
 hi def link mcEnchantLevel  mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Execute
+" /Execute
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand execute contained skipwhite nextgroup=mcDoubleSpace,mcExecuteKeyword
 
@@ -679,7 +690,7 @@ hi def link mcExecuteRangeInf                   mcValue
 hi def link mcExecuteCondScoreOp                  mcOp
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Fill
+" /Fill
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand fill contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateFill
 
@@ -693,7 +704,7 @@ syn keyword mcFillMode contained skipwhite nextgroup=mcDoubleSpace,mcNsTBlockFil
 hi def link mcFillMode  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Forceload
+" /Forceload
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand forceload contained skipwhite nextgroup=mcDoubleSpace,mcForceloadKeyword
 
@@ -713,26 +724,26 @@ hi def link mcForceloadRemKeyword mcForceloadKeyword
 hi def link mcForceloadKeyword    mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Function
+" /Function
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand function contained skipwhite nextgroup=mcDoubleSpace,mcFunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Gamemode
+" /Gamemode
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand defaultgamemode contained skipwhite nextgroup=mcDoubleSpace,mcGamemode
 syn keyword mcCommand gamemode        contained skipwhite nextgroup=mcDoubleSpace,mcGamemodeSet
 call s:addInstance('Gamemode','Set','mcSelector')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Gamerule
+" /Gamerule
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand gamerule contained skipwhite nextgroup=mcDoubleSpace,mcGamerule
 
 hi def link mcGamerule mcKeyId
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Give
+" /Give
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand give contained skipwhite nextgroup=mcDoubleSpace,mcPlayerSelectorGive
 
@@ -740,12 +751,10 @@ call s:addInstance('PlayerSelector',"Give", "mcNsItemGive")
 call s:addInstance('NsItem','Give','mcUInt')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Help
+" /Help
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand help contained skipwhite nextgroup=mcDoubleSpace,mcUInt,mcHelpCommand
 
-" Help commands (why am i even including this, or UUID highlighting for that matter)
-" (i guess you could /execute store result ... run help for a message generator)
 syn keyword mcHelpCommand contained advancement bossbar clear clone data datapack debug defaultgamemode difficulty effect enchant execute experience fill forceload function gamemode gamerule give help kill list locate loot me msg paraticle playsound recipe reload replaceitem say scoreboard seed setblock setworldspawn spawnpoint spreadplayers stopsound summon tag team teleport teammsg tell tellraw time title tp trigger w weather worldborder xp
 if s:atLeastVersion('18w43a')
         if s:atLeastVersion('18w45a')
@@ -761,19 +770,52 @@ endif
 hi def link mcHelpCommand mcCommand
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Kick
+" /Item (formerly but still internally Replaceitem)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if s:atLeastVersion('21w19a')
+    syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemKeyword item
+
+    syn keyword mcReplaceitemKeyword contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemReplaceTarget replace
+    call s:mcSelectorBlock('ReplaceitemReplaceTarget','ReplaceitemReplaceSlot')
+    call s:addInstance('Slot','ReplaceitemSlot','ReplaceitemReplaceKeyword')
+    syn keyword mcReplaceitemReplaceKeyword contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemWith with
+    call s:addInstance('NsItem', 'ReplaceitemWith', 'mcUInt')
+
+    syn keyword mcReplaceitemReplaceKeyword contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemFrom from
+    call s:mcSelectorBlock('ReplaceitemFrom','ReplaceitemModifyTarget')
+
+    syn keyword mcReplaceitemKeyword contained skipwhite nextgroup=mcDoubleSpace,mcReplaceitemModifyTarget modify
+    call s:mcSelectorBlock('ReplaceitemModifyTarget','JSON')
+
+
+    hi def link mcReplaceitemReplaceKeyword mcReplaceitemKeyword
+    hi def link mcReplaceitemKeyword mcKeyword
+else
+    if s:atLeastVersion('20w46a')
+        syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockReplaceitem item
+    else
+        syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockReplaceitem replaceitem
+    endif
+
+    call s:mcSelectorBlock('Replaceitem','mcSlotReplaceitem')
+    call s:addInstance('Slot','Replaceitem','mcNsItemReplaceitem')
+    call s:addInstance('NsItem','Replaceitem','mcUInt')
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" /Kick
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand kick contained skipwhite nextgroup=mcDoubleSpace,mcSelectorKick
 call s:addInstance('Selector','Kick','mcChatMessage')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Kill
+" /Kill
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand kill contained skipwhite nextgroup=mcDoubleSpace,mcSelector
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" List
+" /List
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand list contained skipwhite nextgroup=mcDoubleSpace,mcListUUIDs
 
@@ -781,19 +823,19 @@ syn keyword mcListUUIDs contained uuids
 hi def link mcListUUIDs mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Locate
+" /Locate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand locate contained skipwhite nextgroup=mcDoubleSpace,mcLocatableStructure
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Locatebiome
+" /Locatebiome
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('20w06a')
 syn keyword mcCommand locatebiome contained skipwhite nextgroup=mcDoubleSpace,mcBiome
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Loot
+" /Loot
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('18w43a')
         if s:atLeastVersion('18w45a')
@@ -837,7 +879,7 @@ hi def link mcLootCount                 mcUInt
 
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Msg
+" /Msg
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand msg w tell me  contained skipwhite nextgroup=mcDoubleSpace,mcSelectorMsg
 syn keyword mcCommand say                       contained skipwhite nextgroup=mcDoubleSpace,mcChatMessage
@@ -850,7 +892,7 @@ call s:addInstance('Selector', "Msg", "mcChatMessage")
 syn match   mcChatMessage       contained /.*/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Particle
+" /Particle
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsParticleParticle particle
 
@@ -864,7 +906,19 @@ syn keyword mcParticleMode  contained skipwhite nextgroup=mcDoubleSpace,mcSelect
 hi def link mcParticleMode  mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Playsound
+" /Perf /Jfr
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcPerfKeyword perf
+if s:atLeastVersion('21w37a')
+    syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcPerfKeyword jfr
+endif
+
+syn keyword mcPerfKeyword contained skipwhite start stop
+
+hi def link mcPerfKeyword mcKeyword
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" /Playsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsSoundPlay playsound
 
@@ -880,7 +934,7 @@ hi def link mcPlaysoundPitch     mcUFloat
 hi def link mcPlaysoundMinVolume mcUFloat
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Recipe
+" /Recipe
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcRecipeKeyword recipe
 
@@ -889,16 +943,7 @@ call s:addInstance('Selector', 'Recipe', 'mcRecipe,mcGlob')
 hi def link mcRecipeKeyword mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" ReplaceItem
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorBlockReplaceitem replaceitem
-
-call s:mcSelectorBlock('Replaceitem','mcSlotReplaceitem')
-call s:addInstance('Slot','Replaceitem','mcNsItemReplaceitem')
-call s:addInstance('NsItem','Replaceitem','mcUInt')
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Schedule
+" /Schedule
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('18w43a')
 
@@ -919,7 +964,7 @@ if s:atLeastVersion('18w43a')
 
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Scoreboard
+" /Scoreboard
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand scoreboard contained skipwhite nextgroup=mcDoubleSpace,mcScoreboardKeyword
 
@@ -965,7 +1010,7 @@ hi def link mcScoreboardModifyRender    mcKeyword
 hi def link mcScoreboardOp              mcOp
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Spreadplayers
+" /Spreadplayers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcColumnSpread spreadplayers
 
@@ -981,7 +1026,7 @@ if s:atLeastVersion('20w21a')
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Spectate
+" /Spectate
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if s:atLeastVersion('19w41a')
         syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorSpectateTarget spectate
@@ -989,7 +1034,7 @@ if s:atLeastVersion('19w41a')
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Stopsound
+" /Stopsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorStopsound stopsound
 
@@ -998,7 +1043,7 @@ call s:addInstance('SoundChannel','StopSound','mcNsSound')
 call s:addInstance('Glob','Stopsoun','mcSound')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Tag
+" /Tag
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTag tag
 
@@ -1011,7 +1056,7 @@ hi def link mcTagKeyword mcKeyword
 hi def link mcTag mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Team
+" /Team
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcTeamKeyword team
 
@@ -1042,14 +1087,14 @@ hi def link mcTeamModifyVisibility mcKeyword
 hi def link mcTeam                 mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Tellraw
+" /Tellraw
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTellraw tellraw
 
 call s:addInstance('Selector', 'Tellraw','mcJSONText')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Time
+" /Time
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcTimeKeyword time
 
@@ -1071,7 +1116,7 @@ hi def link mcTimeSet     mcKeyword
 hi def link mcTimeAdd     mcValue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Setblock
+" /Setblock
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand setblock contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateSetblock
 
@@ -1082,18 +1127,18 @@ call s:addInstance('NsBlock',"Setblock","mcSetblockMode")
 hi def link mcSetblockMode      mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Spawnpoint
+" /Spawnpoint
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand spawnpoint contained skipwhite nextgroup=mcDoubleSpace,mcSelectorSpawnPos
 call s:addInstance('Selector', "SpawnPos","mcCoordinate")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Setworldspawn
+" /Setworldspawn
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand setworldspawn contained skipwhite nextgroup=mcDoubleSpace,mcCoordinate
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Summon
+" /Summon
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand summon contained skipwhite nextgroup=mcDoubleSpace,mcNsEntitySummon
 
@@ -1101,7 +1146,7 @@ call s:addInstance("NsEntity","Summon","mcCoordinateSummon")
 call s:addInstance('Coordinate', "Summon","mcNBTTag")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Title
+" /Title
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand title contained skipwhite nextgroup=mcDoubleSpace,mcSelectorTitle
 
@@ -1117,7 +1162,7 @@ call s:addInstance('UInt','TitleTime3','')
 hi def link mcTitleKeyword mcKeyWord
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Tp
+" /Tp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand tp teleport contained skipwhite nextgroup=mcDoubleSpace,mcCoordinateTpSpecial,mcSelectorTpTarget
 
@@ -1132,7 +1177,7 @@ hi def link mcTpFacingAnchor    mcKeyword
 hi def link mcTpFacingEntity    mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Trigger
+" /Trigger
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcObjectiveTrigger trigger
 
@@ -1144,11 +1189,12 @@ hi def link mcTriggerMode mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Trivial Commands
+" Commands that never have arguments
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand reload seed contained
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Weather
+" /Weather
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand weather contained skipwhite nextgroup=mcDoubleSpace,mcWeather
 
@@ -1158,7 +1204,7 @@ call s:addInstance('UIntE6', 'WeatherDuration','')
 hi def link mcWeather           mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Worldborder
+" /Worldborder
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcWorldborderKeyword worldborder
 
@@ -1178,7 +1224,7 @@ hi def link mcWorldborderDamage         mcKeyword
 hi def link mcWorldborderWarning        mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Xp
+" /Xp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand xp experience contained skipwhite nextgroup=mcDoubleSpace,mcXpKeyword
 
@@ -1289,7 +1335,14 @@ syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockSta
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqShape       shape
 syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqType        type
 if s:atLeastVersion('19w34a')
-        syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI  honey_level
+    syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqUI      honey_level
+endif
+if s:atLeastVersion('20w48a')
+    syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqThickness thickness
+    syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqVertDir vertical_direction
+endif
+if s:atLeastVersion('20w49a')
+    syn keyword mcBlockStateKeyword         contained skipwhite nextgroup=mcBlockStateEqSculkPhase    sculk_sensor_phase
 endif
 
 " values
@@ -1314,8 +1367,19 @@ syn keyword mcBlockStateValueLeaves     contained skipwhite     large none small
 syn keyword mcBlockStateValueMode       contained skipwhite     compare subtract corner data load save
 syn keyword mcBlockStateValuePart       contained skipwhite     foot head
 syn keyword mcBlockStateValueType       contained skipwhite     normal sticky left right single bottom double top
+if s:atLeastVersion('20w48a')
+    syn keyword mcBlockStateValueThickness      contained skipwhite     tip tip_merge frustrum middle base
+    syn keyword mcBlockStateValueVertDir        contained skipwhite     up down
+if s:atLeastVersion('20w49a')
+    syn keyword mcBlockStateValueSculkPhase     contained skipwhite     active cooldown inactive
+endif
 
-for x in split('UI Bool Attachment Axis Cardinal Face Facing Half Hinge Instrument Leaves Mode Part Shape Type',' ')
+
+s:blockstateTypes = 'UI Bool Attachment Axis Cardinal Face Facing Half Hinge Instrument Leaves Mode Part Shape Type'
+if s:atLeastVersion('20w48a') s:blockstateTypes += ' Thickness VertDir' endif
+if s:atLeastVersion('20w49a') s:blockstateTypes += ' SculkPhase' endif
+
+for x in split(s:blockstateTypes,' ')
         execute 'syn match   mcBlockStateEq'.x '/=/ contained skipwhite nextgroup=mcBlockStateValue'.x
         execute 'hi def link mcBlockStateEq'.x 'mcBlockStateEq'
         execute 'hi def link mcBlockStateValue'.x 'mcBlockStateValue'

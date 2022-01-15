@@ -76,3 +76,24 @@ soul_fire_flame
 
 !20w11a
 soul
+
+!20w46a
+snowflake
+
+!20w48a
+dripping_dripstone_(water|lava)
+falling_drip(stone_lava|_water)
+
+!20w49a
+vibration
+dust_color_transition
+
+!21w05a
+falling_spore_blossom
+spore_blossom_air
+
+!21w11a
+electric_spark
+scrape
+wax_o(n|ff)
+

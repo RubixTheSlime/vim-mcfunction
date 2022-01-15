@@ -1,3 +1,48 @@
+" things file
+" aka blocks, items, (select) recipes, and entities because there are several of
+" each, and several that are in multiple categories
+"
+" legend:
+" b: a block, and only a block
+" B: a block tag, specified in-game with a #, as in `/fill ... replace #slabs`
+" c: craftable item, because it's both an item and a recipe
+" e: an entity
+" E: entity tag
+" i: an item
+" I: item tag
+" m: mob, more accurately any entity that has an associated spawn egg, as the 
+"    spawn egg is in fact a different name. There is no short version for
+"    something that is both an item and an entity as there's very few of them.
+" r (not yet used outside of things that originally did not have a recipe but it
+"    was later added, and needs a lot of work anyways, assuming it ever gets
+"    implemented, because who really needs this part): soley a recipe
+"
+" These markers can be combined in any way
+"
+" The syntax should be fairly simple to figure out beyond that, a ! denotes that
+" everything below it was introduced in that exact version, more accurately,
+" the system adds everything above the first version it finds that is past the
+" desired version. This needs a lot of work to accomidate multiple branches, as
+" it currently assumes only a single release branch. All other branches are
+" hardcoded.
+" 
+" If something was previously available but then removed, ![removal version] is
+" added at the end of the line. Everything is considered regex, as it adds word
+" boundaries to them. The regex is matched as a vim regex with "very magic".
+" Parentheses are modified so as to not capture groups, so as many can be used
+" as one wishes
+" 
+" Note that some things are set to be removed at a later version, despite not 
+" actually being removed. This is to improve regex, eg for the addition of
+" copper and deepslate ores. This is not always done, however, it is mainly
+" only done if it affects a major release version (ie the ores are only
+" redefined when all deepslate ores are introduced, as that is the when it will
+" affect the versions people will use the most).
+"
+" In case it isn't clear, " means comment, and blank lines are acceptable.
+" Comments at the end of a line are supported, though not encouraged
+
+
 !1.13
 b (attatched_)?(melon|pumpkin)_stem
 b (cave|void)_air
@@ -87,7 +132,8 @@ bi (carved_)?pumpkin
 bi (chain_|repeating_)?command_block
 bi (chipped|damaged)_anvil
 bi (tube|brain|fire|horn|bubble)_coral(_block|_fan)?
-bi (iron|gold|coal|diamond|lapis|redstone|emerald|nether_quartz)_ore
+bi (iron|gold|coal|diamond|lapis|redstone|emerald)_ore !21w10a
+bi nether_quartz_ore !20w11a
 bi (mossy_)?cobblestone
 bi (red_)?sand
 bi (stripped_)?((dark_)?oak|spruce|birch|jungle|acacia)_log
@@ -106,7 +152,8 @@ bi end_portal_frame
 bi end_stone
 bi farmland
 bi fern
-bi grass(_block|_path)?
+bi grass_block
+bi grass_path !20w45a
 bi gravel
 bi ice
 bi infested_((cobble)?stone|(mossy_|cracked_|chiseled_)?stone_bricks)
@@ -400,7 +447,8 @@ E arrows
 B portals
 
 !20w06a
-bi ancient_debris|basalt
+bi ancient_debris
+bi basalt !21w08a
 bc netherite_block
 bi (crimson|warped)_(fungus|nylium|planks|roots|stem|sign)
 b (crimson|warped)_wall_sign
@@ -436,14 +484,15 @@ bi (crimson|warped)_hyphae
 B (pi|ho)glin_repellents
 
 !20w11a
-bi nether_gold_ore|twisting_vines
+bi nether_(gold|quartz)_ore
+bi twisting_vines
 b twisting_vines_plant
-BI gold_ores
+BI gold_ores !21w10a
 I piglin_repellents
 B soul_speed_blocks
 
 !20w12a
-bc polished_basalt
+bc polished_basalt !21w08a
 bc respawn_anchor
 B soul_fire_base_blocks
 
@@ -468,7 +517,7 @@ bc ((chiseled|cracked)_nether|quartz)_bricks
 bc soul_campfire
 i piglin_banner_pattern
 B campfires|guarded_by_piglins
-I (furnace|stone_tool)_materials
+I (furnace|stone_tool)_materials !20w28a
 I soul_fire_base_blocks
 
 !20w16a
@@ -491,3 +540,175 @@ C fench_gates|unstable_bottom_center
 
 !1.16p3
 B infiniburn_(overworld|nether|end)
+
+!20w27a
+B mushroom_grow_block
+
+!20w28a
+B base_stone_(nether|overworld)
+B stone_craftine_materials
+
+!20w45a
+bi (small|medium|large)_amethyst_bud
+bi budding_amethyst
+bi amethyst_(block|cluster)
+bi calcite
+b (lava|powder_snow|water)_cauldron
+bc ((red|pink|magenta|purple|blue|cyan|(light_)?(blue|gray)|green|lime|yellow|orange|brown|black|white)_)?candle(_cake)?
+bi copper_ore !20w10a
+
+" There's a good chance that this is incorrect
+bi (((waxed_)?(lightly_|semi_))?weathered_)|waxed_)?(copper_block|cut_copper_(block|slab|stairs)) !21w05a
+
+r (copper_block|cut_copper_(block|slab|stairs))
+bc lightning_rod
+bc tinted_glass
+bi tuff
+bi dirt_path
+i amthyst_shard
+c bundle
+c copper_ingot
+c spyglass
+B candle(_cake)?s
+B cauldrons
+B crystal_sound_blocks
+I candles
+I ignored_by_piglin_babies
+I piglin_food
+
+!20w46a
+b powder_snow
+i powder_snow_bucket
+B snow_step_sound_blocks !20w48a
+E powder_snow_walkable_mobs
+
+!20w48a
+bi dripstone_block
+bi pointed_dripstone
+I freeze_immune_wearables
+B inside_step_sound_block
+
+!20w49a
+bi sculk_sensor
+B dripstone_replaceable_blocks
+B occludes_vibration_signals
+
+!20w51a
+i axolotl_bucket
+m axolotl
+I axolotl_tempt_items
+I occludes_vibration_signals
+E axolotl_always_hostiles
+E axolotl_tempted_hostiles !21w13a
+
+!21w03a
+ei glow_item_frame
+bi glow_lichen
+i glow_ink_sac
+m glow_squid
+r dripstone_block
+
+!21w05a
+bi (flowering_)?azalea !1.17p2
+bi azalea_leaves(_flowers)? !1.17p2
+b cave_vines_(head|body) !21w11a
+i glow_beries
+bi (big|small)_dripleaf
+b big_dripleaf_stem
+bi hanging_roots
+bi moss_block
+bc moss_carpet
+bi rooted_dirt
+bi spore_blossom
+B (azalea_log|lush_plants)_replaceable !21w10a
+B cave_vines
+B fox_food
+bi (((waxed_)?(exposed_|weathered_))|oxidized_)?(copper_block|cut_copper(_slab|_stairs)) !21w05b
+bi waxed_(exposed_|weathered_)?(copper_block|cut_copper(_slab|_stairs)) !21w05b
+
+!21w05b
+bi (waxed_)?copper_block
+bi ((waxed_)?(exposed|weathered)?|oxidized)_copper !21w14a
+bi ((waxed_)?(exposed_|weathered_)?|oxidized_)?(cut_copper(_slab|_stairs)) !21w14a
+
+!21w07a
+bc chiseled_grimstone !21w08a
+bc grimstone_(tile|brick)(s|_slab|_stairs|_wall) !21w08a
+bi (polished_)?grimstone(_slab|_stairs|_wall)? !21w08a
+r (polished_)?grimstone(_slab|_stairs|_wall) !21w08a
+
+!21w08a
+bc chiseled_deepslate
+bc deepslate(_(tile|brick)(s|_slab|_stairs|_wall))?
+bc (polished|cobbled)deepslate(_slab|_stairs|_wall)?
+bi deepslate_(diamond|gold|iron|lapis|redstone)_ore !21w10a
+bi (smooth_|polished_)?basalt
+r (smooth|polished)_basalt
+BI (deepslate|stone)_ore_replaceables
+BI (diamond|iron|lapis|redstone)_ores !21w10a
+
+!21w10a
+bi (deepslate_)?(coal|copper|diamond|emerald|gold|iron|lapis|redstone)_ore
+BI (coal|copper|diamond|emerald|gold|iron|lapis|redstone)_ores
+bc cracked_deepslate_(brick|tile)s
+bi infested_deepslate
+BI lush_(plants|ground)_replaceable
+
+!21w11a
+bi cave_vines(_plant)?
+B cluster_max_harvestables
+
+!21w13a
+bi light_block
+m goat
+B dirt
+B snow
+E axolotl_hunt_targets
+E freeze_(hurts_extra|immune_entity)_types
+
+!21w14a
+bi (waxed_)?(exposed|weathered|oxidized)_copper
+bi (waxed_)?(exposed_|weathered_|oxidized_)?(cut_copper(_slab|_stairs))
+i raw_(copper|iron|gold) !21w15a
+
+!21w15a
+i raw_(copper|iron|gold)(_block)?
+i raw_(copper|iron|gold)_block
+e marker
+
+!21w16a
+B moss_replaceable
+
+!21w17a
+B small_dripleaf_placeable
+
+!21w19a
+B mineable/((pick)?axe|hoe|shovel)
+B needs_(stone|iron|diamond)_tool
+
+!21w20a
+B features_cannot_place
+
+!1.17p1
+B lava_pool_stone_replaceables
+B geode_invalid_blocks
+
+!1.17p2
+bi (flowering_)?azalea(_leaves)?
+
+!21w42a
+music_disc_otherside
+
+!21w43a
+B big_dripleaf_placeable
+
+!21w44a
+B (animals|axolotls|foxes|goats|mooshrooms|parrots|rabbits|wolves)_spawnable_on
+B polar_bears_spawnable_on_in_frozen_ocean
+
+!1.18p5
+B azalea_(grows_on|root_replaceable)
+B replaceable_plants
+BI terracotta
+I dirt
+

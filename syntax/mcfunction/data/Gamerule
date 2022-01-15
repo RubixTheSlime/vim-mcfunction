@@ -41,3 +41,9 @@ doTraderSpawning
 !1.16p1
 forgiveDeadPlayers
 universalAnger
+
+!20w48a
+freezeDamage
+
+!20w51a
+playersSleepingPercentage   /\<1?\d{0,2}\>/
