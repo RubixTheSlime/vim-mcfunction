@@ -23,7 +23,7 @@ You can check out these setting in the [wiki](https://github.com/rubixninja314/v
 
 As of right now, sounds (used by `/playsound` and `/stopsound`) and recipes (used by `/recipe`) are not fully implemented.
 Specifically, some sounds that were not available in older snapshots may still highlight as a false-positive, and only the recipes that happen to share a name with an item will highlight.
-As stated earlier, the multiplayer commands may or may not work. To my knowledge they highlight correctly, but I am not sure if they'll actually run.
+The multiplayer commands may or may not work. To my knowledge they highlight correctly, but I am not sure if they'll actually run.
 
 If you notice any discrepancies, please feel free to submit an issue.
 
