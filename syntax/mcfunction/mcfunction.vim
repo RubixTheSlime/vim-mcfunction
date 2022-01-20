@@ -21,6 +21,7 @@ hi def link mcAnySpace mcBadWhitespace
 let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/'
 
 " MC Version identifier
+" This REALLY needs to be re-worked
 function! s:toNumericVersion(name)
         if a:name =~ '\c\<c\%[ombat]'
                 let l:num = matchstr(a:name,'\d\+$')
@@ -64,12 +65,16 @@ function! s:toNumericVersion(name)
                         return s:addOffset('20w03z',a:name)
                 elseif a:name =~ '1.15'
                         return s:addOffset('19w47z',a:name)
-                elseif a:name =~ '1.16'
-                        return s:addOffset('20w23z',a:name)
                 elseif a:name =~ '1.16.1'
-                        return s:addOffset('21w23z',a:name)
+                        return s:addOffset('20w26z',a:name)
+                elseif a:name =~ '1.16.[2-5]'
+                        return s:addOffset('20w33z',a:name)
+                elseif a:name =~ '1.16'
+                        return s:addOffset('20w26y',a:name)
                 elseif a:name =~ '1.17'
-                        return s:addOffset('22w23z',a:name)
+                        return s:addOffset('21w24z',a:name)
+                elseif a:name =~ '1.18'
+                        return s:addOffset('21w49z',a:name)
                 endif
         endif
 endfunction
@@ -447,7 +452,7 @@ if s:atLeastVersion('1.14.4p1')
     syn keyword mcDebugKeyword contained start stop
     if s:atLeastVersion('21w15a')
         " This cannot be run inside of functions, but it exists
-        syn match mcDebugKeyword contained skipwhite contains=mcError nextgroup=mcDoubleSpace,mcFunction
+        " syn match mcDebugKeyword contained skipwhite contains=mcError nextgroup=mcDoubleSpace,mcFunction
     endif
     if !s:atLeastVersion('1.17p1')
         syn keyword mcDebugKeyword contained report
@@ -1361,7 +1366,7 @@ syn keyword mcBlockStateValueHalf       contained skipwhite     lower upper bott
 syn keyword mcBlockStateValueHinge      contained skipwhite     left right
 syn keyword mcBlockStateValueInstrument contained skipwhite     basedrum bass bell chime flute guitar harp hat pling snare xylophone
 if s:atLeastVersion('19w09a')
-syn keyword mcBlockStateValueInstrument contained skipwhite     iron_xylophone cow_bell didgeridoo bit banjo
+    syn keyword mcBlockStateValueInstrument contained skipwhite     iron_xylophone cow_bell didgeridoo bit banjo
 endif
 syn keyword mcBlockStateValueLeaves     contained skipwhite     large none small
 syn keyword mcBlockStateValueMode       contained skipwhite     compare subtract corner data load save
@@ -1369,20 +1374,25 @@ syn keyword mcBlockStateValuePart       contained skipwhite     foot head
 syn keyword mcBlockStateValueType       contained skipwhite     normal sticky left right single bottom double top
 if s:atLeastVersion('20w48a')
     syn keyword mcBlockStateValueThickness      contained skipwhite     tip tip_merge frustrum middle base
-    syn keyword mcBlockStateValueVertDir        contained skipwhite     up down
+endif
+syn keyword mcBlockStateValueVertDir        contained skipwhite     up down
 if s:atLeastVersion('20w49a')
     syn keyword mcBlockStateValueSculkPhase     contained skipwhite     active cooldown inactive
 endif
 
 
-s:blockstateTypes = 'UI Bool Attachment Axis Cardinal Face Facing Half Hinge Instrument Leaves Mode Part Shape Type'
-if s:atLeastVersion('20w48a') s:blockstateTypes += ' Thickness VertDir' endif
-if s:atLeastVersion('20w49a') s:blockstateTypes += ' SculkPhase' endif
+let s:blockstateTypes = 'UI Bool Attachment Axis Cardinal Face Facing Half Hinge Instrument Leaves Mode Part Shape Type'
+if s:atLeastVersion('20w48a')
+    let s:blockstateTypes += ' Thickness VertDir'
+endif
+if s:atLeastVersion('20w49a')
+    let s:blockstateTypes += ' SculkPhase'
+endif
 
 for x in split(s:blockstateTypes,' ')
-        execute 'syn match   mcBlockStateEq'.x '/=/ contained skipwhite nextgroup=mcBlockStateValue'.x
-        execute 'hi def link mcBlockStateEq'.x 'mcBlockStateEq'
-        execute 'hi def link mcBlockStateValue'.x 'mcBlockStateValue'
+    execute 'syn match   mcBlockStateEq'.x '/=/ contained skipwhite nextgroup=mcBlockStateValue'.x
+    execute 'hi def link mcBlockStateEq'.x 'mcBlockStateEq'
+    execute 'hi def link mcBlockStateValue'.x 'mcBlockStateValue'
 endfor
 
 hi def link mcBlockStateBracket         mcOp
@@ -1526,10 +1536,10 @@ hi def link mcBuiltinNamespace  mcKeyId
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
         function! s:addBuiltin(type,match)
-                execute 'syn match mcBuiltin'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
+                execute 'syn match mcBuiltin'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
         endfunction
         function! s:addBuiltinTag(type,match)
-                execute 'syn match mcBuiltinTag'.a:type 'contained `\v(<'.substitute(a:match,'(','%(','g').'>)`'
+                execute 'syn match mcBuiltinTag'.a:type 'contained `\v<('.substitute(a:match,'(','%(','g').')>`'
         endfunction
         function! s:addGamerule(name, values)
                 if a:values =~ '\cuint'
@@ -1565,7 +1575,7 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 				if s:parts[0] =~ 'b'    | call s:addBuiltin(   'Block', s:parts[1]) | endif
 				if s:parts[0] =~ 'B'    | call s:addBuiltinTag('Block', s:parts[1]) | endif
 				" Recipe
-				if s:parts[0] =~ '[cr]' | call s:addBuiltin('Recipe',   s:parts[1]) | endif
+				if s:parts[0] =~ '[cr]' | call s:addBuiltin( 'Recipe',  s:parts[1]) | endif
 				" Item
 				if s:parts[0] =~ '[ci]' | call s:addBuiltin(   'Item',  s:parts[1]) | endif
 				if s:parts[0] =~ 'I'    | call s:addBuiltinTag('Item',  s:parts[1]) | endif
@@ -1586,9 +1596,9 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 					else
 						" it would be very consistent if it weren't for EndCity
 						if s:line=~ 'endcity'
-							call s:addBuiltin('LocatableStructure','EndCity')
+                            call s:addBuiltin('LocatableStructure','EndCity')
 						else
-							call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
+                            call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
 						endif
 					endif
 				endif

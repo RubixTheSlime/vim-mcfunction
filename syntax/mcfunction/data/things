@@ -697,7 +697,7 @@ B geode_invalid_blocks
 bi (flowering_)?azalea(_leaves)?
 
 !21w42a
-music_disc_otherside
+i music_disc_otherside
 
 !21w43a
 B big_dripleaf_placeable
