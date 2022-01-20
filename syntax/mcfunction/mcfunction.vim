@@ -923,6 +923,13 @@ syn keyword mcPerfKeyword contained skipwhite start stop
 hi def link mcPerfKeyword mcKeyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" /Placefeature
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcFeaturePlace placefeature
+
+call s:addInstance('Feature', 'Place', 'mcCoordinate')
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " /Playsound
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword mcCommand contained skipwhite nextgroup=mcDoubleSpace,mcNsSoundPlay playsound
@@ -1488,7 +1495,7 @@ hi def link mcLootTableCategory mcKeyId
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Data Values
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-for s:x in split('Advancement AdvancementCriteria Attribute BossbarId ChestLoot CustomCriteria Difficulty Dimension Effect Enchantment Function Gamemode GameplayLoot Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
+for s:x in split('Advancement AdvancementCriteria Attribute BossbarId ChestLoot CustomCriteria Difficulty Dimension Effect Enchantment Feature Function Gamemode GameplayLoot Slot LocatableStructure Objective Particle Predicate Recipe Sound SoundChannel Storage Structure UUID',' ')
         execute 'syn match mcNs'.s:x '/[^ =,\t\r\n\]]\+/                      contained contains=mcNamespace,mc'.s:x
         execute 'syn match mcNamespaced'.s:x '/[^ =,\t\r\n\]]\+/              contained contains=mcNamespace,mc'.s:x
         if s:x =~ '\cuuid'
@@ -1596,9 +1603,17 @@ if (!exists('g:mcEnableBuiltinIDs') || g:mcEnableBuiltinIDs)
 					else
 						" it would be very consistent if it weren't for EndCity
 						if s:line=~ 'endcity'
-                            call s:addBuiltin('LocatableStructure','EndCity')
+                            if s:atLeastVersion('22w03a')
+                                call s:addBuiltin('nsLocatableStructure','EndCity')
+                            else
+                                call s:addBuiltin('LocatableStructure','EndCity')
+                            endif
 						else
-                            call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
+                            if s:atLeastVersion('22w03a')
+                                call s:addBuiltin('nsLocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
+                            else
+                                call s:addBuiltin('LocatableStructure',substitute(matchstr(s:line,'^\*\?\zs\S*\>'), '\(^\|_\)\zs\a', '\u&', 'g'))
+                            endif
 						endif
 					endif
 				endif
