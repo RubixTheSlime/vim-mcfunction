@@ -1432,7 +1432,7 @@ syn keyword mcFilterKeyword     contained predicate      skipwhite nextgroup=mcF
 
 " ... = ...
 syn match   mcFilterEqGamemode  contained /=/    skipwhite nextgroup=mcGamemode
-syn match   mcFilterEqNBT       contained /=/    skipwhite nextgroup=mcNBTTag
+syn match   mcFilterEqNBT       contained /=!\?/    skipwhite nextgroup=mcNBTTag
 syn match   mcFilterEqPredicate contained /=/    skipwhite nextgroup=mcNsPredicate
 syn match   mcFilterEqSort      contained /=/    skipwhite nextgroup=mcFilterSort
 syn match   mcFilterEqScores    contained /=/    skipwhite nextgroup=mcFilterScores
