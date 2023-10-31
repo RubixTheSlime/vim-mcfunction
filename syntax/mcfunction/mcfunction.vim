@@ -1431,13 +1431,12 @@ syn keyword mcFilterKeyword     contained advancements   skipwhite nextgroup=mcF
 syn keyword mcFilterKeyword     contained predicate      skipwhite nextgroup=mcFilterEqPredicate
 
 " ... = ...
-syn match   mcFilterEqGamemode  contained /=/    skipwhite nextgroup=mcGamemode
+syn match   mcFilterEqGamemode  contained /=!\?/    skipwhite nextgroup=mcGamemode
 syn match   mcFilterEqNBT       contained /=!\?/    skipwhite nextgroup=mcNBTTag
-syn match   mcFilterEqPredicate contained /=/    skipwhite nextgroup=mcNsPredicate
+syn match   mcFilterEqPredicate contained /=!\?/    skipwhite nextgroup=mcNsPredicate
 syn match   mcFilterEqSort      contained /=/    skipwhite nextgroup=mcFilterSort
 syn match   mcFilterEqScores    contained /=/    skipwhite nextgroup=mcFilterScores
 syn match   mcFilterEqAdvances  contained /=/    skipwhite nextgroup=mcFilterAdvancements
-syn match   mcFilterEqScore     contained /=/    skipwhite nextgroup=mcFilterIR1,mcFilterIR2
 syn match   mcFilterEqAdvance   contained /=/    skipwhite nextgroup=mcFilterAdvancementCriterion,mcBool
 syn match   mcFilterEqName      contained /=!\?/ skipwhite nextgroup=mcPlayerName
 syn match   mcFilterEqTeam      contained /=!\?/ skipwhite nextgroup=mcTeam
