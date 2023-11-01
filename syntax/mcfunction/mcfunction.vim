@@ -194,7 +194,7 @@ hi def link mcInt       mcValue
 hi def link mcFloat     mcValue
 
 syn match   mcUIntRange         contained contains=mcBadDecimal,mcUInt,mcRangeDots   /\d*\%(\.\+\d*\)\?/ 
-syn match   mcIntRange          contained contains=mcBadDecimal,mcInt,mcRangeDots    /-\?\d*\%(\.\+-\?\d*\)\?/ 
+syn match   mcIntRange          contained contains=mcBadDecimal,mcInt,mcRangeDots    /-\?\d*\%(\.\.-\?\d*\)\?/ 
 syn match   mcUFloatRange       contained contains=mcUFloat,mcRangeDots /[[:digit:].]*\%(\.\.[[:digit:].]*\)\?/ 
 syn match   mcFloatRange        contained contains=mcFloat,mcRangeDots  /[[:digit:].-]*\%(\.\.[[:digit:].-]*\)\?/ 
 syn match   mcRangeDots         contained /\.\./
@@ -1461,16 +1461,20 @@ hi def link mcYRotation mcXRotation
 hi def link mcXRotation mcValue
 
 " Lists
-syn region  mcFilterScores                      matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcObjectiveNameFilter
-syn region  mcFilterAdvancements                matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcNsAdvancementFilter
+syn region  mcFilterScores                      matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcFilterScoresPair,mcFilterComma
+syn region  mcFilterAdvancements                matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcNsAdvancementFilter
 call s:addInstance('NsAdvancement','Filter','mcFilterEqAdvance')
-syn region  mcFilterAdvancementCriterion        matchgroup=mcOp start=/{/rs=e end=/}/ oneline contained contains=mcAdvancementCriterion
+syn region  mcFilterAdvancementCriterion        matchgroup=mcNBTBracket start=/{/rs=e end=/}/ oneline contained contains=mcAdvancementCriterion
 
+syn match mcFilterScoresObjective /[A-Za-z_]\w\+/ contained
+syn match mcFilterScoresPair /\w\+=\(\d\|[-.]\)\+/ contained contains=mcFilterScoresObjective,mcIntRange
 
 " Links
 hi def link mcFilterKeyword             mcKeyword
 hi def link mcFilterSort                mcKeyword
 hi def link mcFilterComma               mcFilterEq
+hi def link mcFilterScoresObjective     mcObjective
+hi def link mcFilterScoresPair          mcOp
 
 for x in split('Gamemode NBT Tag Sort Scores Advances Score Advance Name Team Type Tag F UI UFR XR YR', ' ')
         execute 'hi def link mcFilterEq'.x 'mcFilterEq'
